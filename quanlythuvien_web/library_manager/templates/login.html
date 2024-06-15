@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/bootswatch_flatly.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <div class="bg-primary" style="height:100vh;">
+        <main role="main" class="pb-3 main h-100">
+            <div class="login">
+                <h2 class="text-primary">Đăng nhập</h2>
+                <form method="post">
+                    <div class="form-group">
+                        <label for="inputTenDN" class="form-label mt-4">Tên đăng nhập</label>
+                        <input type="text" class="form-control" id="inputTenDN" name="taikhoan" required placeholder="Nhập tên đăng nhập">
+                    </div>
+                    <div class="form-group">
+                        <label for="inputMK" class="form-label mt-4">Mật khẩu</label>
+                        <input type="password" class="form-control" id="inputMK" name="matkhau" required placeholder="Nhập mật khẩu" autocomplete="off">
+                    </div>
+                    <br />
+                    <div class="text-end">
+                        <a href="#!">Quên mật khẩu</a>
+                    </div>
+                    <br />
+                    <div class="text-center">
+                        <input type="submit" value="Log in" class="btn btn-primary w-100" />
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock  %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootswatch_flatly.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <input type="checkbox" id="nav-toggle" checked>
+    <div class="sidebar" target="_sidebar">
+        <div class="sidebar-brand">
+            <a asp-controller="Home" asp-action="Index">
+                <h2 class="lv2">
+                    <img src="{% static 'logo-svg.webp' %}" class="logo" />
+                    <span>EAUT Libary</span>
+                </h2>
+            </a>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li>
+                    <a href="/home" page="home" title="Dasboard" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-house"></i>
+                        </span>
+                        <span>Dasboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-tri-he-thong" page="quan-tri-he-thong" title="Quản trị hệ thống" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-server"></i>
+                        </span>
+                        <span>Quản trị hệ thống</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-ly-kho-sach" page="quan-ly-kho-sach" title="Quản lý kho sách" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-book"></i>
+                        </span>
+                        <span>Quản lý kho sách</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-ly-doc-gia" page="quan-ly-doc-gia" title="Quản lý độc giả" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-file-person"></i>
+                        </span>
+                        <span>Quản lý độc giả</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-ly-muon-tra" page="quan-ly-muon-tra" title="Quản lý mượn trả sách" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-file-earmark-ruled"></i>
+                        </span>
+                        <span>Quản lý mượn trả sách</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/bao-cao-thong-ke" page="bao-cao-thong-ke" title="Báo cáo thống kê" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-file-earmark-bar-graph"></i>
+                        </span>
+                        <span>Báo cáo thống kê</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/#logout" title="Thoát">
+                        <span>
+                            <i class="bi bi-box-arrow-left"></i>
+                        </span>
+                        <span>Thoát</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <header>
+            <h2 class="lv2">
+                <label for="nav-toggle">
+                    <span>
+                        <i class="bi bi-list"></i>
+                    </span>
+                </label>
+            </h2>
+            <div class="search-wrapper">
+                <span>
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="search" placeholder="Search here" />
+            </div>
+
+            <div class="user-wrapper">
+                <img src="{% static 'admin.png' %}" alt="" width="30px" height="30px">
+                <div>
+                    <h4 class="lv4">Nguyễn Văn Hải</h4>
+                    <small>Admin</small>
+                </div>
+            </div>
+        </header>
+        {% comment %} Body {% endcomment %}
+        <main>
+            {% block content %}{% endblock  %}
+        </main>
+    </div>
+    <script src="{% static 'javascript/app.js' %}"></script>
+</body>
+</html>
