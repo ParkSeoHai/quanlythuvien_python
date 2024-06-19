@@ -15,7 +15,7 @@
         <div class="sidebar-brand">
             <a asp-controller="Home" asp-action="Index">
                 <h2 class="lv2">
-                    <img src="{% static 'logo-svg.webp' %}" class="logo" />
+                    <img src={% static 'imgs/logo-svg.webp' %} class="logo" />
                     <span>EAUT Libary</span>
                 </h2>
             </a>
@@ -31,47 +31,55 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/quan-tri-he-thong" page="quan-tri-he-thong" title="Quản trị hệ thống" class="sidebar-link">
+                    <a href="/quan-ly-nguoi-dung" page="quan-ly-nguoi-dung" title="Quản lý người dùng" class="sidebar-link">
                         <span>
                             <i class="bi bi-server"></i>
                         </span>
-                        <span>Quản trị hệ thống</span>
+                        <span>Quản lý người dùng</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-ly-danh-muc" page="quan-ly-danh-muc" title="Quản lý danh mục" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-book"></i>
+                        </span>
+                        <span>Quản lý danh mục</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-ly-sach" page="quan-ly-sach" title="Quản lý sách" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-file-person"></i>
+                        </span>
+                        <span>Quản lý sách</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-ly-muon-tra" page="quan-ly-muon-tra" title="Quản lý cho mượn / thu hồi sách" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-file-earmark-bar-graph"></i>
+                        </span>
+                        <span>Quản lý cho mượn / thu hồi sách</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/quan-ly-tinh-hinh-muon-tra" page="quan-ly-tinh-hinh-muon-tra" title="Quản lý tình hình mượn / trả" class="sidebar-link">
+                        <span>
+                            <i class="bi bi-file-earmark-ruled"></i>
+                        </span>
+                        <span>Quản lý tình hình mượn / trả</span>
                     </a>
                 </li>
                 <li>
                     <a href="/quan-ly-kho-sach" page="quan-ly-kho-sach" title="Quản lý kho sách" class="sidebar-link">
                         <span>
-                            <i class="bi bi-book"></i>
+                            <i class="bi bi-file-earmark-bar-graph"></i>
                         </span>
                         <span>Quản lý kho sách</span>
                     </a>
                 </li>
                 <li>
-                    <a href="/quan-ly-doc-gia" page="quan-ly-doc-gia" title="Quản lý độc giả" class="sidebar-link">
-                        <span>
-                            <i class="bi bi-file-person"></i>
-                        </span>
-                        <span>Quản lý độc giả</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/quan-ly-muon-tra" page="quan-ly-muon-tra" title="Quản lý mượn trả sách" class="sidebar-link">
-                        <span>
-                            <i class="bi bi-file-earmark-ruled"></i>
-                        </span>
-                        <span>Quản lý mượn trả sách</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/bao-cao-thong-ke" page="bao-cao-thong-ke" title="Báo cáo thống kê" class="sidebar-link">
-                        <span>
-                            <i class="bi bi-file-earmark-bar-graph"></i>
-                        </span>
-                        <span>Báo cáo thống kê</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/#logout" title="Thoát">
+                    <a href="/logout" title="Thoát">
                         <span>
                             <i class="bi bi-box-arrow-left"></i>
                         </span>
@@ -99,10 +107,10 @@
             </div>
 
             <div class="user-wrapper">
-                <img src="{% static 'admin.png' %}" alt="" width="30px" height="30px">
+                <img src={% static 'imgs/avatar_default.jpg' %} alt="" width="30px" height="30px">
                 <div>
-                    <h4 class="lv4">Nguyễn Văn Hải</h4>
-                    <small>Admin</small>
+                    <h4 class="lv4">{{ user.email }}</h4>
+                    <small>{% if user.role == 0 %} Admin {% elif user.role == 1 %} Thủ thư {% endif %}</small>
                 </div>
             </div>
         </header>
