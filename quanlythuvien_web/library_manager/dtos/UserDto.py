@@ -1,4 +1,5 @@
 from library_manager.models import Users
+from library_manager.dtos.ResponseDto import ResponseDto as Response
 
 class UserDto(object):
     def __init__(self, id_user = '', name = '', email ='',
@@ -15,11 +16,26 @@ class UserDto(object):
         self.address = address
     
     def login(self):
-        user = Users.objects.filter(email=self.email, password=self.password).first()
-        return user.id_user if user else None
+        try:
+            user = Users.objects.filter(email=self.email, password=self.password).first()
+            if user:
+                return Response(True, 'Login success', user.id_user)
+            else:
+                return Response(False, 'Login failed', None)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
 
     def register(self):
         ...
+
+    def check_email(email):
+        try:
+            user = Users.objects.filter(email=email).first()
+            return True if user else False
+        except Exception as e:
+            print(e)
+            return False
 
     def logout(self):
         ...
