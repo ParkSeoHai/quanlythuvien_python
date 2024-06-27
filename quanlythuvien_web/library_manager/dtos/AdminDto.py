@@ -1,6 +1,6 @@
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.ResponseDto import ResponseDto as Response
-from library_manager.models import Users
+from library_manager.models import Users, Categories
 
 class AdminDto(UserDto):
     def __init__(self):
@@ -18,8 +18,13 @@ class AdminDto(UserDto):
     def search_category(self):
         ...
     
-    def get_categories(self):
-        ...
+    def get_categories():
+        try:
+            categories = Categories.objects.all()
+            return Response(True, 'Get categories success', categories)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
     
     def add_user(userDto: UserDto):
         try:
