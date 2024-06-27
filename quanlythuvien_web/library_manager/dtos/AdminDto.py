@@ -1,31 +1,82 @@
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.ResponseDto import ResponseDto as Response
 from library_manager.models import Users, Categories
+from  library_manager.dtos.CategoryDto import CategoryDto
 
 class AdminDto(UserDto):
     def __init__(self):
         super().__init__()
 
-    def add_category(self):
-        ...
-    
-    def update_category(self):
-        ...
-    
-    def delete_category(self):
-        ...
+    def check_nameCategory(name):
+        category = Categories.objects.filter(name=name).first()
+        return True if category else False
 
+    def add_category(CategoryDto : CategoryDto):
+        try:
+            # Check if user exists in database by email
+            is_category = AdminDto.check_nameCategory(CategoryDto.name)
+
+            if is_category is True:
+                return Response(False, 'This name already exists', None)
+            else:
+                # Add user to database
+                category = Categories(id_category=CategoryDto.id_category, name=CategoryDto.name, description=CategoryDto.description
+                                       , is_delete=CategoryDto.is_delete )
+                category.save()
+                return Response(True, 'Add user success', category.id_category)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+    
+    def update_category(categoryDto : CategoryDto):
+        try:
+            # Check if user exists in database by id
+            is_category = AdminDto.check_nameCategory(categoryDto.name)
+            if is_category is True:
+                # Check if name exists in database
+                return Response(False, 'This category already exists', None)
+            else:
+                category = Categories.objects.filter(id_category=categoryDto.id_category).first()
+                category.name = categoryDto.name
+                category.description = categoryDto.description
+                category.is_delete = categoryDto.is_delete
+                category.save()
+                return Response(True, 'Update category success', category.id_category)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+    
+    def delete_category(id):
+        try:
+            category = Categories.objects.filter(id_category=id).first()
+            if category:
+                category.is_delete = 1;
+                category.save()
+                return Response(True, 'Delete category success', None)
+            else:
+                return Response(False, 'Category not found', None)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
     def search_category(self):
         ...
     
     def get_categories():
         try:
-            categories = Categories.objects.all()
+            categories = Categories.objects.filter(is_delete=0)
             return Response(True, 'Get categories success', categories)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-    
+    def get_category_by_id(id):
+        try:
+            category = Categories.objects.filter(id_category=id).first()
+            return Response(True, 'Get user success', category)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+
     def add_user(userDto: UserDto):
         try:
             # Check if user exists in database by email
