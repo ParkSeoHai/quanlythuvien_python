@@ -1,4 +1,4 @@
-# This is an auto-generated Django model module.
+﻿# This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
 #   * Make sure each model has one field with primary_key=True
@@ -84,7 +84,7 @@ class Books(models.Model):
     quantity = models.IntegerField()
     image = models.CharField(max_length=255)
     author = models.CharField(max_length=100)
-    active = models.IntegerField()
+    is_delete = models.IntegerField()
     id_category = models.ForeignKey('Categories', models.DO_NOTHING, db_column='id_category')
 
     class Meta:
@@ -96,6 +96,7 @@ class Categories(models.Model):
     id_category = models.CharField(primary_key=True, max_length=100)
     name = models.CharField(max_length=255)
     description = models.CharField(max_length=500)
+    is_delete = models.IntegerField()
 
     class Meta:
         managed = False
@@ -180,6 +181,7 @@ class Docgias(models.Model):
     phone_number = models.CharField(max_length=20)
     address = models.CharField(max_length=255)
     ngay_tao = models.CharField(max_length=50)
+    is_delete = models.IntegerField()
 
     class Meta:
         managed = False
@@ -189,6 +191,7 @@ class Docgias(models.Model):
 class Phieuhuys(models.Model):
     id_phieuhuy = models.CharField(primary_key=True, max_length=100)
     ngay_huy = models.CharField(max_length=50)
+    is_delete = models.IntegerField()
     id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='id_user')
 
     class Meta:
@@ -207,6 +210,7 @@ class Phieumuons(models.Model):
     id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='id_user')
     id_sach = models.ForeignKey(Books, models.DO_NOTHING, db_column='id_sach')
     id_the = models.ForeignKey('Thethuviens', models.DO_NOTHING, db_column='id_the')
+    is_delete = models.IntegerField()
 
     class Meta:
         managed = False
@@ -219,6 +223,7 @@ class Phieunhaps(models.Model):
     ngay_nhap = models.CharField(max_length=50)
     ly_do_nhap = models.CharField(max_length=255)
     id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='id_user')
+    is_delete = models.IntegerField()
 
     class Meta:
         managed = False
@@ -232,6 +237,7 @@ class Thethuviens(models.Model):
     ngay_het_han = models.CharField(max_length=50)
     ghi_chu = models.CharField(max_length=255)
     id_docgia = models.ForeignKey(Docgias, models.DO_NOTHING, db_column='id_docgia')
+    is_delete = models.IntegerField()
 
     class Meta:
         managed = False
@@ -248,6 +254,7 @@ class Users(models.Model):
     birthday = models.CharField(max_length=50)
     phone_number = models.CharField(max_length=20)
     address = models.CharField(max_length=255)
+    is_delete = models.IntegerField()
 
     class Meta:
         managed = False

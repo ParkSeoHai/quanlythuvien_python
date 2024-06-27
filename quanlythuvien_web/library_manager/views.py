@@ -4,6 +4,7 @@ from django.urls import reverse
 
 import uuid
 
+from library_manager.dtos.CategoryDto import CategoryDto
 # Import user dto
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.AdminDto import AdminDto
@@ -173,16 +174,86 @@ def searchUser(request, searchInput):
         'user': user,
         'users': response.data
     }, request))
-
+# category
 def quanlydanhmuc(request):
     # Get user
     user = get_user(request)
+    response = AdminDto.get_categories()
     # Load quanlydanhmuc page
     template = loader.get_template('quanlydanhmuc/index.html')
     return HttpResponse(template.render({
+        'user': user,
+        'categories' :response.data
+    }, request))
+def addUsertoCategory(request):
+    # Get user
+    user = get_user(request)
+    # Load template
+    template = loader.get_template('quanlydanhmuc/add.html')
+    return HttpResponse(template.render({
         'user': user
     }, request))
+def addCategoryPost(request):
+    if request.method == 'POST':
+        # Get value
+        id = str(uuid.uuid4())  # Generate random id
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        isDelete = 0   # Default type for delete
 
+        # Create Category dto
+        category = CategoryDto(id_category=id, name=name, description=description, is_delete=isDelete)
+        print(category.__dict__)
+
+        # Response from add_Category function
+        response = AdminDto.add_category(category)
+        if response.status is True:
+            print(response.message)
+            return HttpResponseRedirect(reverse('quanlydanhmuc'))
+        else:
+            print(response.message)
+            return HttpResponseRedirect(reverse('addUsertoCategory'))
+def deleteCategory(request, id):
+    # Response from delete_user function
+    response = AdminDto.delete_category(id)
+    if response.status is True:
+        print(response.message)
+        return HttpResponseRedirect(reverse('quanlydanhmuc'))
+    else:
+        print(response.message)
+        return HttpResponseRedirect(reverse('quanlydanhmuc'))
+def updateCategory(request, id):
+    # Get user
+    user = get_user(request)
+    # Get user by id
+    category_update = AdminDto.get_category_by_id(id).data
+    # Load update user page
+    template = loader.get_template('quanlydanhmuc/update.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'category_update': category_update
+    }, request))
+
+# Update user post request
+def updateCategoryPost(request):
+    if request.method == 'POST':
+        # Get value
+        id = request.POST.get('id')
+        name = request.POST.get('name')
+        desciption = request.POST.get('description')
+        # Update user dto
+        category = CategoryDto(id_category=id, name=name,description=desciption, is_delete=0)
+        print(category.__dict__)
+
+        # Response from update_user function
+        response = AdminDto.update_category(category)
+        if response.status is True:
+            print(response.message)
+            return HttpResponseRedirect(reverse('quanlydanhmuc'))
+        else:
+            print(response.message)
+            return HttpResponseRedirect(reverse('updateCategory', args=(id,)))
+#/category
 def quanlysach(request):
     # Get user
     user = get_user(request)

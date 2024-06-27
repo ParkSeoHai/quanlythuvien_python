@@ -19,6 +19,14 @@ urlpatterns = [
 
     # Quan ly danh muc
     path('quan-ly-danh-muc/', views.quanlydanhmuc, name="quanlydanhmuc"),
+    # add category
+    path('quan-ly-danh-muc/add/', views.addUsertoCategory, name="addUsertoCategory"),
+    path('addCategoryPost/', views.addCategoryPost, name="addCategoryPost"),
+    #update category
+    path('quan-ly-danh-muc/update/<str:id>/', views.updateCategory, name="updateCategory"),
+    path('updateCategoryPost/', views.updateCategoryPost, name="updateCategoryPost"),
+    #delete category
+    path('quan-ly-danh-muc/delete/<str:id>/', views.deleteCategory, name="deleteCategory"),
     path('quan-ly-sach/', views.quanlysach, name="quanlysach"),
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
     path('quan-ly-tinh-hinh-muon-tra/', views.quanlytinhhinhmuontra, name="quanlytinhhinhmuontra"),
