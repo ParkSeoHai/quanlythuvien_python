@@ -11,17 +11,17 @@ class AdminDto(UserDto):
         category = Categories.objects.filter(name=name).first()
         return True if category else False
 
-    def add_category(CategoryDto : CategoryDto):
+    def add_category(categoryDto : CategoryDto):
         try:
             # Check if user exists in database by email
-            is_category = AdminDto.check_nameCategory(CategoryDto.name)
+            is_category = AdminDto.check_nameCategory(categoryDto.name)
 
             if is_category is True:
                 return Response(False, 'This name already exists', None)
             else:
                 # Add user to database
-                category = Categories(id_category=CategoryDto.id_category, name=CategoryDto.name, description=CategoryDto.description
-                                       , is_delete=CategoryDto.is_delete )
+                category = Categories(id_category=categoryDto.id_category, name=categoryDto.name, description=categoryDto.description
+                                       , is_delete=categoryDto.is_delete)
                 category.save()
                 return Response(True, 'Add user success', category.id_category)
         except Exception as e:
@@ -31,17 +31,25 @@ class AdminDto(UserDto):
     def update_category(categoryDto : CategoryDto):
         try:
             # Check if user exists in database by id
-            is_category = AdminDto.check_nameCategory(categoryDto.name)
-            if is_category is True:
-                # Check if name exists in database
-                return Response(False, 'This category already exists', None)
-            else:
-                category = Categories.objects.filter(id_category=categoryDto.id_category).first()
+            category = Categories.objects.filter(id_category=categoryDto.id_category).first()
+            if category.name == categoryDto.name:
                 category.name = categoryDto.name
                 category.description = categoryDto.description
                 category.is_delete = categoryDto.is_delete
                 category.save()
                 return Response(True, 'Update category success', category.id_category)
+            else:
+                is_category = AdminDto.check_nameCategory(categoryDto.name)
+                if is_category is True:
+                    # Check if name exists in database
+                    return Response(False, 'This category already exists', None)
+                else:
+                    category.name = categoryDto.name
+                    category.description = categoryDto.description
+                    category.is_delete = categoryDto.is_delete
+                    category.save()
+                    return Response(True, 'Update category success', category.id_category)
+
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
@@ -58,8 +66,15 @@ class AdminDto(UserDto):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-    def search_category(self):
-        ...
+    def search_category(searchInput : str):
+        try:
+            # Search user by name or email or phone or address
+            categories = (Categories.objects.filter(name__icontains=searchInput) | Categories.objects.filter(
+                description__icontains=searchInput))
+            return Response(True, 'Search Category success', categories)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
     
     def get_categories():
         try:

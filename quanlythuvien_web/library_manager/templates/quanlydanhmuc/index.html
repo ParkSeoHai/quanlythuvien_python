@@ -7,15 +7,15 @@
 {% block content %}
     <h2 class="lv2">Danh sách danh mục</h2>
     <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
-        <a href="add/" class="btn btn-outline-primary">
+        <a href="/quan-ly-danh-muc/add/" class="btn btn-outline-primary">
             <i class="bi bi-plus-circle"></i>&nbsp; Tạo mới
         </a>
         <div class="search-block w-25">
             <div class="input-group">
-                <span class="input-group-text search-icon" onclick="searchUser()">
+                <span class="input-group-text search-icon" onclick="searchCategory()">
                     <i class="bi bi-search"></i>
                 </span>
-                <input type="text" class="form-control search-user" placeholder="Search" onkeypress="searchUserEnter(event)">
+                <input type="text" class="form-control search-category" placeholder="Search" onkeypress="searchCategoryEnter(event)">
             </div>              
         </div>
     </div>
@@ -42,7 +42,7 @@
                     <td>{{ category.name }}</td>
                     <td>{{ category.description }}</td>
                     <td>
-                        <a href="update/{{ category.id_category }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
+                        <a href="/quan-ly-danh-muc/update/{{ category.id_category }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
                             <i class="bi bi-gear"></i>
                         </a>
                         <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteUser('{{ category.id_category }}')">

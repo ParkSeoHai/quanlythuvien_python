@@ -22,7 +22,7 @@ const deleteUser = (id) => {
     if (modalBg && modal) {
         modalBg.classList.remove('d-none');
         modal.classList.remove('d-none');
-        modal.querySelector('.btn-delete').setAttribute('href', `delete/${id}`);
+        modal.querySelector('.btn-delete').setAttribute('href', `/quan-ly-danh-muc/delete/${id}`);
     }
 }
 
@@ -46,9 +46,23 @@ const searchUser = () => {
     }
 }
 
+const searchCategory = () => {
+    const searchInput = document.querySelector('.search-category');
+    const searchValue = searchInput.value.trim();
+    if (searchValue) {
+        window.location.href = `/quan-ly-danh-muc/search/${searchValue}`;
+    }
+}
+
 // Handle search user enter key
 const searchUserEnter = (event) => {
     if (event.key === 'Enter') {
         searchUser();
+    }
+}
+
+const searchCategoryEnter = (event) => {
+    if (event.key === 'Enter') {
+        searchCategory();
     }
 }
