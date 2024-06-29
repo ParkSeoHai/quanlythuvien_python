@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='main'),
+    path('register/', views.register, name='register'),
     path('home/', views.home, name="home"),
     # Url quan ly nguoi dung
     path('quan-ly-nguoi-dung/', views.quanlynguoidung, name="quanlynguoidung"),
@@ -30,8 +31,11 @@ urlpatterns = [
     path('quan-ly-sach/', views.quanlysach, name="quanlysach"),
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
     path('quan-ly-tinh-hinh-muon-tra/', views.quanlytinhhinhmuontra, name="quanlytinhhinhmuontra"),
+    path('quan-ly-danh-muc/search/<str:searchInput>/', views.searchCategory, name="searchCategory"),
+
     path('quan-ly-kho-sach/', views.quanlykhosach, name="quanlykhosach"),
     path('logout/', views.logout, name="logout"),
     # Form action submit
     path('loginPost/', views.loginPost, name='loginPost'),
+    path('registerPost/', views.registerPost, name='registerPost'),
 ]

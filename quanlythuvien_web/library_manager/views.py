@@ -14,6 +14,9 @@ from library_manager.dtos.AdminDto import AdminDto
 def index(request):
     template = loader.get_template('login.html')
     return HttpResponse(template.render())
+def register(request):
+    template = loader.get_template('register.html')
+    return HttpResponse(template.render())
 
 # Login post request
 def loginPost(request):
@@ -35,7 +38,46 @@ def loginPost(request):
         else:
             # Redirect to login page
             return HttpResponseRedirect(reverse('main'))
-
+def registerPost(request):
+    if request.method == 'POST':
+        # Get email and password from request
+        id = str(uuid.uuid4())
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        rppassword = request.POST.get('rppassword')
+        is_email = UserDto.check_email(email)
+        if not is_email:
+            if len(password) > 8:
+                if password == rppassword:
+                    # Create user dto
+                    user = UserDto(id_user=id, email=email, password=password)
+                    response = user.register()
+                    # Redirect to home page
+                    if response.status is True:
+                        template = loader.get_template('register.html')
+                        return HttpResponse(template.render({
+                            'mes': response.message,
+                        }, request))
+                    else:
+                        template = loader.get_template('register.html')
+                        return HttpResponse(template.render({
+                            'mesEror': 'Register fall',
+                        }, request))
+                else:
+                    template = loader.get_template('register.html')
+                    return HttpResponse(template.render({
+                        'mesEror': 'Passwords do not match',
+                    }, request))
+            else:
+                template = loader.get_template('register.html')
+                return HttpResponse(template.render({
+                    'mesEror': 'Password must be more than 8 characters long',
+                }))
+        else:
+            template = loader.get_template('register.html')
+            return HttpResponse(template.render({
+                'mesEror': 'email already exists',
+            }))
 # Get user from session
 def get_user(request):
     # Get user id session
@@ -185,6 +227,18 @@ def quanlydanhmuc(request):
         'user': user,
         'categories' :response.data
     }, request))
+
+def searchCategory(request, searchInput):
+    # Get user
+    user = get_user(request)
+    # Response from search_user function
+    response = AdminDto.search_category(searchInput)
+    # Load quanlydanhmuc page
+    template = loader.get_template('quanlydanhmuc/index.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'categories': response.data
+    }, request))
 def addUsertoCategory(request):
     # Get user
     user = get_user(request)
@@ -202,7 +256,7 @@ def addCategoryPost(request):
         isDelete = 0   # Default type for delete
 
         # Create Category dto
-        category = CategoryDto(id_category=id, name=name, description=description, is_delete=isDelete)
+        category = CategoryDto(id_category=id, name=name, description=description)
         print(category.__dict__)
 
         # Response from add_Category function
