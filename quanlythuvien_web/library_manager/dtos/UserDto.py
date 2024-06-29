@@ -42,6 +42,13 @@ class UserDto(object):
         except Exception as e:
             print(e)
             return False
+    def check_book(name):
+        try:
+            book = Books.objects.filter(name=name).first()
+            return True if book else False
+        except Exception as e:
+            print(e)
+            return False
 
     def logout(self):
         ...
@@ -49,14 +56,70 @@ class UserDto(object):
     def change_info(self):
         ...
 
-    def add_book():
-        ...
-    
-    def update_book():
-        ...
-    
-    def delete_book():
-        ...
+    def add_book(bookDto: BookDto):
+        try:
+            # Check if book exists in database by name
+            is_book = UserDto.check_book(bookDto.name)
+
+            if is_book is True:
+                return Response(False, 'This book already exists', None)
+            else:
+                category = Categories.objects.filter(id_category=bookDto.id_category).first()
+                # Add book to database
+                book = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price,
+                             quantity=bookDto.quantity, image=bookDto.image, author=bookDto.author,
+                             is_delete=bookDto.is_delete, id_category=category)
+                book.save()
+                return Response(True, 'Add book success', book.id_sach)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def update_book(bookDto: BookDto):
+        try:
+            # Check if user exists in database by id
+            category = Categories.objects.filter(id_category=bookDto.id_category).first()
+            book = Books.objects.filter(id_sach=bookDto.id_sach).first()
+            if book.name == bookDto.name:
+                # Update user
+                book.name = bookDto.name
+                book.price = bookDto.price
+                book.quantity = bookDto.quantity
+                book.image = bookDto.image
+                book.author = bookDto.author
+                book.id_category = category
+                book.save()
+                return Response(True, 'Update book success', book.id_sach)
+            else:
+                is_book = UserDto.check_book(bookDto.name)
+                if is_book is True:
+                    return Response(False, 'Name is exists', book.id_sach)
+                else:
+                    book.name = bookDto.name
+                    book.price = bookDto.price
+                    book.quantity = bookDto.quantity
+                    book.image = bookDto.image
+                    book.author = bookDto.author
+                    book.id_category = category
+                    book.save()
+                    return Response(True, 'Update book success', book.id_sach)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def delete_book(id_sach):
+        try:
+            # Locate the book by its id_sach
+            book = Books.objects.get(id_sach=id_sach)
+            # Mark the book as deleted
+            book.is_delete = 1
+            book.save()
+            return Response(True, 'Delete book success', None)
+        except Books.DoesNotExist:
+            return Response(False, 'Book not found', None)
+        except Exception as e:
+            print(e)
+            return Response(False, str(e), None)
 
     def search_book():
         ...
@@ -71,7 +134,7 @@ class UserDto(object):
 
     def get_books():
         try:
-            books = Books.objects.all()
+            books = Books.objects.filter(is_delete = 0)
             return Response(True, 'Get books success', books)
         except Exception as e:
             print(e)

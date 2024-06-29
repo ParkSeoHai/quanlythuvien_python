@@ -1,10 +1,81 @@
 {% extends "index.html" %}
 
 {% block title %}
-    Quản trị hệ thống
+    Quản lý sách
 {% endblock  %}
 
 {% block content %}
-    <h1>Quan tri he thong</h1>
-    
+    <h2 class="lv2">Danh sách sách</h2>
+    <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
+        <a href="add/" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i>&nbsp; Tạo mới
+        </a>
+        <div class="search-block w-25">
+            <div class="input-group">
+                <span class="input-group-text search-icon" onclick="searchBook()">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control search-book" placeholder="Search" onkeypress="searchBookEnter(event)">
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th scope="col">ID</th>
+                <th scope="col">Tên sách</th>
+                <th scope="col">Giá</th>
+                <th scope="col">Số lượng</th>
+                <th scope="col">Hình ảnh</th>
+                <th scope="col">Tác giả</th>
+                <th scope="col">ID danh mục</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if books|length == 0 %}
+                <tr>
+                    <td colspan="9" class="text-center">Không có dữ liệu</td>
+                </tr>
+            {% endif %}
+            {% comment %} Hiển thị danh sách book {% endcomment %}
+
+            {% for book in books %}
+                <tr>
+                    <th class="d-table-cell align-middle" scope="row">{{ book.id_sach }}</th>
+                    <td class="d-table-cell align-middle">{{ book.name }}</td>
+                    <td class="d-table-cell align-middle">{{ book.price }}</td>
+                    <td class="d-table-cell align-middle">{{ book.quantity }}</td>
+                    <td class="d-table-cell align-middle"><img src="{{ book.image }}" alt="{{ book.name }}" width="50" height="50"></td>
+                    <td class="d-table-cell align-middle" >{{ book.author }}</td>
+
+                    <td class="d-table-cell align-middle">{{ book.id_category.name }}</td>
+                    <td class="d-table-cell align-middle">
+                        <a href="update/{{ book.id_sach }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
+                            <i class="bi bi-gear"></i>
+                        </a>
+                        <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteBook('{{ book.id_sach }}')">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% comment %} Modal delete book {% endcomment %}
+    <div class="modal-main modal-delete d-none">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">Bạn có chắc chắn muốn xóa sách này không?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="cancelDeleteBook()">Hủy</button>
+                <a href="" class="btn btn-danger btn-delete">Xóa</a>
+            </div>
+        </div>
+    </div>
 {% endblock  %}

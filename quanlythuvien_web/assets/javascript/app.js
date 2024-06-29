@@ -52,3 +52,41 @@ const searchUserEnter = (event) => {
         searchUser();
     }
 }
+
+//handle xoá sách
+const deleteBook = (id_sach) => {
+    //open modal
+    const modalBg = document.querySelector('.modal-bg');
+    const modal = document.querySelector('.modal-delete');
+    if (modalBg && modal) {
+        modalBg.classList.remove('d-none');
+        modal.classList.remove('d-none');
+        modal.querySelector('.btn-delete').setAttribute('href', `delete/${id_sach}`);
+    }
+}
+
+//handle cancel xoá sách
+const cancelDeleteBook = () =>{
+    const modalBg = document.querySelector('.modal-bg');
+    const modal = document.querySelector('.modal-delete');
+    if (modalBg && modal) {
+        modalBg.classList.add('d-none');
+        modal.classList.add('d-none');
+    }
+}
+
+//handle tim kiem sach
+const searchBook = () => {
+    const searchInput = document.querySelector('.search-book');
+    const searchValue = searchInput.value.trim();
+    if (searchValue){
+        window.location.href=`/quan-ly-sach/search/${searchValue}`;
+    }
+}
+
+//handel cancel tim kiem sach
+const searchBookEnter = (event) => {
+    if (event.key === 'Enter') {
+        searchBook();
+    }
+}
