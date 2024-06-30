@@ -1,9 +1,7 @@
 from django.urls import path
 from . import views
-
 urlpatterns = [
     path('', views.index, name='main'),
-    path('register/', views.register, name='register'),
     path('home/', views.home, name="home"),
     # Url quan ly nguoi dung
     path('quan-ly-nguoi-dung/', views.quanlynguoidung, name="quanlynguoidung"),
@@ -20,22 +18,21 @@ urlpatterns = [
 
     # Quan ly danh muc
     path('quan-ly-danh-muc/', views.quanlydanhmuc, name="quanlydanhmuc"),
-    # add category
-    path('quan-ly-danh-muc/add/', views.addUsertoCategory, name="addUsertoCategory"),
-    path('addCategoryPost/', views.addCategoryPost, name="addCategoryPost"),
-    #update category
-    path('quan-ly-danh-muc/update/<str:id>/', views.updateCategory, name="updateCategory"),
-    path('updateCategoryPost/', views.updateCategoryPost, name="updateCategoryPost"),
-    #delete category
-    path('quan-ly-danh-muc/delete/<str:id>/', views.deleteCategory, name="deleteCategory"),
+    #url quan ly sach
     path('quan-ly-sach/', views.quanlysach, name="quanlysach"),
+    #add sachs
+    path('quan-ly-sach/add/', views.addBook, name = "addBook"),
+    path('addBookPost/', views.addBookPost, name="addBookPost"),
+    #sua sach
+    path('quan-ly-sach/update/<str:id_sach>/', views.updateBook, name="updateBook"),
+    path('updateBookPost/', views.updateBookPost, name="updateBookPost"),
+    #xoa sach
+    path('quan-ly-sach/delete/<str:id_sach>/', views.deleteBook, name="deleteBook"),
+
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
     path('quan-ly-tinh-hinh-muon-tra/', views.quanlytinhhinhmuontra, name="quanlytinhhinhmuontra"),
-    path('quan-ly-danh-muc/search/<str:searchInput>/', views.searchCategory, name="searchCategory"),
-
     path('quan-ly-kho-sach/', views.quanlykhosach, name="quanlykhosach"),
     path('logout/', views.logout, name="logout"),
     # Form action submit
     path('loginPost/', views.loginPost, name='loginPost'),
-    path('registerPost/', views.registerPost, name='registerPost'),
 ]

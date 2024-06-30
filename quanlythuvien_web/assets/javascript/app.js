@@ -1,6 +1,5 @@
 // Handle active sidebar
 const pathnameCurrent = window.location.pathname.toLowerCase().split('/');
-
 // Add class active vào thẻ link navbar
 const navLinks = document.querySelectorAll('.sidebar .sidebar-link');
 navLinks.forEach(navLink => {
@@ -13,7 +12,6 @@ navLinks.forEach(navLink => {
         navLink.classList.remove('active');
     }
 })
-
 // Handle modal delete user
 const deleteUser = (id) => {
     // Open modal
@@ -22,10 +20,9 @@ const deleteUser = (id) => {
     if (modalBg && modal) {
         modalBg.classList.remove('d-none');
         modal.classList.remove('d-none');
-        modal.querySelector('.btn-delete').setAttribute('href', `/quan-ly-danh-muc/delete/${id}`);
+        modal.querySelector('.btn-delete').setAttribute('href', `delete/${id}`);
     }
 }
-
 // Handle cancel delete user
 const cancelDeleteUser = () => {
     // Close modal
@@ -36,7 +33,6 @@ const cancelDeleteUser = () => {
         modal.classList.add('d-none');
     }
 }
-
 // Handle search user
 const searchUser = () => {
     const searchInput = document.querySelector('.search-user');
@@ -45,15 +41,6 @@ const searchUser = () => {
         window.location.href = `/quan-ly-nguoi-dung/search/${searchValue}`;
     }
 }
-
-const searchCategory = () => {
-    const searchInput = document.querySelector('.search-category');
-    const searchValue = searchInput.value.trim();
-    if (searchValue) {
-        window.location.href = `/quan-ly-danh-muc/search/${searchValue}`;
-    }
-}
-
 // Handle search user enter key
 const searchUserEnter = (event) => {
     if (event.key === 'Enter') {
@@ -61,8 +48,40 @@ const searchUserEnter = (event) => {
     }
 }
 
-const searchCategoryEnter = (event) => {
+//handle xoá sách
+const deleteBook = (id_sach) => {
+    //open modal
+    const modalBg = document.querySelector('.modal-bg');
+    const modal = document.querySelector('.modal-delete');
+    if (modalBg && modal) {
+        modalBg.classList.remove('d-none');
+        modal.classList.remove('d-none');
+        modal.querySelector('.btn-delete').setAttribute('href', `delete/${id_sach}`);
+    }
+}
+
+//handle cancel xoá sách
+const cancelDeleteBook = () =>{
+    const modalBg = document.querySelector('.modal-bg');
+    const modal = document.querySelector('.modal-delete');
+    if (modalBg && modal) {
+        modalBg.classList.add('d-none');
+        modal.classList.add('d-none');
+    }
+}
+
+//handle tim kiem sach
+const searchBook = () => {
+    const searchInput = document.querySelector('.search-book');
+    const searchValue = searchInput.value.trim();
+    if (searchValue){
+        window.location.href=`/quan-ly-sach/search/${searchValue}`;
+    }
+}
+
+//handel cancel tim kiem sach
+const searchBookEnter = (event) => {
     if (event.key === 'Enter') {
-        searchCategory();
+        searchBook();
     }
 }
