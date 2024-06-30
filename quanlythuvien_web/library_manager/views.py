@@ -312,10 +312,25 @@ def quanlymuontra(request):
 def quanlytinhhinhmuontra(request):
     # Get user
     user = get_user(request)
+    phieumuons = UserDto.check_phieumuon()
+
     # Load quanlytinhhinhmuontra page
     template = loader.get_template('quanlytinhhinhmuontra/index.html')
     return HttpResponse(template.render({
-        'user': user
+        'user': user,
+        'phieumuons': phieumuons.data,
+    }, request))
+
+def quanlytinhhinhDaTra(request):
+    # Get user
+    user = get_user(request)
+    phieumuons = UserDto.check_phieumuonDaTra()
+
+    # Load quanlytinhhinhmuontra page
+    template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'phieumuons': phieumuons.data,
     }, request))
 
 def quanlykhosach(request):
