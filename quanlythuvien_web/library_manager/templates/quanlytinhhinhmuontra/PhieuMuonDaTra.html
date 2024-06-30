@@ -12,17 +12,17 @@
         .btn-sachmuon{
             position: relative;
             padding: 4px 15px;
-            background: none;
+            background: #2C3E50;
             border: 0.5px #2c3e50 solid;
             border-radius: 20px 0px 0px 20px ;
             text-decoration: none;
-            color: black;
+            color:white ;
         }
         .btn-sachtra {
             position: absolute;
             padding: 4px 15px;
-            background: #2C3E50;
-            color: white;
+            background: none;
+            color:black ;
             border: 0.5px #2c3e50 solid;
             border-radius: 0 20px 20px 0;
             text-decoration: none;
@@ -61,7 +61,7 @@
                     <td>{{ phieumuon.ngay_tao }}</td>
                     <td>{{ phieumuon.ngay_hen_tra }}</td>
                     <td>{{ phieumuon.ngay_tra}}</td>
-                    <td>{% if phieumuon.trang_thai >= 0 %} Còn {{ phieumuon.trang_thai }} Ngày {% elif phieumuon.trang_thai < 0 %} Đang trễ hạn {% endif %}</td>
+                    <td>{% if phieumuon.trang_thai >= 0 %} Đúng hạn {% elif phieumuon.trang_thai < 0 %} Trễ hạn {% endif %}</td>
                     <td>{{ phieumuon.id_the.id_the }}</td>
                     <td>{{ phieumuon.so_luong }}</td>
                     <td>{{ phieumuon.id_user.name}}</td>
@@ -71,9 +71,4 @@
             {% endfor %}
         </tbody>
     </table>
-    <script>
-        document.querySelector(".btn-sachtra").onclick = function(){
-                window.location.href = `/quan-ly-tinh-hinh-muon-tra/load-form`;
-    			};
-    </script>
 {% endblock  %}

@@ -26,12 +26,14 @@ urlpatterns = [
     #update category
     path('quan-ly-danh-muc/update/<str:id>/', views.updateCategory, name="updateCategory"),
     path('updateCategoryPost/', views.updateCategoryPost, name="updateCategoryPost"),
+    path('quan-ly-danh-muc/search/<str:searchInput>/', views.searchCategory, name="searchCategory"),
     #delete category
     path('quan-ly-danh-muc/delete/<str:id>/', views.deleteCategory, name="deleteCategory"),
     path('quan-ly-sach/', views.quanlysach, name="quanlysach"),
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
+    #quan ly tinh hinh muon tra
     path('quan-ly-tinh-hinh-muon-tra/', views.quanlytinhhinhmuontra, name="quanlytinhhinhmuontra"),
-    path('quan-ly-danh-muc/search/<str:searchInput>/', views.searchCategory, name="searchCategory"),
+    path('quan-ly-tinh-hinh-muon-tra/load-form', views.quanlytinhhinhDaTra, name="quanlytinhhinhDaTra"),
 
     path('quan-ly-kho-sach/', views.quanlykhosach, name="quanlykhosach"),
     path('logout/', views.logout, name="logout"),
