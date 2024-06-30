@@ -288,6 +288,18 @@ def updateBookPost(request):
             print(response.message)
             return HttpResponseRedirect(reverse('updateBook', args=(id_sach,)))
 
+#tim kiem sach
+def searchBook(request, searchInput):
+    # Get book
+    book = get_book(request)
+    # Response from search_book function
+    response = UserDto.search_book(searchInput)
+    # Load quanlysach page
+    template = loader.get_template('quanlysach/index.html')
+    return HttpResponse(template.render({
+        'book': book,
+        'books': response.data
+    }, request))
 def quanlymuontra(request):
     # Get user
     user = get_user(request)
