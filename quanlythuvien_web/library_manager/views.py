@@ -4,18 +4,14 @@ from django.urls import reverse
 
 import uuid
 
-from library_manager.dtos.CategoryDto import CategoryDto
 # Import user dto
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.AdminDto import AdminDto
-
+from library_manager.dtos.BookDto import BookDto
 # Create your views here.
 # Default view for login page
 def index(request):
     template = loader.get_template('login.html')
-    return HttpResponse(template.render())
-def register(request):
-    template = loader.get_template('register.html')
     return HttpResponse(template.render())
 
 # Login post request
@@ -38,46 +34,7 @@ def loginPost(request):
         else:
             # Redirect to login page
             return HttpResponseRedirect(reverse('main'))
-def registerPost(request):
-    if request.method == 'POST':
-        # Get email and password from request
-        id = str(uuid.uuid4())
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        rppassword = request.POST.get('rppassword')
-        is_email = UserDto.check_email(email)
-        if not is_email:
-            if len(password) > 8:
-                if password == rppassword:
-                    # Create user dto
-                    user = UserDto(id_user=id, email=email, password=password)
-                    response = user.register()
-                    # Redirect to home page
-                    if response.status is True:
-                        template = loader.get_template('register.html')
-                        return HttpResponse(template.render({
-                            'mes': response.message,
-                        }, request))
-                    else:
-                        template = loader.get_template('register.html')
-                        return HttpResponse(template.render({
-                            'mesEror': 'Register fall',
-                        }, request))
-                else:
-                    template = loader.get_template('register.html')
-                    return HttpResponse(template.render({
-                        'mesEror': 'Passwords do not match',
-                    }, request))
-            else:
-                template = loader.get_template('register.html')
-                return HttpResponse(template.render({
-                    'mesEror': 'Password must be more than 8 characters long',
-                }))
-        else:
-            template = loader.get_template('register.html')
-            return HttpResponse(template.render({
-                'mesEror': 'email already exists',
-            }))
+
 # Get user from session
 def get_user(request):
     # Get user id session
@@ -90,6 +47,12 @@ def get_user(request):
         response = AdminDto.get_user_by_id(id_user)
         return response.data if response.data else None
 
+#get book from session
+def get_book(request):
+    #get id sách
+    id_sach = request.session.get('id_sach')
+    response = UserDto.get_bookById(id_sach)
+    return response.data if response.data else None
 # View for home page
 def home(request):
     # Get user
@@ -216,107 +179,127 @@ def searchUser(request, searchInput):
         'user': user,
         'users': response.data
     }, request))
-# category
+
 def quanlydanhmuc(request):
     # Get user
     user = get_user(request)
-    response = AdminDto.get_categories()
     # Load quanlydanhmuc page
     template = loader.get_template('quanlydanhmuc/index.html')
-    return HttpResponse(template.render({
-        'user': user,
-        'categories' :response.data
-    }, request))
-
-def searchCategory(request, searchInput):
-    # Get user
-    user = get_user(request)
-    # Response from search_user function
-    response = AdminDto.search_category(searchInput)
-    # Load quanlydanhmuc page
-    template = loader.get_template('quanlydanhmuc/index.html')
-    return HttpResponse(template.render({
-        'user': user,
-        'categories': response.data
-    }, request))
-def addUsertoCategory(request):
-    # Get user
-    user = get_user(request)
-    # Load template
-    template = loader.get_template('quanlydanhmuc/add.html')
     return HttpResponse(template.render({
         'user': user
     }, request))
-def addCategoryPost(request):
-    if request.method == 'POST':
-        # Get value
-        id = str(uuid.uuid4())  # Generate random id
-        name = request.POST.get('name')
-        description = request.POST.get('description')
-        isDelete = 0   # Default type for delete
 
-        # Create Category dto
-        category = CategoryDto(id_category=id, name=name, description=description)
-        print(category.__dict__)
-
-        # Response from add_Category function
-        response = AdminDto.add_category(category)
-        if response.status is True:
-            print(response.message)
-            return HttpResponseRedirect(reverse('quanlydanhmuc'))
-        else:
-            print(response.message)
-            return HttpResponseRedirect(reverse('addUsertoCategory'))
-def deleteCategory(request, id):
-    # Response from delete_user function
-    response = AdminDto.delete_category(id)
-    if response.status is True:
-        print(response.message)
-        return HttpResponseRedirect(reverse('quanlydanhmuc'))
-    else:
-        print(response.message)
-        return HttpResponseRedirect(reverse('quanlydanhmuc'))
-def updateCategory(request, id):
-    # Get user
-    user = get_user(request)
-    # Get user by id
-    category_update = AdminDto.get_category_by_id(id).data
-    # Load update user page
-    template = loader.get_template('quanlydanhmuc/update.html')
-    return HttpResponse(template.render({
-        'user': user,
-        'category_update': category_update
-    }, request))
-
-# Update user post request
-def updateCategoryPost(request):
-    if request.method == 'POST':
-        # Get value
-        id = request.POST.get('id')
-        name = request.POST.get('name')
-        desciption = request.POST.get('description')
-        # Update user dto
-        category = CategoryDto(id_category=id, name=name,description=desciption, is_delete=0)
-        print(category.__dict__)
-
-        # Response from update_user function
-        response = AdminDto.update_category(category)
-        if response.status is True:
-            print(response.message)
-            return HttpResponseRedirect(reverse('quanlydanhmuc'))
-        else:
-            print(response.message)
-            return HttpResponseRedirect(reverse('updateCategory', args=(id,)))
-#/category
+# hien thi view quan ly sach
 def quanlysach(request):
     # Get user
     user = get_user(request)
+    response = UserDto.get_books()
+    context = {
+        'user': user,
+        'books': response.data,
+    }
+    # Load quanlysach page
+    template = loader.get_template('quanlysach/index.html')
+    return HttpResponse(template.render(
+        context, request))
+#xoá sách
+def deleteBook(request, id_sach):
+    response = AdminDto.delete_book(id_sach)
+    if response.status is True:
+        print(response.message)
+        return HttpResponseRedirect(reverse('quanlysach'))
+    else:
+        print(response.message)
+        return HttpResponseRedirect(reverse('quanlysach'))
+#them sach
+def addBook(request):
+    # Get user
+    book = get_book(request)
+    response = AdminDto.get_categories()
+    # Load template
+    template = loader.get_template('quanlysach/add.html')
+    return HttpResponse(template.render({
+
+        'book': book,
+        'categories': response.data,
+    }, request))
+
+# Add sach post request
+def addBookPost(request):
+    if request.method == 'POST':
+        # Get value
+        id_sach = str(uuid.uuid4())  # Generate random id
+        name = request.POST.get('name')
+        price = request.POST.get('price')
+        quantity = request.POST.get('quantity')
+        image = request.POST.get('image')
+        author = request.POST.get('author')
+        id_category = request.POST.get('category')
+        # Create book dto
+        book = BookDto(id_sach=id_sach, name=name, price=price, quantity=quantity, image=image,
+                        author=author, id_category=id_category)
+        print(book.__dict__)
+
+        # Response from add_book function
+        response = UserDto.add_book(book)
+        if response.status is True:
+            print(response.message)
+            return HttpResponseRedirect(reverse('quanlysach'))
+        else:
+            print(response.message)
+            return HttpResponseRedirect(reverse('addBook'))
+#update sach
+def updateBook(request, id_sach):
+    # Get user
+    book = get_book(request)
+    # Get user by id
+    response = AdminDto.get_categories()
+    book_update = UserDto.get_bookById(id_sach).data
+    # Load update user page
+    template = loader.get_template('quanlysach/update.html')
+    return HttpResponse(template.render({
+        'book': book,
+        'book_update': book_update,
+        'categories': response.data,
+    }, request))
+
+# Update user post request
+def updateBookPost(request):
+    if request.method == 'POST':
+        # Get value
+        id_sach = request.POST.get('id_sach')
+        name = request.POST.get('name')
+        price = request.POST.get('price')
+        quantity = request.POST.get('quantity')
+        image = request.POST.get('image')
+        author = request.POST.get('author')
+        id_category = request.POST.get('category')
+        # Create user dto
+        book = BookDto(id_sach = id_sach,name=name, price=price, quantity=quantity, image=image,
+                        author=author, id_category=id_category)
+        print(book.__dict__)
+
+        # Response from update_user function
+        response = UserDto.update_book(book)
+        if response.status is True:
+            print(response.message)
+            return HttpResponseRedirect(reverse('quanlysach'))
+        else:
+            print(response.message)
+            return HttpResponseRedirect(reverse('updateBook', args=(id_sach,)))
+
+#tim kiem sach
+def searchBook(request, searchInput):
+    # Get book
+    book = get_book(request)
+    # Response from search_book function
+    response = UserDto.search_book(searchInput)
     # Load quanlysach page
     template = loader.get_template('quanlysach/index.html')
     return HttpResponse(template.render({
-        'user': user
+        'book': book,
+        'books': response.data
     }, request))
-
 def quanlymuontra(request):
     # Get user
     user = get_user(request)
