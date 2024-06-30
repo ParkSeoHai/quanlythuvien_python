@@ -28,7 +28,8 @@ urlpatterns = [
     path('updateBookPost/', views.updateBookPost, name="updateBookPost"),
     #xoa sach
     path('quan-ly-sach/delete/<str:id_sach>/', views.deleteBook, name="deleteBook"),
-
+    #tim kiem sach
+    path('quan-ly-sach/search/<str:searchInput>/', views.searchBook, name="searchBook"),
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
     path('quan-ly-tinh-hinh-muon-tra/', views.quanlytinhhinhmuontra, name="quanlytinhhinhmuontra"),
     path('quan-ly-kho-sach/', views.quanlykhosach, name="quanlykhosach"),
