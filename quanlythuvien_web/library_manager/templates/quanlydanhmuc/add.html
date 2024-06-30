@@ -1,0 +1,30 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Thêm người dùng
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Thêm danh mục</h2>
+    <form method="post" action={% url 'addCategoryPost' %} class="form" autocomplete="off">
+        {% csrf_token %}
+        <fieldset>
+            <div class="d-flex justify-content-between gap-4">
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" required placeholder="Enter name" name="name">
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-control" required placeholder="Enter description" name="description">
+                </div>
+            </div>
+            <div class="mt-5">
+                <a href="/quan-ly-nguoi-dung" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i>&nbsp; Create
+                </button>
+            </div>
+        </fieldset>
+    </form>
+{% endblock  %}

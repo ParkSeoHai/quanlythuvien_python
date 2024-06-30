@@ -19,16 +19,7 @@ urlpatterns = [
 
     # Quan ly danh muc
     path('quan-ly-danh-muc/', views.quanlydanhmuc, name="quanlydanhmuc"),
-    #url quan ly sach
     path('quan-ly-sach/', views.quanlysach, name="quanlysach"),
-    #add sachs
-    path('quan-ly-sach/add/', views.addBook, name = "addBook"),
-    path('addBookPost/', views.addBookPost, name="addBookPost"),
-    #sua sach
-    path('quan-ly-sach/update/<str:id_sach>/', views.updateBook, name="updateBook"),
-    path('updateBookPost/', views.updateBookPost, name="updateBookPost"),
-    #xoa sach
-    path('quan-ly-sach/delete/<str:id_sach>/', views.deleteBook, name="deleteBook"),
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
     path('quan-ly-tinh-hinh-muon-tra/', views.quanlytinhhinhmuontra, name="quanlytinhhinhmuontra"),
     path('quan-ly-kho-sach/', views.quanlykhosach, name="quanlykhosach"),

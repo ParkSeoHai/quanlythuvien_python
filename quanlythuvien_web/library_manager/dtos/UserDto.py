@@ -33,7 +33,15 @@ class UserDto(object):
             return Response(False, e.__str__(), None)
 
     def register(self):
-        ...
+        try:
+            user = Users(id_user=self.id_user, name=self.name, email=self.email,
+                        password=self.password, role=self.role, gender=self.gender,
+                        birthday=self.birthday, phone_number=self.phone_number, address=self.address, is_delete=self.is_delete)
+            user.save()
+            return Response(True, 'Register success', user.id_user)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
 
     def check_email(email):
         try:
@@ -121,8 +129,15 @@ class UserDto(object):
             print(e)
             return Response(False, str(e), None)
 
-    def search_book():
-        ...
+    def search_book(searchInput:str):
+        try:
+            books = (Books.objects.filter(name__icontains=searchInput) |
+                     Books.objects.filter(author__icontains=searchInput))
+            return Response(True, 'Search book success', books)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
     
     def get_bookById(id_sach):
         try:

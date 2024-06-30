@@ -1,7 +1,6 @@
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.ResponseDto import ResponseDto as Response
-from library_manager.models import Users, Categories, Books
-from library_manager.dtos.BookDto import BookDto
+from library_manager.models import Users, Categories
 
 class AdminDto(UserDto):
     def __init__(self):
@@ -111,6 +110,3 @@ class AdminDto(UserDto):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-
-#add sach
-
