@@ -1,0 +1,50 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Quản lý kho sách - Thông tin phiếu nhập {{ phieunhap.id_phieunhap }}
+{% endblock  %}
+
+{% load custom_filters %}
+
+{% block content %}
+    <h2 class="lv2">Thông tin chi tiết phiếu nhập</h2>
+    <div class="fs-5 mt-3">
+        <p><strong>ID:</strong> {{ phieunhap.id_phieunhap }}</p>
+        <p><strong>Người thực hiện nhập:</strong> {{ phieunhap.id_user.name }}</p>
+        <p><strong>Đơn vị cung cấp:</strong> {{ phieunhap.donvi_cungcap }}</p>
+        <p><strong>Ngày nhập:</strong> {{ phieunhap.ngay_nhap }}</p>
+        <p><strong>Lý do nhập:</strong> {{ phieunhap.ly_do_nhap }}</p>
+    </div>
+    <div>
+        <h3 class="lv3 mb-3">Danh sách sách nhập</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-primary">
+                    <th scope="col">ID</th>
+                    <th scope="col">Tên sách</th>
+                    <th scope="col">Tác giả</th>
+                    <th scope="col">Thể loại</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Giá nhập</th>
+                    <th scope="col">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ctsach in ctphieunhaps %}
+                    <tr>
+                        <th scope="row">{{ ctsach.id_ctphieunhap }}</th>
+                        <td>{{ ctsach.id_sach.name | upper }}</td>
+                        <td>{{ ctsach.id_sach.author }}</td>
+                        <td>{{ ctsach.id_sach.id_category.name }}</td>
+                        <td>{{ ctsach.so_luong }}</td>
+                        <td>{{ ctsach.gia_nhap }}</td>
+                        <td>{{ ctsach.so_luong|multiply:ctsach.gia_nhap }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-5">
+            <a href="/quan-ly-kho-sach/nhap-sach/" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+        </div>
+    </div>
+{% endblock %}

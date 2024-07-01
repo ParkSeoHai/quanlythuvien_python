@@ -7,7 +7,7 @@
 {% block content %}
     <h2 class="lv2">Danh sách người dùng</h2>
     <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
-        <a href="add/" class="btn btn-outline-primary">
+        <a href="/quan-ly-nguoi-dung/add/" class="btn btn-outline-primary">
             <i class="bi bi-plus-circle"></i>&nbsp; Tạo mới
         </a>
         <div class="search-block w-25">
@@ -36,7 +36,7 @@
         <tbody>
             {% if users|length == 0 %}
                 <tr>
-                    <td colspan="9" class="text-center">Không có dữ liệu</td>
+                    <th colspan="9" class="text-center">Không có dữ liệu</th>
                 </tr>
             {% endif %}
             {% comment %} Hiển thị danh sách user {% endcomment %}
@@ -52,7 +52,7 @@
                     <td>{{ user.phone_number }}</td>
                     <td>{{ user.address }}</td>
                     <td>
-                        <a href="update/{{ user.id_user }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
+                        <a href="/quan-ly-nguoi-dung/update/{{ user.id_user }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
                             <i class="bi bi-gear"></i>
                         </a>
                         <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteUser('{{ user.id_user }}')">

@@ -3,10 +3,13 @@ from django.template import loader
 from django.urls import reverse
 
 import uuid
+import json
 
 # Import user dto
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.AdminDto import AdminDto
+from library_manager.dtos.PhieunhapDto import PhieunhapDto
+from library_manager.dtos.BookDto import BookDto
 
 # Create your views here.
 # Default view for login page
@@ -154,12 +157,9 @@ def updateUserPost(request):
 def deleteUser(request, id):
     # Response from delete_user function
     response = AdminDto.delete_user(id)
-    if response.status is True:
-        print(response.message)
-        return HttpResponseRedirect(reverse('quanlynguoidung'))
-    else:
-        print(response.message)
-        return HttpResponseRedirect(reverse('quanlynguoidung'))
+
+    print(response.message)
+    return HttpResponseRedirect(reverse('quanlynguoidung'))
 
 # Search user
 def searchUser(request, searchInput):
@@ -192,6 +192,25 @@ def quanlysach(request):
         'user': user
     }, request))
 
+# Get book by id from javascript fetch request
+def getBook(request):
+    if request.method == 'GET':
+        id = request.GET.get('id')
+        response = UserDto.get_bookById(id[0:len(id)-1])
+        # Book response
+        bookResponse = {
+            'id_sach': response.data.id_sach,
+            'name': response.data.name,
+            'price': response.data.price,
+            'quantity': response.data.quantity,
+            'image': response.data.image,
+            'author': response.data.author,
+            'is_delete': response.data.is_delete,
+            'id_category': response.data.id_category_id
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(bookResponse), content_type='application/json')
+
 def quanlymuontra(request):
     # Get user
     user = get_user(request)
@@ -210,6 +229,7 @@ def quanlytinhhinhmuontra(request):
         'user': user
     }, request))
 
+# Quan ly kho sach
 def quanlykhosach(request):
     # Get user
     user = get_user(request)
@@ -218,6 +238,210 @@ def quanlykhosach(request):
     return HttpResponse(template.render({
         'user': user
     }, request))
+
+# Quan ly kho sach - nhap sach
+def nhapsach(request):
+    # Get user 
+    user = get_user(request)
+    # Get all phieu nhap
+    phieunhapRes = UserDto.get_phieunhaps()
+    # Context for template
+    context = {
+        'user': user,
+        'phieunhaps': phieunhapRes.data
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/nhapsach/index.html')
+    return HttpResponse(template.render(context, request))
+
+# Lap phieu nhap sach view
+def addPhieunhap(request):
+    # Get user
+    user = get_user(request)
+    # Get category
+    categoryRes = AdminDto.get_categories()
+    # Get books
+    bookRes = UserDto.get_books()
+    # Context for template
+    context = {
+        'user': user,
+        'categories': categoryRes.data,
+        'books': bookRes.data
+    }
+    # Load addPhieunhap page
+    template = loader.get_template('quanlykhosach/nhapsach/add.html')
+    return HttpResponse(template.render(context, request))
+
+# Cap nhat phieu nhap sach view
+def updatePhieunhap(request, id):
+    # Get user
+    user = get_user(request)
+    # Get phieu nhap by id
+    pnRes = UserDto.get_phieunhapById(id)
+    # Get ctphieunhap by id phieu nhap
+    ctphieunhapRes = UserDto.get_ctphieunhapBy_PnhapId(id)
+    # List books
+    listBooks = []
+    for ctpn in ctphieunhapRes.data:
+        book = {
+            'id': ctpn.id_sach_id,
+            'name': ctpn.id_sach.name,
+            'price': ctpn.gia_nhap,
+            'quantity': ctpn.so_luong,
+            'author': ctpn.id_sach.author,
+            'category': {
+                'id': ctpn.id_sach.id_category_id,
+                'name': ctpn.id_sach.id_category.name
+            }
+        }
+        listBooks.append(book)
+    # Get categogies
+    categoryRes = AdminDto.get_categories()
+    # Get books
+    bookRes = UserDto.get_books()
+    # Context for template
+    context = {
+        'user': user,
+        'phieunhap': pnRes.data,
+        'categories': categoryRes.data,
+        'books': bookRes.data,
+        'listBooks': listBooks
+    }
+    # Load updatePhieunhap page
+    template = loader.get_template('quanlykhosach/nhapsach/update.html')
+    return HttpResponse(template.render(context, request))
+
+# Nhap sach post request
+def nhapsachPost(request):
+    if request.method == 'POST':
+        # Get value
+        data = request.POST.get('data')
+        data = json.loads(data)
+        # Create phieu nhap dto
+        phieunhap = PhieunhapDto(
+            id_phieunhap=str(uuid.uuid4()),
+            donvi_cungcap=data['dvcc'],
+            ngay_nhap=data['ngaynhap'],
+            ly_do_nhap=data['lydo'],
+            id_user=request.session.get('id_user')
+        )
+        
+        # Create list book dto
+        books = []
+        for book in data['books']:
+            book = BookDto(
+                id_sach=str(uuid.uuid4()),
+                name=book['name'],
+                price=float(book['price']),
+                quantity=int(book['quantity']),
+                image='https://plus.unsplash.com/premium_photo-1667251760532-85310936c89a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                author=book['author'],
+                id_category=book['category']['id']
+            )
+            books.append(book)
+        
+        # Response from nhap_sach function
+        responseDto = UserDto.nhap_sach(phieunhap, books)
+        print(responseDto.message)
+
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Update phieu nhap
+def updatePhieunhapPost(request):
+    if request.method == 'POST':
+        # Get value
+        data = request.POST.get('data')
+        data = json.loads(data)
+
+        print(data)
+
+        # Create phieu nhap dto
+        pn = PhieunhapDto(
+            id_phieunhap=data['id_phieunhap'],
+            donvi_cungcap=data['dvcc'],
+            ngay_nhap=data['ngaynhap'],
+            ly_do_nhap=data['lydo'],
+            id_user=request.session.get('id_user')
+        )
+        
+        # Create list book dto
+        books = []
+        for book in data['books']:
+            book = BookDto(
+                id_sach=book['id'],
+                name=book['name'],
+                price=float(book['price']),
+                quantity=int(book['quantity']),
+                image='https://plus.unsplash.com/premium_photo-1667251760532-85310936c89a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                author=book['author'],
+                id_category=book['category']['id']
+            )
+            books.append(book)
+
+        # Get book deletes
+        book_deletes = data['book_deletes']
+
+        # Response from nhap_sach function
+        responseDto = UserDto.update_phieunhap(pn, books, book_deletes)
+        print(responseDto.message)
+
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Delete phieu nhap
+def deletePhieunhap(request, id):
+    # Response from delete_phieunhap function
+    response = UserDto.delete_phieunhap(id)
+    
+    print(response.message)
+    return HttpResponseRedirect(reverse('nhapsachIndex'))
+
+# Search phieu nhap by date
+def searchPhieunhapByDate(request, dateFrom, dateTo):
+    # Get user
+    user = get_user(request)
+    # Response from search_phieunhap_by_date function
+    response = UserDto.search_phieunhap_by_date(dateFrom, dateTo)
+    # Context for template
+    context = {
+        'user': user,
+        'phieunhaps': response.data,
+        'dateFrom': dateFrom,
+        'dateTo': dateTo
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/nhapsach/index.html')
+    return HttpResponse(template.render(context, request))
+
+# Info phieu nhap sach view
+def infoPhieunhap(request, id):
+    # Get user
+    user = get_user(request)
+    # Get phieu nhap by id
+    phieunhapRes = UserDto.get_phieunhapById(id)
+    # Get ctphieunhap by id phieu nhap
+    ctphieunhapRes = UserDto.get_ctphieunhapBy_PnhapId(id)
+    # Context for template
+    context = {
+        'user': user,
+        'phieunhap': phieunhapRes.data,
+        'ctphieunhaps': ctphieunhapRes.data
+    }
+    # Load infoPhieunhap page
+    template = loader.get_template('quanlykhosach/nhapsach/info.html')
+    return HttpResponse(template.render(context, request))
 
 # Logout
 def logout(request):

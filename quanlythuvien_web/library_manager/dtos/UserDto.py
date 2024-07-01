@@ -71,7 +71,7 @@ class UserDto(object):
 
     def get_books():
         try:
-            books = Books.objects.all()
+            books = Books.objects.filter(is_delete=0)
             return Response(True, 'Get books success', books)
         except Exception as e:
             print(e)
@@ -100,7 +100,7 @@ class UserDto(object):
     
     def get_phieunhaps():
         try:
-            phieunhaps = Phieunhaps.objects.all()
+            phieunhaps = Phieunhaps.objects.filter(is_delete=0)
             return Response(True, 'Get phieunhaps success', phieunhaps)
         except Exception as e:
             print(e)
@@ -112,7 +112,8 @@ class UserDto(object):
             user = Users.objects.filter(id_user=phieunhap.id_user).first()
             # Add phieunhap
             phieunhap = Phieunhaps(id_phieunhap=phieunhap.id_phieunhap, donvi_cungcap=phieunhap.donvi_cungcap,
-                                    ngay_nhap=phieunhap.ngay_nhap, ly_do_nhap=phieunhap.ly_do_nhap, id_user=user)
+                                    ngay_nhap=phieunhap.ngay_nhap, ly_do_nhap=phieunhap.ly_do_nhap, id_user=user,
+                                    is_delete=phieunhap.is_delete)
             phieunhap.save()
             # Update book if book exits else add new book
             for bookDto in bookDtos:
@@ -121,27 +122,99 @@ class UserDto(object):
                 if book:
                     # Update book
                     book.quantity += bookDto.quantity
+                else:
+                    # Get category by id
+                    category = Categories.objects.filter(id_category=bookDto.id_category).first()
+                    # Add new book
+                    book = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price, quantity=bookDto.quantity,
+                             image=bookDto.image, author=bookDto.author, id_category=category, is_delete=bookDto.is_delete)
+                book.save()
+
+                # Add ctphieunhap
+                ctphieunhap = Ctphieunhaps(id_ctphieunhap=str(uuid.uuid4()), id_phieunhap=phieunhap, id_sach=book,
+                                           so_luong=bookDto.quantity, gia_nhap=bookDto.price)
+                ctphieunhap.save()
+                
+            return Response(True, 'Add phieunhap success', phieunhap.id_phieunhap)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+    
+    def update_phieunhap(phieunhap: PhieunhapDto, bookDtos: list[BookDto], book_deletes):
+        try:
+            # Get user by id
+            user = Users.objects.filter(id_user=phieunhap.id_user).first()
+            # Update phieunhap
+            phieunhap = Phieunhaps.objects.filter(id_phieunhap=phieunhap.id_phieunhap).first()
+            phieunhap.donvi_cungcap = phieunhap.donvi_cungcap
+            phieunhap.ngay_nhap = phieunhap.ngay_nhap
+            phieunhap.ly_do_nhap = phieunhap.ly_do_nhap
+            phieunhap.id_user = user
+            phieunhap.save()
+
+            # Update book if book exits else add new book
+            for bookDto in bookDtos:
+                # Check book is exist by name
+                book = Books.objects.filter(name=bookDto.name).first()
+                if book:
+                    # Get ctphieunhap by id_sach and id_phieunhap, xoa so_luong nhap cu
+                    ctpn = Ctphieunhaps.objects.filter(id_sach=book, id_phieunhap=phieunhap).first()
+                    if ctpn:
+                        book.quantity -= ctpn.so_luong
+
+                    # Update book
+                    book.quantity += bookDto.quantity
                     book.save()
                 else:
                     # Get category by id
                     category = Categories.objects.filter(id_category=bookDto.id_category).first()
                     # Add new book
-                    bookNew = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price, quantity=bookDto.quantity,
-                             image=bookDto.image, author=bookDto.author, active=bookDto.active, id_category=category)
-                    bookNew.save()
-            # Add ctphieunhap
-            for bookDto in bookDtos:
-                # Get book by name
-                book = Books.objects.filter(name=bookDto.name).first()
+                    book = Books(id_sach=str(uuid.uuid4()), name=bookDto.name, price=bookDto.price, quantity=bookDto.quantity,
+                             image=bookDto.image, author=bookDto.author, id_category=category, is_delete=bookDto.is_delete)
+                book.save()
 
-                ctphieunhap = Ctphieunhaps(id_ctphieunhap=str(uuid.uuid4()), id_phieunhap=phieunhap, id_sach=book,
-                                           so_luong=bookDto.quantity, gia_nhap=bookDto.price)
+                # Update ctphieunhap if ctphieunhap exits else add new ctphieunhap
+                ctphieunhap = Ctphieunhaps.objects.filter(id_sach=book, id_phieunhap=phieunhap).first()
+                if ctphieunhap:
+                    ctphieunhap.so_luong = bookDto.quantity
+                    ctphieunhap.gia_nhap = bookDto.price
+                else:
+                    ctphieunhap = Ctphieunhaps(id_ctphieunhap=str(uuid.uuid4()), id_phieunhap=phieunhap, id_sach=book,
+                                               so_luong=bookDto.quantity, gia_nhap=bookDto.price)
                 ctphieunhap.save()
-            return Response(True, 'Nhap sach thanh cong', phieunhap.id_phieunhap)
+            
+            # Delete ct phieunhap
+            for book_delete in book_deletes:
+                book = Books.objects.filter(id_sach=book_delete).first()
+                ctphieunhap = Ctphieunhaps.objects.filter(id_sach=book, id_phieunhap=phieunhap).first()
+                book.quantity -= ctphieunhap.so_luong
+
+                ctphieunhap.delete()
+                book.save()
+            
+            return Response(True, 'Update phieunhap success', phieunhap.id_phieunhap)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-    
+
+    def delete_phieunhap(id):
+        try:
+            phieunhap = Phieunhaps.objects.filter(id_phieunhap=id).first()
+            phieunhap.is_delete = 1
+            phieunhap.save()
+            return Response(True, 'Delete phieunhap success', phieunhap.id_phieunhap)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def search_phieunhap_by_date(dateFrom, dateTo):
+        try:
+            phieunhaps = Phieunhaps.objects.filter(ngay_nhap__gte=dateFrom, ngay_nhap__lte=dateTo, is_delete=0)
+            return Response(True, 'Search phieunhap by date success', phieunhaps)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
     def get_phieunhapById(id):
         try:
             pn = Phieunhaps.objects.filter(id_phieunhap=id).first()

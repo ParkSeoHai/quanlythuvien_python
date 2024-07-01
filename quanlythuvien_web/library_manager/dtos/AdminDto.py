@@ -20,7 +20,7 @@ class AdminDto(UserDto):
     
     def get_categories():
         try:
-            categories = Categories.objects.all()
+            categories = Categories.objects.filter(is_delete=0)
             return Response(True, 'Get categories success', categories)
         except Exception as e:
             print(e)
@@ -37,7 +37,8 @@ class AdminDto(UserDto):
                 # Add user to database
                 user = Users(id_user=userDto.id_user, name=userDto.name, email=userDto.email,
                         password=userDto.password, role=userDto.role, gender=userDto.gender,
-                        birthday=userDto.birthday, phone_number=userDto.phone_number, address=userDto.address)
+                        birthday=userDto.birthday, phone_number=userDto.phone_number,
+                        address=userDto.address, is_delete=userDto.is_delete)
                 user.save()
                 return Response(True, 'Add user success', user.id_user)
         except Exception as e:
@@ -76,7 +77,9 @@ class AdminDto(UserDto):
         try:
             user = Users.objects.filter(id_user=id).first()
             if user:
-                user.delete()
+                # Change is_delete to 1
+                user.is_delete = 1
+                user.save()
                 return Response(True, 'Delete user success', None)
             else:
                 return Response(False, 'User not found', None)
@@ -89,7 +92,7 @@ class AdminDto(UserDto):
             # Search user by name or email or phone or address
             users = (Users.objects.filter(name__icontains=searchInput) | Users.objects.filter(email__icontains=searchInput) |
                     Users.objects.filter(phone_number__icontains=searchInput) |
-                    Users.objects.filter(address__icontains=searchInput))
+                    Users.objects.filter(address__icontains=searchInput)) & (Users.objects.filter(is_delete=0))
             return Response(True, 'Search user success', users)
         except Exception as e:
             print(e)
@@ -97,7 +100,7 @@ class AdminDto(UserDto):
     
     def get_users():
         try:
-            users = Users.objects.all()
+            users = Users.objects.filter(is_delete=0)
             return Response(True, 'Get users success', users)
         except Exception as e:
             print(e)

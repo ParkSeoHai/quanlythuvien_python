@@ -135,8 +135,14 @@ h4.lv4 {
     padding-left: 2rem;
 }
 
+.sidebar-menu li:hover > .subs-menu {
+    display: block;
+}
+
+
 .sidebar-menu li a {
     text-decoration: none;
+    cursor: pointer;
 }
 
 .sidebar-menu a {
@@ -146,6 +152,7 @@ h4.lv4 {
     font-size: 1.1rem;
 }
 
+
 .sidebar-menu a.active {
     background: #fff;
     padding-top: 1rem;
@@ -154,9 +161,40 @@ h4.lv4 {
     border-radius: 30px 0 0 30px;
 }
 
+.sidebar-menu a.active ~ .subs-menu {
+    display: block;
+}
+
 .sidebar-menu a span:first-child {
     font-size: 1.5rem;
     padding-right: 1rem;
+}
+
+/* Sub menu */
+.sidebar-menu .subs-menu {
+    display: none;
+    margin-top: 13px;
+    height: 134px;
+    animation: showSubmenu linear 0.3s;
+}
+
+@keyframes showSubmenu {
+    from {
+        opacity: 0;
+        height: 0px;
+    } to {
+        opacity: 1;
+        height: 134px;
+    }
+}
+
+.sidebar-menu .sub-link {
+    padding-left: 0;
+    margin-left: 22px;
+}
+
+.sidebar-menu .sub-link:hover {
+    text-decoration: underline;
 }
 
 #nav-toggle:checked + .sidebar {
@@ -175,6 +213,10 @@ h4.lv4 {
 
 #nav-toggle:checked + .sidebar .sidebar-brand h2 span:last-child,
 #nav-toggle:checked + .sidebar li a span:last-child {
+    display: none;
+}
+
+#nav-toggle:checked + .sidebar .subs-menu {
     display: none;
 }
 
@@ -435,6 +477,18 @@ tr td:last-child {
     display: inline-block;
     margin-left: .5rem;
     color: var(--main-color);
+}
+
+/* Lap phieu nhap */
+.container-books {
+    margin-top: 20px;
+}
+
+.container-books__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 @media only screen and (max-width: 1200px) {

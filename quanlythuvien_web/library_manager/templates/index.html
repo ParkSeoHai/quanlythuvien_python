@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-    <input type="checkbox" id="nav-toggle" checked>
+    <input type="checkbox" id="nav-toggle">
     <div class="sidebar" target="_sidebar">
         <div class="sidebar-brand">
             <a asp-controller="Home" asp-action="Index">
@@ -73,12 +73,34 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/quan-ly-kho-sach" page="quan-ly-kho-sach" title="Quản lý kho sách" class="sidebar-link">
+                    <a page="quan-ly-kho-sach" title="Quản lý kho sách" class="sidebar-link">
                         <span>
                             <i class="bi bi-file-earmark-bar-graph"></i>
                         </span>
                         <span>Quản lý kho sách</span>
                     </a>
+                    <ul class="subs-menu">
+                        <li class="sub-item">
+                            <a href="/quan-ly-kho-sach/nhap-sach" title="Nhập sách" class="sub-link">
+                                Nhập sách
+                            </a>
+                        </li>
+                        <li class="sub-item">
+                            <a href="/quan-ly-kho-sach/huy-sach" title="Hủy sách" class="sub-link">
+                                Hủy sách
+                            </a>
+                        </li>
+                        <li class="sub-item">
+                            <a href="/quan-ly-kho-sach/thong-ke" title="Thống kê sách" class="sub-link">
+                                Thống kê sách
+                            </a>
+                        </li>
+                        <li class="sub-item">
+                            <a href="/quan-ly-kho-sach/kiem-ke" title="Kiểm kê" class="sub-link">
+                                Kiểm kê
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li>
                     <a href="/logout" title="Thoát">
