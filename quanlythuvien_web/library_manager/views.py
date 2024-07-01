@@ -11,7 +11,6 @@ from library_manager.dtos.AdminDto import AdminDto
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 
-# Create your views here.
 # Default view for login page
 def index(request):
     template = loader.get_template('login.html')
@@ -183,13 +182,118 @@ def quanlydanhmuc(request):
         'user': user
     }, request))
 
+# hien thi view quan ly sach
 def quanlysach(request):
     # Get user
     user = get_user(request)
+    response = UserDto.get_books()
+    context = {
+        'user': user,
+        'books': response.data,
+    }
+    # Load quanlysach page
+    template = loader.get_template('quanlysach/index.html')
+    return HttpResponse(template.render(
+        context, request))
+
+#xoá sách
+def deleteBook(request, id_sach):
+    response = AdminDto.delete_book(id_sach)
+    if response.status is True:
+        print(response.message)
+        return HttpResponseRedirect(reverse('quanlysach'))
+    else:
+        print(response.message)
+        return HttpResponseRedirect(reverse('quanlysach'))
+
+#them sach
+def addBook(request):
+    # Get user
+    user = get_user(request)
+    response = AdminDto.get_categories()
+    # Load template
+    template = loader.get_template('quanlysach/add.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'categories': response.data,
+    }, request))
+
+# Add sach post request
+def addBookPost(request):
+    if request.method == 'POST':
+        # Get value
+        id_sach = str(uuid.uuid4())  # Generate random id
+        name = request.POST.get('name')
+        price = request.POST.get('price')
+        quantity = request.POST.get('quantity')
+        image = request.POST.get('image')
+        author = request.POST.get('author')
+        id_category = request.POST.get('category')
+        # Create book dto
+        book = BookDto(id_sach=id_sach, name=name, price=price, quantity=quantity, image=image,
+                        author=author, id_category=id_category)
+        print(book.__dict__)
+
+        # Response from add_book function
+        response = UserDto.add_book(book)
+        if response.status is True:
+            print(response.message)
+            return HttpResponseRedirect(reverse('quanlysach'))
+        else:
+            print(response.message)
+            return HttpResponseRedirect(reverse('addBook'))
+        
+#update sach
+def updateBook(request, id_sach):
+    # Get user
+    user = get_user(request)
+    # Get user by id
+    response = AdminDto.get_categories()
+    book_update = UserDto.get_bookById(id_sach).data
+    # Load update user page
+    template = loader.get_template('quanlysach/update.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'book_update': book_update,
+        'categories': response.data,
+    }, request))
+
+# Update user post request
+def updateBookPost(request):
+    if request.method == 'POST':
+        # Get value
+        id_sach = request.POST.get('id_sach')
+        name = request.POST.get('name')
+        price = request.POST.get('price')
+        quantity = request.POST.get('quantity')
+        image = request.POST.get('image')
+        author = request.POST.get('author')
+        id_category = request.POST.get('category')
+        # Create user dto
+        book = BookDto(id_sach = id_sach,name=name, price=price, quantity=quantity, image=image,
+                        author=author, id_category=id_category)
+        print(book.__dict__)
+
+        # Response from update_user function
+        response = UserDto.update_book(book)
+        if response.status is True:
+            print(response.message)
+            return HttpResponseRedirect(reverse('quanlysach'))
+        else:
+            print(response.message)
+            return HttpResponseRedirect(reverse('updateBook', args=(id_sach,)))
+
+#tim kiem sach
+def searchBook(request, searchInput):
+    # Get book
+    user = get_user(request)
+    # Response from search_book function
+    response = UserDto.search_book(searchInput)
     # Load quanlysach page
     template = loader.get_template('quanlysach/index.html')
     return HttpResponse(template.render({
-        'user': user
+        'user': user,
+        'books': response.data
     }, request))
 
 # Get book by id from javascript fetch request
@@ -223,10 +327,25 @@ def quanlymuontra(request):
 def quanlytinhhinhmuontra(request):
     # Get user
     user = get_user(request)
+    phieumuons = UserDto.check_phieumuon()
+
     # Load quanlytinhhinhmuontra page
     template = loader.get_template('quanlytinhhinhmuontra/index.html')
     return HttpResponse(template.render({
-        'user': user
+        'user': user,
+        'phieumuons': phieumuons.data,
+    }, request))
+
+def quanlytinhhinhDaTra(request):
+    # Get user
+    user = get_user(request)
+    phieumuons = UserDto.check_phieumuonDaTra()
+
+    # Load quanlytinhhinhmuontra page
+    template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'phieumuons': phieumuons.data,
     }, request))
 
 # Quan ly kho sach

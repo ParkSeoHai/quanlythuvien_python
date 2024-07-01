@@ -1,8 +1,8 @@
-from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Categories
+from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Categories, Phieumuons
 from library_manager.dtos.ResponseDto import ResponseDto as Response
 
 import uuid
-
+from datetime import datetime
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 
@@ -33,7 +33,16 @@ class UserDto(object):
             return Response(False, e.__str__(), None)
 
     def register(self):
-        ...
+        try:
+            user = Users(id_user=self.id_user, name=self.name, email=self.email,
+                        password=self.password, role=self.role, gender=self.gender,
+                        birthday=self.birthday, phone_number=self.phone_number,
+                        address=self.address, is_delete=self.is_delete)
+            user.save()
+            return Response(True, 'Register success', user.id_user)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
 
     def check_email(email):
         try:
@@ -42,25 +51,92 @@ class UserDto(object):
         except Exception as e:
             print(e)
             return False
-
-    def logout(self):
-        ...
     
     def change_info(self):
         ...
 
-    def add_book():
-        ...
-    
-    def update_book():
-        ...
-    
-    def delete_book():
-        ...
+    def check_book(name):
+        try:
+            book = Books.objects.filter(name=name).first()
+            return True if book else False
+        except Exception as e:
+            print(e)
+            return False
 
-    def search_book():
-        ...
-    
+    def add_book(bookDto: BookDto):
+        try:
+            # Check if book exists in database by name
+            is_book = UserDto.check_book(bookDto.name)
+
+            if is_book is True:
+                return Response(False, 'This book already exists', None)
+            else:
+                category = Categories.objects.filter(id_category=bookDto.id_category).first()
+                # Add book to database
+                book = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price,
+                             quantity=bookDto.quantity, image=bookDto.image, author=bookDto.author,
+                             is_delete=bookDto.is_delete, id_category=category)
+                book.save()
+                return Response(True, 'Add book success', book.id_sach)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def update_book(bookDto: BookDto):
+        try:
+            # Check if user exists in database by id
+            category = Categories.objects.filter(id_category=bookDto.id_category).first()
+            book = Books.objects.filter(id_sach=bookDto.id_sach).first()
+            if book.name == bookDto.name:
+                # Update user
+                book.name = bookDto.name
+                book.price = bookDto.price
+                book.quantity = bookDto.quantity
+                book.image = bookDto.image
+                book.author = bookDto.author
+                book.id_category = category
+                book.save()
+                return Response(True, 'Update book success', book.id_sach)
+            else:
+                is_book = UserDto.check_book(bookDto.name)
+                if is_book is True:
+                    return Response(False, 'Name is exists', book.id_sach)
+                else:
+                    book.name = bookDto.name
+                    book.price = bookDto.price
+                    book.quantity = bookDto.quantity
+                    book.image = bookDto.image
+                    book.author = bookDto.author
+                    book.id_category = category
+                    book.save()
+                    return Response(True, 'Update book success', book.id_sach)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def delete_book(id_sach):
+        try:
+            # Locate the book by its id_sach
+            book = Books.objects.get(id_sach=id_sach)
+            # Mark the book as deleted
+            book.is_delete = 1
+            book.save()
+            return Response(True, 'Delete book success', None)
+        except Books.DoesNotExist:
+            return Response(False, 'Book not found', None)
+        except Exception as e:
+            print(e)
+            return Response(False, str(e), None)
+
+    def search_book(searchInput:str):
+        try:
+            books = (Books.objects.filter(name__icontains=searchInput) |
+                     Books.objects.filter(author__icontains=searchInput))
+            return Response(True, 'Search book success', books)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
     def get_bookById(id_sach):
         try:
             book = Books.objects.filter(id_sach=id_sach).first()
@@ -93,10 +169,52 @@ class UserDto(object):
         ...
     
     def get_phieumuons():
-        ...
-
+        try:
+            phieumuons = Phieumuons.objects.all()
+            return Response(True, 'Get phieumuon success', phieumuons)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+        
     def thuhoi_phieumuon():
         ...
+    
+    def check_phieumuon():
+        try:
+            phieumuons = Phieumuons.objects.filter(ngay_tra='')
+            for phieumuon in phieumuons:
+                ngay_hen_tra = phieumuon.ngay_hen_tra
+                today = datetime.now().strftime('%Y-%m-%d')
+
+                if ngay_hen_tra and today:
+                    a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+                    b = datetime.strptime(today, "%Y-%m-%d")
+                    c = (a-b).days
+                phieumuon.trang_thai = int(c)
+                phieumuon.save()
+            phieumuonsbydate = Phieumuons.objects.filter(trang_thai__lt=5, ngay_tra= '')
+            return Response(True, 'Get phieumuon success', phieumuonsbydate)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def check_phieumuonDaTra():
+        try:
+            phieumuons = Phieumuons.objects.exclude(ngay_tra__exact='')
+            for phieumuon in phieumuons:
+                ngay_hen_tra = phieumuon.ngay_hen_tra
+                ngay_tra = phieumuon.ngay_tra
+
+                if ngay_hen_tra and ngay_tra:
+                    a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+                    b = datetime.strptime(ngay_tra, "%Y/%m/%d")
+                    c = (a-b).days
+                phieumuon.trang_thai = int(c)
+                phieumuon.save()
+            return Response(True, 'Get phieumuon success', phieumuons)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
     
     def get_phieunhaps():
         try:

@@ -1,9 +1,72 @@
 {% extends "index.html" %}
 
 {% block title %}
-    Quản lý độc giả
+    Quản lý danh mục
 {% endblock  %}
 
 {% block content %}
-    <h1>Quan ly doc gia</h1>
+    <h2 class="lv2">Danh sách danh mục</h2>
+    <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
+        <a href="/quan-ly-danh-muc/add/" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i>&nbsp; Tạo mới
+        </a>
+        <div class="search-block w-25">
+            <div class="input-group">
+                <span class="input-group-text search-icon" onclick="searchCategory()">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control search-category" placeholder="Search" onkeypress="searchCategoryEnter(event)">
+            </div>              
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if categories|length == 0 %}
+                <tr>
+                    <td colspan="9" class="text-center">Không có dữ liệu</td>
+                </tr>
+            {% endif %}
+            {% comment %} Hiển thị danh sách user {% endcomment %}
+
+            {% for category in categories %}
+                <tr>
+                    <th scope="row">{{ category.id_category }}</th>
+                    <td>{{ category.name }}</td>
+                    <td>{{ category.description }}</td>
+                    <td>
+                        <a href="/quan-ly-danh-muc/update/{{ category.id_category }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
+                            <i class="bi bi-gear"></i>
+                        </a>
+                        <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteUser('{{ category.id_category }}')">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% comment %} Modal delete user {% endcomment %}
+    <div class="modal-main modal-delete d-none">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">Bạn có chắc chắn muốn xóa danh mục này không?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="cancelDeleteUser()">Hủy</button>
+                <a href="" class="btn btn-danger btn-delete">Xóa</a>
+            </div>
+        </div>
+    </div>
 {% endblock  %}

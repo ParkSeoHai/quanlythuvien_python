@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Cập nhật thông tin sách
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Cập nhật thông tin sách</h2>
+    {% if book_update %}
+        <form method="post" action={% url 'updateBookPost' %} class="form" autocomplete="off">
+            {% csrf_token %}
+            <fieldset>
+                <input type="hidden" name="id_sach" value="{{ book_update.id_sach }}">
+                <div class="d-flex justify-content-between gap-4">
+                    <div class="form-group mt-4 w-50">
+                        <label class="form-label">Tên sách</label>
+                        <input type="text" class="form-control" value="{{ book_update.name }}" required placeholder="Enter name" name="name">
+                    </div>
+                    <div class="form-group mt-4 w-50">
+                        <label class="form-label">Giá tiền</label>
+                        <input type="text" class="form-control" value="{{ book_update.price }}" required placeholder="Enter price" name="price">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between gap-4">
+                    <div class="form-group mt-4 w-50">
+                        <label class="form-label">Số lượng</label>
+                        <input type="text" class="form-control" value="{{ book_update.quantity }}" required placeholder="Enter quantity" name="quantity">
+                    </div>
+                    <div class="form-group mt-4 w-50">
+                        <label class="form-label">Hình ảnh</label>
+                        <input type="text" class="form-control" value="{{ book_update.image }}" required placeholder="Enter image" name="image">
+                    </div>
+                    <div class="form-group mt-4 w-50">
+                        <label class="form-label">Tác giả</label>
+                        <input type="text" class="form-control" value="{{ book_update.author }}" required placeholder="Enter author" name="author">
+                    </div>
+                    <div class="form-group mt-4 w-50">
+                        <label class="form-label">Danh mục sách</label>
+                        <select class="form-control" name="category">
+                            {% for category in categories %}
+                                        <option value="{{ category.id_category }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-5">
+                    <a href="/quan-ly-sach" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i>&nbsp; Lưu
+                    </button>
+                </div>
+            </fieldset>
+        </form>
+    {% else %}
+        <div class="alert alert-danger" role="alert">
+            Không tìm thấy thông tin sách
+        </div>
+    {% endif %}
+{% endblock  %}
