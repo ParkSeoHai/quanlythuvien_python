@@ -181,36 +181,15 @@ class UserDto(object):
     
     def check_phieumuon():
         try:
-            phieumuons = Phieumuons.objects.filter(ngay_tra='')
-            for phieumuon in phieumuons:
-                ngay_hen_tra = phieumuon.ngay_hen_tra
-                today = datetime.now().strftime('%Y-%m-%d')
-
-                if ngay_hen_tra and today:
-                    a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
-                    b = datetime.strptime(today, "%Y-%m-%d")
-                    c = (a-b).days
-                phieumuon.trang_thai = int(c)
-                phieumuon.save()
-            phieumuonsbydate = Phieumuons.objects.filter(trang_thai__lt=5, ngay_tra= '')
-            return Response(True, 'Get phieumuon success', phieumuonsbydate)
+            phieumuons = Phieumuons.objects.filter(trang_thai=0, is_delete=0)
+            return Response(True, 'Get phieumuon success', phieumuons)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
 
     def check_phieumuonDaTra():
         try:
-            phieumuons = Phieumuons.objects.exclude(ngay_tra__exact='')
-            for phieumuon in phieumuons:
-                ngay_hen_tra = phieumuon.ngay_hen_tra
-                ngay_tra = phieumuon.ngay_tra
-
-                if ngay_hen_tra and ngay_tra:
-                    a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
-                    b = datetime.strptime(ngay_tra, "%Y/%m/%d")
-                    c = (a-b).days
-                phieumuon.trang_thai = int(c)
-                phieumuon.save()
+            phieumuons = Phieumuons.objects.filter(trang_thai=1,is_delete=0)
             return Response(True, 'Get phieumuon success', phieumuons)
         except Exception as e:
             print(e)

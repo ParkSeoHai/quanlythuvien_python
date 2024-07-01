@@ -4,7 +4,7 @@ from django.urls import reverse
 
 import uuid
 import json
-
+from datetime import datetime
 # Import user dto
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.AdminDto import AdminDto
@@ -328,24 +328,40 @@ def quanlytinhhinhmuontra(request):
     # Get user
     user = get_user(request)
     phieumuons = UserDto.check_phieumuon()
+    for phieumuon in phieumuons.data:
+        ngay_hen_tra = phieumuon.ngay_hen_tra
+        today = datetime.now().strftime('%Y-%m-%d')
 
+        if ngay_hen_tra and today:
+            a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+            b = datetime.strptime(today, "%Y-%m-%d")
+            date_muon = int((a - b).days)
     # Load quanlytinhhinhmuontra page
     template = loader.get_template('quanlytinhhinhmuontra/index.html')
     return HttpResponse(template.render({
         'user': user,
         'phieumuons': phieumuons.data,
+        'date': date_muon,
     }, request))
 
 def quanlytinhhinhDaTra(request):
     # Get user
     user = get_user(request)
     phieumuons = UserDto.check_phieumuonDaTra()
+    for phieumuon in phieumuons.data:
+        ngay_hen_tra = phieumuon.ngay_hen_tra
+        ngay_tra = phieumuon.ngay_tra
 
+        if ngay_hen_tra and ngay_tra:
+            a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+            b = datetime.strptime(ngay_tra, "%Y/%m/%d")
+            date_tra = (a - b).days
     # Load quanlytinhhinhmuontra page
     template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
     return HttpResponse(template.render({
         'user': user,
         'phieumuons': phieumuons.data,
+        'date' : date_tra
     }, request))
 
 # Quan ly kho sach
