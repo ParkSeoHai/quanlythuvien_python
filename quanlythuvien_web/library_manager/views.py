@@ -357,13 +357,13 @@ def quanlytinhhinhDaTra(request):
         if ngay_hen_tra and ngay_tra:
             a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
             b = datetime.strptime(ngay_tra, "%Y/%m/%d")
-            date_tra = (a - b).days
+            date_tra = int((a - b).days)
     # Load quanlytinhhinhmuontra page
     template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
     return HttpResponse(template.render({
         'user': user,
         'phieumuons': phieumuons.data,
-        'date' : date_tra
+        'date': date_tra,
     }, request))
 
 # Quan ly kho sach
