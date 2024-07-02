@@ -24,7 +24,7 @@ urlpatterns = [
     #update category
     path('quan-ly-danh-muc/update/<str:id>/', views.updateCategory, name="updateCategory"),
     path('updateCategoryPost/', views.updateCategoryPost, name="updateCategoryPost"),
-    # path('quan-ly-danh-muc/search/<str:searchInput>/', views.searchCategory, name="searchCategory"),
+    path('quan-ly-danh-muc/search/<str:searchInput>/', views.searchCategories, name="searchCategory"),
     #delete category
     path('quan-ly-danh-muc/delete/<str:id>/', views.deleteCategory, name="deleteCategory"),
     #url quan ly sach

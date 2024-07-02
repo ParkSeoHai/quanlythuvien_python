@@ -65,8 +65,15 @@ class AdminDto(UserDto):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-    def search_category(self):
-        ...
+    def search_category(searchCategory:str):
+        try:
+            # Search user by name or email or phone or address
+            categories = (Categories.objects.filter(name__icontains=searchCategory) | Categories.objects.filter(
+                description__icontains=searchCategory))
+            return Response(True, 'Search user success', categories)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
 
     def get_category_by_id(id):
         try:

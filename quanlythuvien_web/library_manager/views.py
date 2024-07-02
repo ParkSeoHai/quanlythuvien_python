@@ -665,3 +665,15 @@ def updateCategoryPost(request):
         else:
             print(response.message)
             return HttpResponseRedirect(reverse('updateCategory', args=(id,)))
+
+def searchCategories(request, searchInput):
+    # Get user
+    user = get_user(request)
+    # Response from search_user function
+    response = AdminDto.search_category(searchInput)
+    # Load quanlynguoidung page
+    template = loader.get_template('quanlydanhmuc/index.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'categories': response.data
+    }, request))
