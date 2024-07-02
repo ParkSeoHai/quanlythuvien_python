@@ -1,5 +1,3 @@
-import datetime
-
 class DocgiaDto(object):
     def __init__(self, id_docgia = '', name = '', email = '',
                 gender = 0, birthday = '', phone_number = '',

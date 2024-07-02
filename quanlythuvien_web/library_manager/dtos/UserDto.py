@@ -24,10 +24,12 @@ class UserDto(object):
     def login(self):
         try:
             user = Users.objects.filter(email=self.email, password=self.password).first()
-            if user:
-                return Response(True, 'Login success', user.id_user)
+            if user is None:
+                return Response(False, 'Tài khoản hoặc mật khẩu không chính xác', None)
+            if user.is_delete == 1:
+                return Response(False, 'Tài khoản này đã bị xóa', None)
             else:
-                return Response(False, 'Login failed', None)
+                return Response(True, 'Đăng nhập thành công', user.id_user)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)

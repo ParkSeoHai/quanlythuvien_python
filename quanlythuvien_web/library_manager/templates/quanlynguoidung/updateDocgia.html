@@ -1,0 +1,87 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Cập nhật độc giả
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2 mb-2">Cập nhật độc giả</h2>
+    <strong>ID thẻ: {{ ttv.id_the }}</strong>
+    <form method="post" action={% url 'updateDocgiaPost' %} class="form" autocomplete="off">
+        {% csrf_token %}
+        <fieldset>
+            <input type="text" hidden class="form-control" value="{{ ttv.id_the }}" name="id-the">
+            <div class="d-flex justify-content-between gap-3">
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" value="{{ ttv.id_docgia.name }}" required placeholder="Enter name" name="name">
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="{{ ttv.id_docgia.email }}" required placeholder="Enter email" name="email">
+                </div>
+            </div>
+            <div class="form-group mt-4">
+                <label class="form-label">Address</label>
+                <input type="text" class="form-control" value="{{ ttv.id_docgia.address }}" required placeholder="Enter address" name="address">
+            </div>
+            <div class="d-flex justify-content-between gap-3">
+                <div class="form-group mt-4 w-25">
+                    <label class="form-label">Gender</label>
+                    <select class="form-control" name="gender">
+                        {% if ttv.id_docgia.gender == 0 %}
+                            <option value="0" selected>Nam</option>
+                            <option value="1">Nữ</option>
+                        {% else %}
+                            <option value="0">Nam</option>
+                            <option value="1" selected>Nữ</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Phone number</label>
+                    <input type="text" class="form-control" value="{{ ttv.id_docgia.phone_number }}" required placeholder="Enter phone number" name="phone">
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Birthday</label>
+                    <input type="date" class="form-control" value="{{ ttv.id_docgia.birthday }}" required name="birthday">
+                </div>
+            </div>
+            <div class="mt-5">
+                <h4>Thông tin thẻ thư viện</h4>
+            </div>
+            <div class="d-flex justify-content-between gap-3">
+                <div class="form-group mt-4 w-25">
+                    <label class="form-label">Ngày tạo</label>
+                    <input type="date" class="form-control" value="{{ ttv.ngay_tao }}" required name="ngay-tao-the">
+                </div>
+                <div class="form-group mt-4 w-25">
+                    <label class="form-label">Ngày hết hạn</label>
+                    <input type="date" class="form-control" value="{{ ttv.ngay_het_han }}" required name="ngay-het-han-the">
+                </div>
+                <div class="form-group mt-4 w-25">
+                    <label class="form-label">Loại đối tượng</label>
+                    <select class="form-control" name="type">
+                        {% if ttv.type == 0 %}
+                            <option value="1">Sinh viên</option>
+                            <option value="0" selected>Giảng viên</option>
+                        {% else %}
+                            <option value="1" selected>Sinh viên</option>
+                            <option value="0">Giảng viên</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Ghi chú</label>
+                    <input type="text" class="form-control" value="{{ ttv.ghi_chu }}" required name="ghi-chu">
+                </div>
+            </div>
+            <div class="mt-5">
+                <a href="/quan-ly-nguoi-dung/doc-gia/" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i>&nbsp; Lưu
+                </button>
+            </div>
+        </fieldset>
+    </form>
+{% endblock  %}

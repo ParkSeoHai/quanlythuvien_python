@@ -1,15 +1,19 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
+from django.contrib import messages
 
 import uuid
 import json
+import datetime
 
 # Import user dto
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.AdminDto import AdminDto
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
+from library_manager.dtos.DocgiaDto import DocgiaDto
+from library_manager.dtos.ThethuvienDto import ThethuvienDto
 
 # Default view for login page
 def index(request):
@@ -31,9 +35,11 @@ def loginPost(request):
         if response.status is True:
             # Set user id session
             request.session['id_user'] = response.data
+            messages.success(request, response.message)
             # Redirect to home page
             return HttpResponseRedirect(reverse('home'))
         else:
+            messages.info(request, response.message)
             # Redirect to login page
             return HttpResponseRedirect(reverse('main'))
 
@@ -60,28 +66,39 @@ def home(request):
     }, request))
 
 # View for quanlynguoidung page
-def quanlynguoidung(request):
+def quanlynguoidung(request, tab):
     # Get user id session when user login
     user = get_user(request)
-    # Get all users
-    response = AdminDto.get_users()
     # Context for template
     context = {
         'user': user,
-        'users': response.data,
+        'tab': tab,
     }
+    # If tab is nguoi-dung
+    if tab == 'nguoi-dung':
+        # Get all users
+        response = AdminDto.get_users()
+        context['users'] = response.data
+    elif tab == 'doc-gia':
+        # Get all thethuviens
+        response = AdminDto.get_thethuviens()
+        # Context for template
+        context['thethuviens'] = response.data
+    else:
+        print('Tab not found')
+        # Message show in template
+        messages.info(request, 'Tab not found')
+
     # Load quanlynguoidung page
     template = loader.get_template('quanlynguoidung/index.html')
     return HttpResponse(template.render(context, request))
 
 # Add user view
 def addUser(request):
-    # Get user
-    user = get_user(request)
     # Load template
     template = loader.get_template('quanlynguoidung/add.html')
     return HttpResponse(template.render({
-        'user': user
+        'user': get_user(request)
     }, request))
 
 # Add user post request
@@ -105,24 +122,32 @@ def addUserPost(request):
 
         # Response from add_user function
         response = AdminDto.add_user(user)
+        print(response.message)
         if response.status is True:
-            print(response.message)
-            return HttpResponseRedirect(reverse('quanlynguoidung'))
+            # Load quanlynguoidung page
+            template = loader.get_template('quanlynguoidung/index.html')
+            # Message
+            messages.success(request, response.message)
+            return HttpResponse(template.render({
+                'user': get_user(request),
+            }, request))
         else:
-            print(response.message)
-            return HttpResponseRedirect(reverse('addUser'))
+            # Message
+            messages.error(request, response.message)
+            return HttpResponseRedirect(reverse('quanlynguoidung', args=('nguoi-dung',)))
 
 # Update user view
 def updateUser(request, id):
-    # Get user
-    user = get_user(request)
     # Get user by id
-    user_update = AdminDto.get_user_by_id(id).data
+    response = AdminDto.get_user_by_id(id)
+    if response.status is False:
+        messages.error(request, response.message)
+
     # Load update user page
     template = loader.get_template('quanlynguoidung/update.html')
     return HttpResponse(template.render({
-        'user': user,
-        'user_update': user_update
+        'user': get_user(request),
+        'user_update': response.data
     }, request))
 
 # Update user post request
@@ -141,24 +166,26 @@ def updateUserPost(request):
         # Create user dto
         user = UserDto(id_user=id, name=name, email=email, role=role, gender=gender,
                         birthday=birthday, phone_number=phone, address=address)
-        print(user.__dict__)
 
         # Response from update_user function
         response = AdminDto.update_user(user)
+        print(response.message)
         if response.status is True:
-            print(response.message)
-            return HttpResponseRedirect(reverse('quanlynguoidung'))
+            messages.success(request, response.message)
+            return HttpResponseRedirect(reverse('quanlynguoidung', args=('nguoi-dung',)))
         else:
-            print(response.message)
+            messages.error(request, response.message)
             return HttpResponseRedirect(reverse('updateUser', args=(id,)))
 
 # Delete user
 def deleteUser(request, id):
     # Response from delete_user function
     response = AdminDto.delete_user(id)
-
     print(response.message)
-    return HttpResponseRedirect(reverse('quanlynguoidung'))
+    if response.status is False:
+        messages.error(response.message)
+    
+    return HttpResponseRedirect(reverse('quanlynguoidung', args=('nguoi-dung',)))
 
 # Search user
 def searchUser(request, searchInput):
@@ -166,13 +193,136 @@ def searchUser(request, searchInput):
     user = get_user(request)
     # Response from search_user function
     response = AdminDto.search_user(searchInput)
+    # Message
+    messages.info(request, response.message)
     # Load quanlynguoidung page
     template = loader.get_template('quanlynguoidung/index.html')
     return HttpResponse(template.render({
         'user': user,
-        'users': response.data
+        'users': response.data,
+        'tab': 'nguoi-dung'
     }, request))
 
+# Add docgia view
+def addDocgia(request):
+    # Load template
+    template = loader.get_template('quanlynguoidung/addDocgia.html')
+    return HttpResponse(template.render({
+        'user': get_user(request)
+    }, request))
+
+# Add docgia post
+def addDocgiaPost(request):
+    if request.method == 'POST':
+        id = str(uuid.uuid4())
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        address = request.POST.get('address')
+        gender = request.POST.get('gender')
+        type = request.POST.get('type')
+        phone = request.POST.get('phone')
+        birthday = request.POST.get('birthday')
+        # Get ngay tao is date current
+        dateNow = datetime.datetime.now()
+        ngay_tao = dateNow.strftime("%Y") + "-" + dateNow.strftime("%m") + "-" + dateNow.strftime("%d")
+
+        # Create docgia dto object
+        docgiaDto = DocgiaDto(id_docgia=id, name=name, email=email, address=address,
+                              gender=int(gender), phone_number=phone, birthday=birthday, ngay_tao=ngay_tao)
+        
+        # Create thethuvien dto object
+        ngay_het_han = str((int(dateNow.strftime("%Y")) + 4)) + "-" + dateNow.strftime("%m") + "-" + dateNow.strftime("%d")
+        thethuvienDto = ThethuvienDto(id_the=str(uuid.uuid4()), type=int(type), ngay_tao=ngay_tao,
+                                      ngay_het_han=ngay_het_han)
+        
+        # Add docgia to database
+        response = AdminDto.add_docgia(docgiaDto, thethuvienDto)
+        print(response.message)
+        if response.status is True:
+            # Message show in template
+            messages.success(request, response.message)
+            return HttpResponseRedirect(reverse('quanlynguoidung', args=('doc-gia',)))
+        else:
+            # Message show in template
+            messages.error(request, response.message)
+            return HttpResponseRedirect(reverse('addDocgia'))
+
+# Update doc-gia view
+def updateDocgia(request, id):
+    # Get thethuvien by id_the
+    response = AdminDto.get_thethuvien_by_id(id)
+    if response.status is False:
+        messages.error(request, response.message)
+
+    # Load update user page
+    template = loader.get_template('quanlynguoidung/updateDocgia.html')
+    return HttpResponse(template.render({
+        'user': get_user(request),
+        'ttv': response.data
+    }, request))
+
+# Update doc-gia post
+def updateDocgiaPost(request):
+    if request.method == 'POST':
+        id_the = request.POST.get("id-the")
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        address = request.POST.get("address")
+        gender = request.POST.get("gender")
+        phone = request.POST.get("phone")
+        birthday = request.POST.get("birthday")
+        ngay_tao_the = request.POST.get("ngay-tao-the")
+        ngay_het_han_the = request.POST.get("ngay-het-han-the")
+        type = request.POST.get("type")
+        ghi_chu = request.POST.get("ghi-chu")
+
+        # Create docgia dto object
+        docgiaDto = DocgiaDto(name=name, email=email, address=address, gender=int(gender),
+                              phone_number=phone, birthday=birthday)
+        
+        # Create thethuvien dto object
+        ttvDto = ThethuvienDto(id_the=id_the, ngay_tao=ngay_tao_the, ngay_het_han=ngay_het_han_the,
+                               type=type, ghi_chu=ghi_chu)
+        
+        # Update to database
+        response = AdminDto.update_docgia(docgiaDto, ttvDto)
+        print(response.message)
+        if response.status is True:
+            # Message
+            messages.success(request, response.message)
+            return HttpResponseRedirect(reverse('quanlynguoidung', args=('doc-gia',)))
+        else:
+            messages.error(request, response.message)
+            return HttpResponseRedirect(reverse('updateDocgia', args=(ttvDto.id_the,)))
+
+# Delete doc-gia
+def deleteDocgia(request, id):
+    # Response from delete_docgia function
+    response = AdminDto.delete_docgia(id)
+    print(response.message)
+
+    if response.status is True:
+        messages.success(request, response.message)
+    else:
+        messages.error(request, response.message)
+    
+    return HttpResponseRedirect(reverse('quanlynguoidung', args=('doc-gia',)))
+
+# Search doc-gia
+def searchDocgia(request, searchInput):
+    # Response from search_docgia function
+    response = AdminDto.search_docgia(searchInput)
+    # Message
+    messages.info(request, response.message)
+    # Load quanlynguoidung page
+    template = loader.get_template('quanlynguoidung/index.html')
+    return HttpResponse(template.render({
+        'user': get_user(request),
+        'thethuviens': response.data,
+        'tab': 'doc-gia'
+    }, request))
+
+# Quan ly danh muc
 def quanlydanhmuc(request):
     # Get user
     user = get_user(request)

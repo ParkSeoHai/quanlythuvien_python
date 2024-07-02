@@ -6,72 +6,66 @@
 
 {% block content %}
     <h2 class="lv2">Cập nhật người dùng</h2>
-    {% if user_update %}
-        <form method="post" action={% url 'updateUserPost' %} class="form" autocomplete="off">
-            {% csrf_token %}
-            <fieldset>
-                <input type="hidden" name="id" value="{{ user_update.id_user }}">
-                <div class="d-flex justify-content-between gap-4">
-                    <div class="form-group mt-4 w-50">
-                        <label class="form-label">Name</label>
-                        <input type="text" class="form-control" value="{{ user_update.name }}" required placeholder="Enter name" name="name">
-                    </div>
-                    <div class="form-group mt-4 w-50">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-control" value="{{ user_update.email }}" required placeholder="Enter email" name="email">
-                    </div>
+    <form method="post" action={% url 'updateUserPost' %} class="form" autocomplete="off">
+        {% csrf_token %}
+        <fieldset>
+            <input type="hidden" name="id" value="{{ user_update.id_user }}">
+            <div class="d-flex justify-content-between gap-4">
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-control" value="{{ user_update.name }}" required placeholder="Enter name" name="name">
                 </div>
-                <div class="d-flex justify-content-between gap-4">
-                    <div class="form-group mt-4 w-50">
-                        <label class="form-label">Phone number</label>
-                        <input type="text" class="form-control" value="{{ user_update.phone_number }}" required placeholder="Enter phone number" name="phone">
-                    </div>
-                    <div class="form-group mt-4 w-50">
-                        <label class="form-label">Address</label>
-                        <input type="text" class="form-control" value="{{ user_update.address }}" required placeholder="Enter address" name="address">
-                    </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" value="{{ user_update.email }}" required placeholder="Enter email" name="email">
                 </div>
-                <div class="d-flex justify-content-between gap-4">
-                    <div class="form-group mt-4 w-50">
-                        <label class="form-label">Role</label>
-                        <select class="form-control" name="role">
-                            {% if user_update.role == 0 %}
-                                <option value="0" selected>Admin</option>
-                                <option value="1">Thủ thư</option>
-                            {% else %}
-                                <option value="0">Admin</option>
-                                <option value="1" selected>Thủ thư</option>
-                            {% endif %}
-                        </select>
-                    </div>
-                    <div class="form-group mt-4 w-50">
-                        <label class="form-label">Gender</label>
-                        <select class="form-control" name="gender">
-                            {% if user_update.gender == 0 %}
-                                <option value="0" selected>Nam</option>
-                                <option value="1">Nữ</option>
-                            {% else %}
-                                <option value="0">Nam</option>
-                                <option value="1" selected>Nữ</option>
-                            {% endif %}
-                        </select>
-                    </div>
-                    <div class="form-group mt-4 w-50">
-                        <label class="form-label">Birthday</label>
-                        <input type="date" class="form-control" value="{{ user_update.birthday }}" required name="birthday">
-                    </div>
+            </div>
+            <div class="d-flex justify-content-between gap-4">
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Phone number</label>
+                    <input type="text" class="form-control" value="{{ user_update.phone_number }}" required placeholder="Enter phone number" name="phone">
                 </div>
-                <div class="mt-5">
-                    <a href="/quan-ly-nguoi-dung" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
-                    <button type="submit" class="btn btn-success">
-                        <i class="bi bi-plus-circle"></i>&nbsp; Lưu
-                    </button>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" value="{{ user_update.address }}" required placeholder="Enter address" name="address">
                 </div>
-            </fieldset>
-        </form>
-    {% else %}
-        <div class="alert alert-danger" role="alert">
-            Không tìm thấy người dùng
-        </div>
-    {% endif %}
+            </div>
+            <div class="d-flex justify-content-between gap-4">
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Role</label>
+                    <select class="form-control" name="role">
+                        {% if user_update.role == 0 %}
+                            <option value="0" selected>Admin</option>
+                            <option value="1">Thủ thư</option>
+                        {% else %}
+                            <option value="0">Admin</option>
+                            <option value="1" selected>Thủ thư</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Gender</label>
+                    <select class="form-control" name="gender">
+                        {% if user_update.gender == 0 %}
+                            <option value="0" selected>Nam</option>
+                            <option value="1">Nữ</option>
+                        {% else %}
+                            <option value="0">Nam</option>
+                            <option value="1" selected>Nữ</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Birthday</label>
+                    <input type="date" class="form-control" value="{{ user_update.birthday }}" required name="birthday">
+                </div>
+            </div>
+            <div class="mt-5">
+                <a href="/quan-ly-nguoi-dung" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i>&nbsp; Lưu
+                </button>
+            </div>
+        </fieldset>
+    </form>
 {% endblock  %}

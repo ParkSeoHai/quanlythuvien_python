@@ -3,18 +3,29 @@ from . import views
 urlpatterns = [
     path('', views.index, name='main'),
     path('home/', views.home, name="home"),
-    # Url quan ly nguoi dung
-    path('quan-ly-nguoi-dung/', views.quanlynguoidung, name="quanlynguoidung"),
+    # Url quan ly nguoi dung / user
+    path('quan-ly-nguoi-dung/<str:tab>/', views.quanlynguoidung, name="quanlynguoidung"),
     # Add user
-    path('quan-ly-nguoi-dung/add/', views.addUser, name="addUser"),
+    path('quan-ly-nguoi-dung/nguoi-dung/add/', views.addUser, name="addUser"),
     path('addUserPost/', views.addUserPost, name="addUserPost"),
     # Update user
-    path('quan-ly-nguoi-dung/update/<str:id>/', views.updateUser, name="updateUser"),
+    path('quan-ly-nguoi-dung/nguoi-dung/update/<str:id>/', views.updateUser, name="updateUser"),
     path('updateUserPost/', views.updateUserPost, name="updateUserPost"),
     # Delete user
-    path('quan-ly-nguoi-dung/delete/<str:id>/', views.deleteUser, name="deleteUser"),
+    path('quan-ly-nguoi-dung/nguoi-dung/delete/<str:id>/', views.deleteUser, name="deleteUser"),
     # Search user
-    path('quan-ly-nguoi-dung/search/<str:searchInput>/', views.searchUser, name="searchUser"),
+    path('quan-ly-nguoi-dung/nguoi-dung/search/<str:searchInput>/', views.searchUser, name="searchUser"),
+
+    # Url quan ly nguoi dung / Add doc-gia post
+    path('quan-ly-nguoi-dung/doc-gia/add/', views.addDocgia, name="addDocgia"),
+    path('addDocgiaPost/', views.addDocgiaPost, name="addDocgiaPost"),
+    # Update doc-gia
+    path('quan-ly-nguoi-dung/doc-gia/update/<str:id>/', views.updateDocgia, name="updateDocgia"),
+    path('updateDocgiaPost/', views.updateDocgiaPost, name="updateDocgiaPost"),
+    # Delete doc-gia
+    path('quan-ly-nguoi-dung/doc-gia/delete/<str:id>/', views.deleteDocgia, name="deleteDocgia"),
+    # Search doc-gia
+    path('quan-ly-nguoi-dung/doc-gia/search/<str:searchInput>/', views.searchDocgia, name="searchDocgia"),
 
     # Quan ly danh muc
     path('quan-ly-danh-muc/', views.quanlydanhmuc, name="quanlydanhmuc"),
