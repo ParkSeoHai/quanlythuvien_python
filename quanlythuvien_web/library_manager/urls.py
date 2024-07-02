@@ -19,14 +19,14 @@ urlpatterns = [
     # Quan ly danh muc
     path('quan-ly-danh-muc/', views.quanlydanhmuc, name="quanlydanhmuc"),
     # add category
-    # path('quan-ly-danh-muc/add/', views.addUsertoCategory, name="addUsertoCategory"),
-    # path('addCategoryPost/', views.addCategoryPost, name="addCategoryPost"),
+    path('quan-ly-danh-muc/add/', views.addUsertoCategory, name="addUsertoCategory"),
+    path('addCategoryPost/', views.addCategoryPost, name="addCategoryPost"),
     #update category
-    # path('quan-ly-danh-muc/update/<str:id>/', views.updateCategory, name="updateCategory"),
-    # path('updateCategoryPost/', views.updateCategoryPost, name="updateCategoryPost"),
+    path('quan-ly-danh-muc/update/<str:id>/', views.updateCategory, name="updateCategory"),
+    path('updateCategoryPost/', views.updateCategoryPost, name="updateCategoryPost"),
     # path('quan-ly-danh-muc/search/<str:searchInput>/', views.searchCategory, name="searchCategory"),
     #delete category
-    # path('quan-ly-danh-muc/delete/<str:id>/', views.deleteCategory, name="deleteCategory"),
+    path('quan-ly-danh-muc/delete/<str:id>/', views.deleteCategory, name="deleteCategory"),
     #url quan ly sach
     path('quan-ly-sach/', views.quanlysach, name="quanlysach"),
     #add sach
