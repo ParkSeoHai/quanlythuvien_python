@@ -3,23 +3,87 @@ from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
 from library_manager.dtos.ResponseDto import ResponseDto as Response
 from library_manager.models import Users, Categories, Docgias, Thethuviens
+from library_manager.dtos.CategoryDto import CategoryDto
 
 class AdminDto(UserDto):
     def __init__(self):
         super().__init__()
 
-    def add_category(self):
-        ...
-    
-    def update_category(self):
-        ...
-    
-    def delete_category(self):
-        ...
+    def check_nameCategory(name):
+        category = Categories.objects.filter(name=name).first()
+        return True if category else False
 
-    def search_category(self):
-        ...
-    
+    def add_category(CategoryDto: CategoryDto):
+        try:
+            is_category = AdminDto.check_nameCategory(CategoryDto.name)
+
+            if is_category is True:
+                return Response(False, 'Category name already exists', None)
+            else:
+                # Add category to database
+                category = Categories(id_category=CategoryDto.id_category, name=CategoryDto.name,
+                                      description=CategoryDto.description, is_delete=CategoryDto.is_delete)
+                category.save()
+                return Response(True, 'Add category success', category.id_category)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def update_category(categoryDto: CategoryDto):
+        try:
+            category = Categories.objects.filter(id_category=categoryDto.id_category).first()
+
+            if category.name == categoryDto.name:
+                category.name = categoryDto.name
+                category.description = categoryDto.description
+                category.is_delete = categoryDto.is_delete
+                category.save()
+                return Response(True, 'Update category success', category.id_category)
+            else:
+                is_category = AdminDto.check_nameCategory(categoryDto.name)
+                if is_category is True:
+                    return Response(False, 'Category name already exists', None)
+                else:
+                    category.name = categoryDto.name
+                    category.description = categoryDto.description
+                    category.is_delete = categoryDto.is_delete
+                    category.save()
+                    return Response(True, 'Update category success', category.id_category)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def delete_category(id):
+        try:
+            category = Categories.objects.filter(id_category=id).first()
+            if category:
+                category.is_delete = 1;
+                category.save()
+                return Response(True, 'Delete category success', None)
+            else:
+                return Response(False, 'Category not found', None)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+        
+    def search_category(searchCategory:str):
+        try:
+            # Search user by name or email or phone or address
+            categories = (Categories.objects.filter(name__icontains=searchCategory) |
+                          Categories.objects.filter(description__icontains=searchCategory))
+            return Response(True, f'Tìm thấy {len(categories)} kết quả', categories)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def get_category_by_id(id):
+        try:
+            category = Categories.objects.filter(id_category=id).first()
+            return Response(True, 'Get user success', category)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+        
     def get_categories():
         try:
             categories = Categories.objects.filter(is_delete=0)
@@ -27,7 +91,7 @@ class AdminDto(UserDto):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-    
+        
     def add_user(userDto: UserDto):
         try:
             # Check if user exists in database by email
@@ -254,5 +318,3 @@ class AdminDto(UserDto):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-
-

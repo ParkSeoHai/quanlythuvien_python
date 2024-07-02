@@ -5,8 +5,9 @@ from django.contrib import messages
 
 import uuid
 import json
-import datetime
+from datetime import datetime
 
+from library_manager.dtos.CategoryDto import CategoryDto
 # Import user dto
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.AdminDto import AdminDto
@@ -18,7 +19,7 @@ from library_manager.dtos.ThethuvienDto import ThethuvienDto
 # Default view for login page
 def index(request):
     template = loader.get_template('login.html')
-    return HttpResponse(template.render())
+    return HttpResponse(template.render(request=request))
 
 # Login post request
 def loginPost(request):
@@ -223,7 +224,7 @@ def addDocgiaPost(request):
         phone = request.POST.get('phone')
         birthday = request.POST.get('birthday')
         # Get ngay tao is date current
-        dateNow = datetime.datetime.now()
+        dateNow = datetime.now()
         ngay_tao = dateNow.strftime("%Y") + "-" + dateNow.strftime("%m") + "-" + dateNow.strftime("%d")
 
         # Create docgia dto object
@@ -478,24 +479,40 @@ def quanlytinhhinhmuontra(request):
     # Get user
     user = get_user(request)
     phieumuons = UserDto.check_phieumuon()
+    for phieumuon in phieumuons.data:
+        ngay_hen_tra = phieumuon.ngay_hen_tra
+        today = datetime.now().strftime('%Y-%m-%d')
 
+        if ngay_hen_tra and today:
+            a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+            b = datetime.strptime(today, "%Y-%m-%d")
+            date_muon = int((a - b).days)
     # Load quanlytinhhinhmuontra page
     template = loader.get_template('quanlytinhhinhmuontra/index.html')
     return HttpResponse(template.render({
         'user': user,
         'phieumuons': phieumuons.data,
+        'date': date_muon,
     }, request))
 
 def quanlytinhhinhDaTra(request):
     # Get user
     user = get_user(request)
     phieumuons = UserDto.check_phieumuonDaTra()
+    for phieumuon in phieumuons.data:
+        ngay_hen_tra = phieumuon.ngay_hen_tra
+        ngay_tra = phieumuon.ngay_tra
 
+        if ngay_hen_tra and ngay_tra:
+            a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+            b = datetime.strptime(ngay_tra, "%Y/%m/%d")
+            date_tra = int((a - b).days)
     # Load quanlytinhhinhmuontra page
     template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
     return HttpResponse(template.render({
         'user': user,
         'phieumuons': phieumuons.data,
+        'date': date_tra,
     }, request))
 
 # Quan ly kho sach
@@ -719,3 +736,93 @@ def logout(request):
         del request.session['id_user']
     # Redirect to login page
     return HttpResponseRedirect(reverse('main'))
+
+def quanlydanhmuc(request):
+    # Get user
+    user = get_user(request)
+    response = AdminDto.get_categories()
+    # Load quanlydanhmuc page
+    template = loader.get_template('quanlydanhmuc/index.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'categories' :response.data
+    }, request))
+def addUsertoCategory(request):
+    # Get user
+    user = get_user(request)
+    # Load template
+    template = loader.get_template('quanlydanhmuc/add.html')
+    return HttpResponse(template.render({
+        'user': user
+    }, request))
+def addCategoryPost(request):
+    if request.method == 'POST':
+        # Get value
+        id = str(uuid.uuid4())  # Generate random id
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        isDelete = 0   # Default type for delete
+
+        # Create Category dto
+        category = CategoryDto(id_category=id, name=name, description=description, is_delete=isDelete)
+        print(category.__dict__)
+
+        # Response from add_Category function
+        response = AdminDto.add_category(category)
+        if response.status is True:
+            print(response.message)
+            return HttpResponseRedirect(reverse('quanlydanhmuc'))
+        else:
+            print(response.message)
+            return HttpResponseRedirect(reverse('addUsertoCategory'))
+def deleteCategory(request, id):
+    # Response from delete_user function
+    response = AdminDto.delete_category(id)
+    if response.status is True:
+        print(response.message)
+        return HttpResponseRedirect(reverse('quanlydanhmuc'))
+    else:
+        print(response.message)
+        return HttpResponseRedirect(reverse('quanlydanhmuc'))
+def updateCategory(request, id):
+    # Get user
+    user = get_user(request)
+    # Get user by id
+    category_update = AdminDto.get_category_by_id(id).data
+    # Load update user page
+    template = loader.get_template('quanlydanhmuc/update.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'category_update': category_update
+    }, request))
+
+def updateCategoryPost(request):
+    if request.method == 'POST':
+        # Get value
+        id = request.POST.get('id')
+        name = request.POST.get('name')
+        desciption = request.POST.get('description')
+        # Update user dto
+        category = CategoryDto(id_category=id, name=name,description=desciption, is_delete=0)
+        print(category.__dict__)
+
+        # Response from update_user function
+        response = AdminDto.update_category(category)
+        if response.status is True:
+            print(response.message)
+            return HttpResponseRedirect(reverse('quanlydanhmuc'))
+        else:
+            print(response.message)
+            return HttpResponseRedirect(reverse('updateCategory', args=(id,)))
+
+def searchCategories(request, searchInput):
+    # Get user
+    user = get_user(request)
+    # Response from search_user function
+    response = AdminDto.search_category(searchInput)
+    # Load quanlynguoidung page
+    template = loader.get_template('quanlydanhmuc/index.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'categories': response.data
+    }, request))
