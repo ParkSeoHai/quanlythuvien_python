@@ -480,41 +480,55 @@ def quanlytinhhinhmuontra(request):
     # Get user
     user = get_user(request)
     phieumuons = UserDto.check_phieumuon()
-    for phieumuon in phieumuons.data:
-        ngay_hen_tra = phieumuon.ngay_hen_tra
-        today = datetime.now().strftime('%Y-%m-%d')
+    if phieumuons.data:
+        for phieumuon in phieumuons.data:
+            ngay_hen_tra = phieumuon.ngay_hen_tra
+            today = datetime.now().strftime('%Y-%m-%d')
 
-        if ngay_hen_tra and today:
-            a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
-            b = datetime.strptime(today, "%Y-%m-%d")
-            date_muon = int((a - b).days)
-    # Load quanlytinhhinhmuontra page
-    template = loader.get_template('quanlytinhhinhmuontra/index.html')
-    return HttpResponse(template.render({
-        'user': user,
-        'phieumuons': phieumuons.data,
-        'date': date_muon,
-    }, request))
+            if ngay_hen_tra and today:
+                a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+                b = datetime.strptime(today, "%Y-%m-%d")
+                date_muon = int((a - b).days)
+        # Load quanlytinhhinhmuontra page
+        template = loader.get_template('quanlytinhhinhmuontra/index.html')
+        return HttpResponse(template.render({
+            'user': user,
+            'phieumuons': phieumuons.data,
+            'date': date_muon,
+        }, request))
+    else:
+        template = loader.get_template('quanlytinhhinhmuontra/index.html')
+        return HttpResponse(template.render({
+            'user': user,
+            'phieumuons': phieumuons.data,
+        }, request))
 
 def quanlytinhhinhDaTra(request):
     # Get user
     user = get_user(request)
     phieumuons = UserDto.check_phieumuonDaTra()
-    for phieumuon in phieumuons.data:
-        ngay_hen_tra = phieumuon.ngay_hen_tra
-        ngay_tra = phieumuon.ngay_tra
+    if phieumuons.data:
+        for phieumuon in phieumuons.data:
+            ngay_hen_tra = phieumuon.ngay_hen_tra
+            ngay_tra = phieumuon.ngay_tra
 
-        if ngay_hen_tra and ngay_tra:
-            a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
-            b = datetime.strptime(ngay_tra, "%Y/%m/%d")
-            date_tra = int((a - b).days)
-    # Load quanlytinhhinhmuontra page
-    template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
-    return HttpResponse(template.render({
-        'user': user,
-        'phieumuons': phieumuons.data,
-        'date': date_tra,
-    }, request))
+            if ngay_hen_tra and ngay_tra:
+                a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+                b = datetime.strptime(ngay_tra, "%Y/%m/%d")
+                date_tra = int((a - b).days)
+        # Load quanlytinhhinhmuontra page
+        template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
+        return HttpResponse(template.render({
+            'user': user,
+            'phieumuons': phieumuons.data,
+            'date': date_tra,
+        }, request))
+    else:
+        template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
+        return HttpResponse(template.render({
+            'user': user,
+            'phieumuons': phieumuons.data,
+        }, request))
 
 # Quan ly kho sach
 def quanlykhosach(request):
