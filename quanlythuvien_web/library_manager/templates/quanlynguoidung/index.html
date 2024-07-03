@@ -111,11 +111,11 @@
                     <th scope="col">ID</th>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
+                    <th scope="col">Type</th>
                     <th scope="col">Gender</th>
                     <th scope="col">Birthday</th>
                     <th scope="col">Phone number</th>
                     <th scope="col">Address</th>
-                    <th scope="col">Loại</th>
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
@@ -131,11 +131,11 @@
                         <th scope="row">{{ ttv.id_the }}</th>
                         <td>{{ ttv.id_docgia.name }}</td>
                         <td>{{ ttv.id_docgia.email }}</td>
+                        <td>{% if ttv.type == 0 %} Giảng viên {% else %} Sinh viên {% endif %}</td>
                         <td>{% if ttv.id_docgia.gender == 0 %} Nam {% else %} Nữ {% endif %}</td>
                         <td>{{ ttv.id_docgia.birthday }}</td>
                         <td>{{ ttv.id_docgia.phone_number }}</td>
                         <td>{{ ttv.id_docgia.address }}</td>
-                        <td>{% if ttv.type == 0 %} Giảng viên {% else %} Sinh viên {% endif %}</td>
                         <td>
                             <a href="/quan-ly-nguoi-dung/doc-gia/update/{{ ttv.id_the }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
                                 <i class="bi bi-gear"></i>

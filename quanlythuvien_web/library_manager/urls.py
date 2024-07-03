@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+
 urlpatterns = [
     path('', views.index, name='main'),
     path('home/', views.home, name="home"),
@@ -50,7 +51,10 @@ urlpatterns = [
     path('quan-ly-sach/delete/<str:id_sach>/', views.deleteBook, name="deleteBook"),
     #tim kiem sach
     path('quan-ly-sach/search/<str:searchInput>/', views.searchBook, name="searchBook"),
+
+    # Quản lý mượn trả sách
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
+
     #quan ly tinh hinh muon tra
     path('quan-ly-tinh-hinh-muon-tra/', views.quanlytinhhinhmuontra, name="quanlytinhhinhmuontra"),
     

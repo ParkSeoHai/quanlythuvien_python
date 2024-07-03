@@ -11,21 +11,21 @@
         {% csrf_token %}
         <fieldset>
             <div class="d-flex justify-content-between gap-4">
-                <input type="hidden" class="phieunhap-id" name="phieunhap_id" value={{ phieunhap.id_phieunhap }}>
+                <input type="hidden" class="phieunhap-id" name="phieunhap_id" value="{{ phieunhap.id_phieunhap }}">
                 <div class="form-group mt-4 w-50">
                     <label class="form-label">Đơn vị cung cấp</label>
                     <input type="text" class="form-control dvcungcap"required placeholder="Đơn vị cung cấp" 
-                            name="dvcungcap" value={{ phieunhap.donvi_cungcap }}>
+                            name="dvcungcap" value="{{ phieunhap.donvi_cungcap }}">
                 </div>
                 <div class="form-group mt-4 w-50">
                     <label class="form-label">Ngày nhập</label>
                     <input type="date" class="form-control ngaynhap" required placeholder="Ngày nhập"
-                            name="ngaynhap" value={{ phieunhap.ngay_nhap }}>
+                            name="ngaynhap" value="{{ phieunhap.ngay_nhap }}">
                 </div>
                 <div class="form-group mt-4 w-50">
                     <label class="form-label">Lý do nhập</label>
                     <input type="text" class="form-control lydo" required placeholder="Lý do nhập"
-                            name="lydo" value={{ phieunhap.ly_do_nhap }}>
+                            name="lydo" value="{{ phieunhap.ly_do_nhap }}">
                 </div>
             </div>
             <div class="container-books">

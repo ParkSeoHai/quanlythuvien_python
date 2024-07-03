@@ -59,7 +59,7 @@ const addBookPhieuNhap = async () => {
     // Check book exist
     const is_book = listBooks.find(book => book.name === bookName.value.trim());
     if (is_book) {
-        alert('Sách đã tồn tại');
+        toastr.error('Sách đã tồn tại')
         return;
     }
 
@@ -301,10 +301,12 @@ const submitAddPhieunhap = (e) => {
         .then(response => response.json())
         .then(data => {
             if (data.status === true) {
-                alert('Message: ' + data.message);
-                window.location.href = '/quan-ly-kho-sach/nhap-sach/';
+                toastr.success(data.message)
+                setTimeout(() => {
+                    window.location.href = '/quan-ly-kho-sach/nhap-sach/';
+                }, 2000)
             } else {
-                alert('Error: ' + data.message);
+                toastr.error(data.message)
             }
         })
 }
@@ -339,10 +341,12 @@ const submitUpdatePhieunhap = (e) => {
         .then(response => response.json())
         .then(data => {
             if (data.status === true) {
-                alert('Message: ' + data.message);
-                window.location.href = '/quan-ly-kho-sach/nhap-sach/';
+                toastr.success(data.message)
+                setTimeout(() => {
+                    window.location.href = '/quan-ly-kho-sach/nhap-sach/';
+                }, 2000)
             } else {
-                alert('Error: ' + data.message);
+                toastr.error(data.message)
             }
         })
 
@@ -356,6 +360,15 @@ const deletePhieunhap = (id) => {
         modalBg.classList.remove('d-none');
         modal.classList.remove('d-none');
         modal.querySelector('.btn-delete').setAttribute('href', `/quan-ly-kho-sach/nhap-sach/delete/${id}`);
+    }
+}
+
+const cancelDelete = () => {
+    const modalBg = document.querySelector('.modal-bg');
+    const modal = document.querySelector('.modal-delete');
+    if (modalBg && modal) {
+        modalBg.classList.add('d-none');
+        modal.classList.add('d-none');
     }
 }
 

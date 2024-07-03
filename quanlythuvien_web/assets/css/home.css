@@ -265,6 +265,23 @@ header label span {
     padding-right: 1rem;
 }
 
+.title-description {
+    position: relative;
+    cursor: pointer;
+}
+
+.title-description:hover::after {
+    display: block;
+}
+
+.title-description::after {
+    display: none;
+    position: absolute;
+    content: "Chọn sách có sẵn hoặc nhập sách mới";
+    top: 0;
+    right: -215px;
+}
+
 .search-wrapper {
     border: 1px solid #ccc;
     border-radius: 30px;

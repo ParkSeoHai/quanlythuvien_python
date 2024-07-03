@@ -16,7 +16,7 @@
                 </div>
                 <div class="form-group mt-4 w-50">
                     <label class="form-label">Ngày nhập</label>
-                    <input type="date" class="form-control ngaynhap" required placeholder="Ngày nhập" name="ngaynhap">
+                    <input type="date" class="form-control ngaynhap" required name="ngaynhap">
                 </div>
                 <div class="form-group mt-4 w-50">
                     <label class="form-label">Lý do nhập</label>
@@ -25,7 +25,10 @@
             </div>
             <div class="container-books">
                 <div class="container-books__header">
-                    <h3 class="lv3">Danh sách sách nhập</h3>
+                    <h3 class="lv3">
+                        Danh sách sách nhập
+                        <span class="fs-6 px-2 title-description"><i class="bi bi-info-circle"></i><span>
+                    </h3>
                     <div class="text-center d-flex gap-3">
                         <button type="button" class="btn btn-outline-primary" onclick="addBookPhieuNhap()">
                             <i class="bi bi-plus-circle"></i>&nbsp; Thêm
@@ -38,7 +41,7 @@
                 <div class="container-books__add mb-3">
                     <div class="d-flex justify-content-between gap-4">
                         <input type="hidden" class="book-id" name="book_id">
-                        <div class="form-group w-75">
+                        <div class="form-group w-25">
                             <label for="bookSelect" class="form-label">Chọn sách</label>
                             <select class="form-control book-select" id="bookSelect" onchange="chooseBook(this)">
                                 <option value="0">Chọn sách</option>
@@ -48,12 +51,12 @@
                             </select>
                         </div>
                         <div class="form-group w-75">
-                            <label for="bookName" class="form-label">Name</label>
-                            <input type="text" class="form-control book-name" id="bookName" placeholder="Name">
+                            <label for="bookName" class="form-label">Tên sách</label>
+                            <input type="text" class="form-control book-name" id="bookName" placeholder="Tên sách">
                         </div>
                         <div class="form-group w-50">
-                            <label for="bookAuthor" class="form-label">Author</label>
-                            <input type="text" class="form-control book-author" id="bookAuthor" placeholder="Author">
+                            <label for="bookAuthor" class="form-label">Tác giả</label>
+                            <input type="text" class="form-control book-author" id="bookAuthor" placeholder="Tác giả">
                         </div>
                         <div class="form-group w-50">
                             <label for="bookCategory" class="form-label">Category</label>
@@ -64,12 +67,12 @@
                             </select>
                         </div>
                         <div class="form-group w-25">
-                            <label for="bookPrice" class="form-label">Price</label>
-                            <input type="text" class="form-control book-price" id="bookPrice" placeholder="Price">
+                            <label for="bookPrice" class="form-label">Giá nhập</label>
+                            <input type="text" class="form-control book-price" id="bookPrice" placeholder="Giá nhập">
                         </div>
                         <div class="form-group w-25">
-                            <label for="bookQuantity" class="form-label">Quantity</label>
-                            <input type="text" class="form-control book-quantity" id="bookQuantity" placeholder="Quantity">
+                            <label for="bookQuantity" class="form-label">Số lượng</label>
+                            <input type="text" class="form-control book-quantity" id="bookQuantity" placeholder="Số lượng nhập">
                         </div>
                     </div>
                 </div>
@@ -92,7 +95,7 @@
                 </div>
             </div>
             <div class="mt-5">
-                <a href="/quan-ly-nguoi-dung" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                <a href="/quan-ly-kho-sach/nhap-sach" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
                 <button type="submit" class="btn btn-success">
                     <i class="bi bi-plus-circle"></i>&nbsp; Create
                 </button>

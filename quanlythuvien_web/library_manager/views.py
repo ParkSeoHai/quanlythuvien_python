@@ -184,7 +184,9 @@ def deleteUser(request, id):
     response = AdminDto.delete_user(id)
     print(response.message)
     if response.status is False:
-        messages.error(response.message)
+        messages.error(request, response.message)
+    else:
+        messages.success(request, response.message)
     
     return HttpResponseRedirect(reverse('quanlynguoidung', args=('nguoi-dung',)))
 
@@ -466,13 +468,12 @@ def getBook(request):
         # Return response to javascript json serializer
         return HttpResponse(json.dumps(bookResponse), content_type='application/json')
 
+# Quan ly muon tra sach
 def quanlymuontra(request):
-    # Get user
-    user = get_user(request)
     # Load quanlymuontra page
     template = loader.get_template('quanlymuontra/index.html')
     return HttpResponse(template.render({
-        'user': user
+        'user': get_user(request)
     }, request))
 
 def quanlytinhhinhmuontra(request):
@@ -570,7 +571,7 @@ def updatePhieunhap(request, id):
     listBooks = []
     for ctpn in ctphieunhapRes.data:
         book = {
-            'id': ctpn.id_sach_id,
+            'id': ctpn.id_sach.id_sach,
             'name': ctpn.id_sach.name,
             'price': ctpn.gia_nhap,
             'quantity': ctpn.so_luong,
@@ -690,8 +691,12 @@ def updatePhieunhapPost(request):
 def deletePhieunhap(request, id):
     # Response from delete_phieunhap function
     response = UserDto.delete_phieunhap(id)
-    
     print(response.message)
+    if response.status is True:
+        messages.success(request, response.message)
+    else:
+        messages.error(request, response.message)
+
     return HttpResponseRedirect(reverse('nhapsachIndex'))
 
 # Search phieu nhap by date
@@ -747,6 +752,7 @@ def quanlydanhmuc(request):
         'user': user,
         'categories' :response.data
     }, request))
+
 def addUsertoCategory(request):
     # Get user
     user = get_user(request)
@@ -755,6 +761,7 @@ def addUsertoCategory(request):
     return HttpResponse(template.render({
         'user': user
     }, request))
+
 def addCategoryPost(request):
     if request.method == 'POST':
         # Get value
@@ -775,6 +782,7 @@ def addCategoryPost(request):
         else:
             print(response.message)
             return HttpResponseRedirect(reverse('addUsertoCategory'))
+        
 def deleteCategory(request, id):
     # Response from delete_user function
     response = AdminDto.delete_category(id)
@@ -784,6 +792,7 @@ def deleteCategory(request, id):
     else:
         print(response.message)
         return HttpResponseRedirect(reverse('quanlydanhmuc'))
+    
 def updateCategory(request, id):
     # Get user
     user = get_user(request)

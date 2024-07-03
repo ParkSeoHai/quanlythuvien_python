@@ -286,10 +286,7 @@ class UserDto(object):
             for book_delete in book_deletes:
                 book = Books.objects.filter(id_sach=book_delete).first()
                 ctphieunhap = Ctphieunhaps.objects.filter(id_sach=book, id_phieunhap=phieunhap).first()
-                book.quantity -= ctphieunhap.so_luong
-
-                ctphieunhap.delete()
-                book.save()
+                UserDto.delete_ctphieunhap(ctphieunhap.id_ctphieunhap)
             
             return Response(True, 'Update phieunhap success', phieunhap.id_phieunhap)
         except Exception as e:
@@ -299,8 +296,16 @@ class UserDto(object):
     def delete_phieunhap(id):
         try:
             phieunhap = Phieunhaps.objects.filter(id_phieunhap=id).first()
-            phieunhap.is_delete = 1
-            phieunhap.save()
+            if phieunhap is None:
+                return Response(False, 'Phieunhap not found', None)
+            
+            # If phieunhap exist then delete ct phieunhap
+            ctpns = Ctphieunhaps.objects.filter(id_phieunhap=phieunhap)
+            for ctpn in ctpns:
+                print(ctpn.id_ctphieunhap)
+                UserDto.delete_ctphieunhap(ctpn.id_ctphieunhap)
+
+            phieunhap.delete()
             return Response(True, 'Delete phieunhap success', phieunhap.id_phieunhap)
         except Exception as e:
             print(e)
@@ -326,6 +331,27 @@ class UserDto(object):
         try:
             ctpns = Ctphieunhaps.objects.filter(id_phieunhap=id_phieunhap)
             return Response(True, 'Get ctphieunhaps success', ctpns)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def delete_ctphieunhap(id):
+        try:
+            ctpn = Ctphieunhaps.objects.filter(id_ctphieunhap=id).first()
+
+            if ctpn is None:
+                print('Ctphieunhap not found')
+                return Response(False, 'Ctphieunhap not found', None)
+            
+            # Update quantity book
+            book = Books.objects.filter(id_sach=ctpn.id_sach.id_sach).first()
+            book.quantity -= ctpn.so_luong
+            book.save()
+
+            # Delete ct phieunhap
+            ctpn.delete()
+            print(f'Delete Ctphieunhap success. {book.name}')
+            return Response(True, 'Delete Ctphieunhap success', id)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)

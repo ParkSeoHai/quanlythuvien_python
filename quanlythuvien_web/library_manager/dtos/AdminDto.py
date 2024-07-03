@@ -2,7 +2,7 @@ from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
 from library_manager.dtos.ResponseDto import ResponseDto as Response
-from library_manager.models import Users, Categories, Docgias, Thethuviens
+from library_manager.models import Users, Categories, Docgias, Thethuviens, Phieumuons, Phieuhuys, Phieunhaps
 from library_manager.dtos.CategoryDto import CategoryDto
 
 class AdminDto(UserDto):
@@ -142,11 +142,20 @@ class AdminDto(UserDto):
     def delete_user(id):
         try:
             user = Users.objects.filter(id_user=id).first()
-            if user:
+            if user is not None:
+                # Get data phieumuon, phieuhuy, phieunhap, if data empty then delete
+                phieumuons = Phieumuons.objects.filter(id_user=user)
+                phieuhuys = Phieuhuys.objects.filter(id_user=user)
+                phieunhaps = Phieunhaps.objects.filter(id_user=user)
                 # Change is_delete to 1
-                user.is_delete = 1
-                user.save()
-                return Response(True, 'Delete user success', None)
+                if len(phieumuons) > 0 or len(phieuhuys) > 0 or len(phieunhaps) > 0:
+                    user.is_delete = 1
+                    user.save()
+                    return Response(True, 'Change status is_delete = 1', user.id_user)
+                else:
+                    # Delete user
+                    user.delete()
+                    return Response(True, 'Delete user success', user.id_user)
             else:
                 return Response(False, 'User not found', None)
         except Exception as e:
@@ -290,13 +299,21 @@ class AdminDto(UserDto):
             if docgia is None:
                 return Response(False, "Docgia not found", None)
             
+            # Get data phieumuon, if data empty then delete
+            phieumuons = Phieumuons.objects.filter(id_the=ttv)
+            if len(phieumuons) == 0:
+                # Delete docgia, thethuvien
+                ttv.delete()
+                docgia.delete()
+                return Response(True, "Delete docgia success", docgia.id_docgia)
+            
             # Update thethuvien is_delete = 1
             ttv.is_delete = 1
             ttv.save()
             # Update docgia is_delete = 1
             docgia.is_delete = 1
             docgia.save()
-            return Response(True, "Delete docgia success", docgia.id_docgia)
+            return Response(True, "Change status is_delete = 1", docgia.id_docgia)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
