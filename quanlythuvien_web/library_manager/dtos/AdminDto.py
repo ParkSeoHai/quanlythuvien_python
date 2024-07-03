@@ -2,7 +2,7 @@ from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
 from library_manager.dtos.ResponseDto import ResponseDto as Response
-from library_manager.models import Users, Categories, Docgias, Thethuviens, Phieumuons, Phieuhuys, Phieunhaps
+from library_manager.models import Users, Categories, Docgias, Thethuviens, Phieumuons, Phieuhuys, Phieunhaps, Books
 from library_manager.dtos.CategoryDto import CategoryDto
 
 class AdminDto(UserDto):
@@ -56,12 +56,14 @@ class AdminDto(UserDto):
     def delete_category(id):
         try:
             category = Categories.objects.filter(id_category=id).first()
-            if category:
+            book = Books.objects.filter(id_category=id).first()
+            if book:
                 category.is_delete = 1;
                 category.save()
                 return Response(True, 'Delete category success', None)
             else:
-                return Response(False, 'Category not found', None)
+                category.delete()
+                return Response(True, 'Delete category success', None)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)

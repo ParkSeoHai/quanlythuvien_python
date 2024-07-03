@@ -766,7 +766,6 @@ def quanlydanhmuc(request):
         'user': user,
         'categories' :response.data
     }, request))
-
 def addUsertoCategory(request):
     # Get user
     user = get_user(request)
@@ -775,7 +774,6 @@ def addUsertoCategory(request):
     return HttpResponse(template.render({
         'user': user
     }, request))
-
 def addCategoryPost(request):
     if request.method == 'POST':
         # Get value
@@ -790,23 +788,23 @@ def addCategoryPost(request):
 
         # Response from add_Category function
         response = AdminDto.add_category(category)
+        print(response.message)
         if response.status is True:
-            print(response.message)
+            messages.success(request, response.message)
             return HttpResponseRedirect(reverse('quanlydanhmuc'))
         else:
-            print(response.message)
+            messages.error(request, response.message)
             return HttpResponseRedirect(reverse('addUsertoCategory'))
-        
 def deleteCategory(request, id):
     # Response from delete_user function
     response = AdminDto.delete_category(id)
+    print(response.message)
     if response.status is True:
-        print(response.message)
+        messages.success(request, response.message)
         return HttpResponseRedirect(reverse('quanlydanhmuc'))
     else:
-        print(response.message)
+        messages.error(request, response.message)
         return HttpResponseRedirect(reverse('quanlydanhmuc'))
-    
 def updateCategory(request, id):
     # Get user
     user = get_user(request)
@@ -828,14 +826,14 @@ def updateCategoryPost(request):
         # Update user dto
         category = CategoryDto(id_category=id, name=name,description=desciption, is_delete=0)
         print(category.__dict__)
-
-        # Response from update_user function
         response = AdminDto.update_category(category)
+        print(response.message)
+        # Response from update_user function
         if response.status is True:
-            print(response.message)
+            messages.success(request, response.message)
             return HttpResponseRedirect(reverse('quanlydanhmuc'))
         else:
-            print(response.message)
+            messages.error(request, response.message)
             return HttpResponseRedirect(reverse('updateCategory', args=(id,)))
 
 def searchCategories(request, searchInput):

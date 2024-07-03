@@ -91,5 +91,17 @@ const cancelDeleteCategory = () => {
         modal.classList.add('d-none');
     }
 }
+const searchCategory = () => {
+    const searchInput = document.querySelector('.search-category');
+    const searchValue = searchInput.value.trim();
+    if (searchValue) {
+        window.location.href = `/quan-ly-danh-muc/search/${searchValue}`;
+    }
+}
+const searchCategoryEnter = () => {
+        if (event.key === 'Enter') {
+        searchCategory();
+    }
+}
     </script>
 {% endblock  %}
