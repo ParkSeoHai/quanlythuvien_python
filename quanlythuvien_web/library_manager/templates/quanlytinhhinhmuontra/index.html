@@ -61,7 +61,7 @@
                     <td>{{ phieumuon.ngay_tao }}</td>
                     <td>{{ phieumuon.ngay_hen_tra }}</td>
                     <td>{{ phieumuon.ngay_tra}}</td>
-                    <td>Còn {{ date }} Ngày</td>
+                    <td>{% if date > 0 %} Còn {{ date }} Ngày{% elif date < 0 %} Trễ hạn {% endif %} </td>
                     <td>{{ phieumuon.id_the.id_the }}</td>
                     <td>{{ phieumuon.so_luong }}</td>
                     <td>{{ phieumuon.id_user.name}}</td>

@@ -31,6 +31,8 @@ const cancelDeleteUser = () => {
     }
 }
 
+
+
 // Handle search user
 const searchUser = () => {
     const searchInput = document.querySelector('.search-user');
