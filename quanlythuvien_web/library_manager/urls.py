@@ -85,4 +85,6 @@ urlpatterns = [
     path('logout/', views.logout, name="logout"),
     # Form action submit
     path('loginPost/', views.loginPost, name='loginPost'),
+    path('register/', views.register, name="register"),
+    path('registerPost/', views.registerPost, name='registerPost'),
 ]

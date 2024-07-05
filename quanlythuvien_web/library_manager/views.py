@@ -43,6 +43,31 @@ def loginPost(request):
             messages.info(request, response.message)
             # Redirect to login page
             return HttpResponseRedirect(reverse('main'))
+def register(request):
+    template = loader.get_template('register.html')
+    return HttpResponse(template.render(request=request))
+def registerPost(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        repass = request.POST.get('rppassword')
+        if UserDto.check_email(email):
+            messages.error(request, "Email already registered")
+            return HttpResponseRedirect(reverse('register'))
+        else:
+            if password == repass:
+                if len(password) < 6:
+                    messages.error(request, "Password must be at least 8 characters long")
+                    return HttpResponseRedirect(reverse('register'))
+                else:
+                    user = UserDto(email=email, password=password)
+                    response = user.register()
+                    print(response.message)
+                    messages.success(request, response.message)
+                    return HttpResponseRedirect(reverse('register'))
+            else:
+                messages.error(request, "Passwords do not match")
+                return HttpResponseRedirect(reverse('register'))
 
 # Get user from session
 def get_user(request):
