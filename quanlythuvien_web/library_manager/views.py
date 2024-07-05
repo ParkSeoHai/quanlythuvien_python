@@ -872,3 +872,10 @@ def searchCategories(request, searchInput):
         'user': user,
         'categories': response.data
     }, request))
+def quan_ly_ton_kho(request):
+    user = get_user(request)
+
+    template = loader.get_template('quanlykhosach/sachtonkho/index.html')
+    return HttpResponse(template.render({
+        'user': user,
+    }, request))
