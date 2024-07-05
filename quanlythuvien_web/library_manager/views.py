@@ -486,7 +486,7 @@ def quanlytinhhinhmuontra(request):
             today = datetime.now().strftime('%Y-%m-%d')
 
             if ngay_hen_tra and today:
-                a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+                a = datetime.strptime(ngay_hen_tra, "%Y-%m-%d")
                 b = datetime.strptime(today, "%Y-%m-%d")
                 date_muon = int((a - b).days)
         # Load quanlytinhhinhmuontra page
@@ -513,8 +513,8 @@ def quanlytinhhinhDaTra(request):
             ngay_tra = phieumuon.ngay_tra
 
             if ngay_hen_tra and ngay_tra:
-                a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
-                b = datetime.strptime(ngay_tra, "%Y/%m/%d")
+                a = datetime.strptime(ngay_hen_tra, "%Y-%m-%d")
+                b = datetime.strptime(ngay_tra, "%Y-%m-%d")
                 date_tra = int((a - b).days)
         # Load quanlytinhhinhmuontra page
         template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
