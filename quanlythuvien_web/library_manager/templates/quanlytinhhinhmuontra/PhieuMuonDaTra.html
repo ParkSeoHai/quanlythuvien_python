@@ -3,7 +3,7 @@
 {% block title %}
     Quản trị hệ thống
 {% endblock  %}
-
+{% load custom_filters %}
 {% block content %}
     <style>
         .button-switch{
@@ -11,21 +11,25 @@
         }
         .btn-sachmuon{
             position: relative;
-            padding: 4px 15px;
-            background: #2C3E50;
+            padding: 4.8px 9.6px;
+            background: none;
             border: 0.5px #2c3e50 solid;
-            border-radius: 20px 0px 0px 20px ;
+            border-radius: 4.8px 0px 0px 4.8px ;
             text-decoration: none;
-            color:white ;
+            color:black ;
         }
         .btn-sachtra {
             position: absolute;
-            padding: 4px 15px;
-            background: none;
-            color:black ;
+            padding: 4.8px 9.6px;
+            background: #2C3E50 ;
             border: 0.5px #2c3e50 solid;
-            border-radius: 0 20px 20px 0;
+            border-radius: 0 4.8px 4.8px 0;
             text-decoration: none;
+            color:white ;
+        }
+        .btn-sachmuon:hover{
+            background: #2C3E50;
+            color: white;
         }
     </style>
     <div class="button-switch">
@@ -61,7 +65,7 @@
                     <td>{{ phieumuon.ngay_tao }}</td>
                     <td>{{ phieumuon.ngay_hen_tra }}</td>
                     <td>{{ phieumuon.ngay_tra}}</td>
-                    <td>{% if date >= 0 %} Đúng hạn {% elif date < 0 %} Trễ hạn {% endif %}</td>
+                    <td>{% if phieumuon.ngay_hen_tra|kqdaysTra:phieumuon.ngay_tra >= 0 %} Đúng hạn {% elif phieumuon.ngay_hen_tra|kqdaysTra:phieumuon.ngay_tra < 0 %} Trễ hạn {% endif %}</td>
                     <td>{{ phieumuon.id_the.id_the }}</td>
                     <td>{{ phieumuon.so_luong }}</td>
                     <td>{{ phieumuon.id_user.name}}</td>
