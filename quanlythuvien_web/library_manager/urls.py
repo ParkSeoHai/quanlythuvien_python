@@ -90,8 +90,10 @@ urlpatterns = [
     path('loginPost/', views.loginPost, name='loginPost'),
     path('register/', views.register, name="register"),
     path('registerPost/', views.registerPost, name='registerPost'),
-    # Quan ly sach ton kho
-    path('quan-ly-kho-sach/thong-ke/', views.quan_ly_ton_kho, name='quan_ly_ton_kho'),
+
     # ket Quan ly sach ton kho
-    path('quan-ly-kho-sach/thong-ke/search/<str:searchInput>/', views.searchThongKeSachTK ,name="searchThongKeSachTK"),
+    path('thong-ke/ton-kho/search/<str:searchInput>/', views.searchThongKeSachTK ,name="searchThongKeSachTK"),
+    #thong ke
+    path('thong-ke/nhap-huy/', views.ThongKeNhapHuy, name="ThongKeNhapHuy" ),
+    path('thong-ke/ton-kho/', views.ThongKeTongKho, name="ThongKeTongKho"),
 ]

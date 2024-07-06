@@ -1,6 +1,7 @@
-from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Categories, Phieumuons
+from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Categories, Phieumuons, Phieuhuys, \
+    Ctphieuhuys
 from library_manager.dtos.ResponseDto import ResponseDto as Response
-
+from collections import defaultdict
 import uuid
 from datetime import datetime
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
@@ -375,3 +376,61 @@ class UserDto(object):
             return Response(False, e.__str__(), None)
     def kiemke():
         ...
+
+#thong ke
+    def ThongKePhieuNhap():
+        try:
+            current_year = datetime.now().year
+            # Lấy tất cả các phiếu nhập
+            phieunhaps = Phieunhaps.objects.filter(is_delete=0, ngay_nhap__startswith=f'{current_year}-')
+
+            # Khởi tạo từ điển để lưu trữ tổng số lượng
+            monthly_stats = defaultdict(lambda: {'total_quantity': 0})
+
+            for phieunhap in phieunhaps:
+                # Chuyển đổi chuỗi ngày tháng sang đối tượng datetime
+                ngay_nhap = datetime.strptime(phieunhap.ngay_nhap, "%Y-%m-%d")
+                month = ngay_nhap.month
+
+                # Lấy các chi tiết phiếu nhập tương ứng
+                ctphieunhaps = Ctphieunhaps.objects.filter(id_phieunhap=phieunhap)
+
+                for ctphieunhap in ctphieunhaps:
+                    monthly_stats[month]['total_quantity'] += ctphieunhap.so_luong
+
+            # Chuyển đổi dữ liệu từ từ điển sang danh sách để dễ sử dụng trong JavaScript
+            quantity_data = [monthly_stats[month]['total_quantity'] for month in range(1, 13)]
+
+            return Response(True, "Thong ke thanh cong", quantity_data)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def ThongKePhieuHuy():
+        try:
+            current_year=datetime.now().year
+            # Lấy tất cả các phiếu hủy
+            phieuhuys = Phieuhuys.objects.filter(ngay_huy__startswith=f"{current_year}/",
+                is_delete=0)
+
+            # Khởi tạo từ điển để lưu trữ tổng số lượng
+            monthly_stats = defaultdict(lambda: {'total_quantity': 0})
+
+            for phieuhuy in phieuhuys:
+                # Chuyển đổi chuỗi ngày tháng sang đối tượng datetime
+                ngay_nhap = datetime.strptime(phieuhuy.ngay_huy, "%Y-%m-%d")
+                month = ngay_nhap.month
+
+                # Lấy các chi tiết phiếu nhập tương ứng
+                ctphieuhuys = Ctphieuhuys.objects.filter(id_phieuhuy=phieuhuy)
+
+                for ctphieuhuy in ctphieuhuys:
+                    monthly_stats[month]['total_quantity'] += ctphieuhuy.so_luong
+
+            # Chuyển đổi dữ liệu từ từ điển sang danh sách để dễ sử dụng trong JavaScript
+            quantity_data = [monthly_stats[month]['total_quantity'] for month in range(1, 13)]
+
+            return Response(True, "Thong ke thanh cong", quantity_data)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)

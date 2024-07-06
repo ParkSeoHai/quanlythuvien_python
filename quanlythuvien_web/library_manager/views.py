@@ -8,6 +8,8 @@ import uuid
 import json
 from datetime import datetime
 
+from pip._vendor.requests.models import Response
+
 from library_manager.dtos.CategoryDto import CategoryDto
 # Import user dto
 from library_manager.dtos.UserDto import UserDto
@@ -58,7 +60,7 @@ def registerPost(request):
         else:
             if password == repass:
                 if len(password) < 6:
-                    messages.error(request, "Password must be at least 8 characters long")
+                    messages.error(request, "Password must be at least 6 characters long")
                     return HttpResponseRedirect(reverse('register'))
                 else:
                     user = UserDto(email=email, password=password)
@@ -859,18 +861,30 @@ def searchCategories(request, searchInput):
         'user': user,
         'categories': response.data
     }, request))
-def quan_ly_ton_kho(request):
+def searchThongKeSachTK(request, searchInput):
     user = get_user(request)
-    response = UserDto.thongkesach()
+    response = UserDto.searchSachTK(searchInput)
     template = loader.get_template('quanlykhosach/sachtonkho/index.html')
     return HttpResponse(template.render({
         'user': user,
         'thongkesachs': response.data
     }, request))
-def searchThongKeSachTK(request, searchInput):
+
+# Thong ke
+def ThongKeNhapHuy(request):
     user = get_user(request)
-    response = UserDto.searchSachTK(searchInput)
-    template = loader.get_template('quanlykhosach/sachtonkho/index.html')
+    response = UserDto.ThongKePhieuNhap()
+    response_huy = UserDto.ThongKePhieuHuy()
+    template = loader.get_template('thongke/thongkenhaphuy.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'Nhap': response.data,
+        'Huy': response_huy.data
+    }))
+def ThongKeTongKho(request):
+    user = get_user(request)
+    response = UserDto.thongkesach()
+    template = loader.get_template('thongke/thongketonkho.html')
     return HttpResponse(template.render({
         'user': user,
         'thongkesachs': response.data
