@@ -6,6 +6,7 @@ urlpatterns = [
     path('home/', views.home, name="home"),
     # Url quan ly nguoi dung / user
     path('quan-ly-nguoi-dung/<str:tab>/', views.quanlynguoidung, name="quanlynguoidung"),
+    path('home/quanlynguoidung/index.html/', views.quanlynguoidung1, name='quanlynguoidung1'),
     # Add user
     path('quan-ly-nguoi-dung/nguoi-dung/add/', views.addUser, name="addUser"),
     path('addUserPost/', views.addUserPost, name="addUserPost"),
@@ -41,6 +42,7 @@ urlpatterns = [
     path('quan-ly-danh-muc/delete/<str:id>/', views.deleteCategory, name="deleteCategory"),
     #url quan ly sach
     path('quan-ly-sach/', views.quanlysach, name="quanlysach"),
+    path('home/quanlysach/index.html', views.quanlysach, name='quanlysach'),
     #add sach
     path('quan-ly-sach/add/', views.addBook, name = "addBook"),
     path('addBookPost/', views.addBookPost, name="addBookPost"),
@@ -51,6 +53,7 @@ urlpatterns = [
     path('quan-ly-sach/delete/<str:id_sach>/', views.deleteBook, name="deleteBook"),
     #tim kiem sach
     path('quan-ly-sach/search/<str:searchInput>/', views.searchBook, name="searchBook"),
+    #hien thi home
 
     # Quản lý mượn trả sách
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),

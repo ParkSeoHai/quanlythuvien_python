@@ -1,4 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.template import loader
 from django.urls import reverse
 from django.contrib import messages
@@ -15,7 +16,7 @@ from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
-
+from library_manager.models import Books, Users, AuthUser
 # Default view for login page
 def index(request):
     template = loader.get_template('login.html')
@@ -83,13 +84,17 @@ def get_user(request):
 
 # View for home page
 def home(request):
-    # Get user
     user = get_user(request)
-    # Load home page
-    template = loader.get_template('home.html')
-    return HttpResponse(template.render({
-        'user': user
-    }, request))
+    books = Books.objects.all()
+    users = Users.objects.all()
+
+    context = {
+        'user': user,
+        'books': books,
+        'users': users,
+
+    }
+    return render(request, 'home.html', context)
 
 # View for quanlynguoidung page
 def quanlynguoidung(request, tab):
@@ -114,6 +119,20 @@ def quanlynguoidung(request, tab):
         print('Tab not found')
         # Message show in template
         messages.info(request, 'Tab not found')
+
+    # Load quanlynguoidung page
+    template = loader.get_template('quanlynguoidung/index.html')
+    return HttpResponse(template.render(context, request))
+
+def quanlynguoidung1(request):
+    # Get user id session when user login
+    user = get_user(request)
+    # Context for template
+    context = {
+        'user': user,
+
+    }
+
 
     # Load quanlynguoidung page
     template = loader.get_template('quanlynguoidung/index.html')
@@ -373,6 +392,7 @@ def quanlysach(request):
     template = loader.get_template('quanlysach/index.html')
     return HttpResponse(template.render(
         context, request))
+
 
 #xoá sách
 def deleteBook(request, id_sach):
