@@ -366,6 +366,12 @@ class UserDto(object):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-    
+    def searchSachTK(inputSearch:str):
+        try:
+            tksach = Books.objects.filter(name__icontains = inputSearch, quantity__gt=0)
+            return Response(True, 'Search books success', tksach)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
     def kiemke():
         ...

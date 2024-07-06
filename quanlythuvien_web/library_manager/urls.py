@@ -90,4 +90,5 @@ urlpatterns = [
     # Quan ly sach ton kho
     path('quan-ly-kho-sach/thong-ke/', views.quan_ly_ton_kho, name='quan_ly_ton_kho'),
     # ket Quan ly sach ton kho
+    path('quan-ly-kho-sach/thong-ke/search/<str:searchInput>/', views.searchThongKeSachTK ,name="searchThongKeSachTK"),
 ]

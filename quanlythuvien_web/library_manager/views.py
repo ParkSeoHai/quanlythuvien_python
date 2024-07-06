@@ -845,5 +845,13 @@ def quan_ly_ton_kho(request):
     template = loader.get_template('quanlykhosach/sachtonkho/index.html')
     return HttpResponse(template.render({
         'user': user,
-        'thongkesach': response.data
+        'thongkesachs': response.data
+    }, request))
+def searchThongKeSachTK(request, searchInput):
+    user = get_user(request)
+    response = UserDto.searchSachTK(searchInput)
+    template = loader.get_template('quanlykhosach/sachtonkho/index.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'thongkesachs': response.data
     }, request))
