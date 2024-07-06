@@ -360,7 +360,12 @@ class UserDto(object):
         ...
 
     def thongkesach():
-        ...
+        try:
+            tksach = Books.objects.filter(quantity__gt=0)
+            return Response(True, 'Get books success', tksach)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
     
     def kiemke():
         ...

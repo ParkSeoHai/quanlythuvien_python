@@ -33,20 +33,20 @@
         }
     </style>
     <div class="button-switch">
-        <a href="/quan-ly-tinh-hinh-muon-tra/" style="" class="btn-sachmuon" type="button">Sách đã mượn</a>
+        <a href="/quan-ly-tinh-hinh-muon-tra/" style="" class="btn-sachmuon" type="button">Sách đang mượn</a>
         <a style="" class="btn-sachtra" type="button">Sách đã trả</a>
     </div>
     <table class="table table-hover">
         <thead>
             <tr class="table-primary">
                 <th scope="col">ID</th>
+                <th scope="col">Người mượn</th>
                 <th scope="col">Ngày mượn</th>
                 <th scope="col">Ngày hẹn trả</th>
-                <th scope="col">Ngày trả</th>
                 <th scope="col">Trạng thái</th>
                 <th scope="col">Số thẻ</th>
                 <th scope="col">Số lượng</th>
-                <th scope="col">Người mượn</th>
+                <th scope="col">Người tạo</th>
                 <th scope="col">Sách</th>
                 <th scope="col">Ghi chú</th>
             </tr>
@@ -62,9 +62,9 @@
             {% for phieumuon in phieumuons %}
                 <tr>
                     <th scope="row">{{ phieumuon.id_phieumuon }}</th>
+                    <td>{{ phieumuon.id_the.id_docgia.name }}</td>
                     <td>{{ phieumuon.ngay_tao }}</td>
                     <td>{{ phieumuon.ngay_hen_tra }}</td>
-                    <td>{{ phieumuon.ngay_tra}}</td>
                     <td>{% if phieumuon.ngay_hen_tra|kqdays > 0 %} Còn {{ phieumuon.ngay_hen_tra|kqdays }} Ngày{% elif phieumuon.ngay_hen_tra|kqdays < 0 %} Trễ hạn {% endif %} </td>
                     <td>{{ phieumuon.id_the.id_the }}</td>
                     <td>{{ phieumuon.so_luong }}</td>
