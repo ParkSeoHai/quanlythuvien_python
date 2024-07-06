@@ -204,7 +204,7 @@ def quanlysach(request):
         context, request))
 #xoá sách
 def deleteBook(request, id_sach):
-    response = AdminDto.delete_book(id_sach)
+    response = UserDto.delete_book(id_sach)
     if response.status is True:
         print(response.message)
         return HttpResponseRedirect(reverse('quanlysach'))
