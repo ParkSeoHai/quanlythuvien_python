@@ -1,10 +1,131 @@
-{% extends "index.html" %}
 
+{% extends "index.html" %}
+{% load static %}
 {% block title %}
-    Dasboard
+    Trang chủ
 {% endblock  %}
 
 {% block content %}
-    <h1>Dasboard</h1>
-    {{ user.name }}
+
+    <div class="cards">
+
+        <div class="card-single">
+            <div>
+
+                <h1>x</h1>
+
+                <span>Độc giả</span>
+            </div>
+            <div>
+                <span><i class="bi bi-people"></i></span>
+            </div>
+        </div>
+
+        <div class="card-single">
+            <div>
+                <h1>{{ books|length }}</h1>
+                <span>Sách</span>
+            </div>
+            <div>
+                <span><i class="bi bi-book-half"></i></span>
+            </div>
+        </div>
+        <div class="card-single">
+            <div>
+                <h1>{{ users|length }}</h1>
+                <span>Tài khoản</span>
+            </div>
+            <div>
+                <span><i class="bi bi-person-add"></i></span>
+            </div>
+        </div>
+        <div class="card-single">
+            <div>
+                <h1>X</h1>
+                <span>Lượt mượn sách</span>
+            </div>
+            <div>
+                <span><i class="bi bi-cart-plus"></i></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="recent-grid">
+        <div class="books">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="lv3">News books</h3>
+                    <button>
+                        <a href="quanlysach/index.html">
+                            See all<span class="las la-arrow-right"></span>
+                        </a>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table width="100%">
+                            <thead>
+                                <tr>
+                                    <td>Tên sách</td>
+                                    <td>Tác giả</td>
+                                    <td>Thể loại</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                    {% for book in books %}
+                                    <tr>
+                                        <td>{{ book.name }}</td>
+                                        <td>{{ book.author }}</td>
+                                        <td>{{ book.id_category.name }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="customers">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="lv3">New customers</h3>
+                    <button>
+                        <a href="quanlynguoidung/index.html">
+                            See all<span class="las la-arrow-right"></span>
+                        </a>
+                    </button>
+                </div>
+
+                <div class="card-body">
+{% for user in users %}
+                        <div class="customer">
+
+                            <div class="info" >
+                                <img src={% static 'imgs/logo-svg.webp' %} class="logo" width="40px" height="40px" />
+
+                                <div >
+
+                                    <h4 class="lv4">{{ user.email }}</h4>
+                                    <small>{{ user.name }}</small>
+
+
+                                </div>
+
+                            </div>
+
+                            <div class="contact">
+                                <span><i class="bi bi-person-circle"></i></span>
+                                <span><i class="bi bi-chat-square-text"></i></span>
+                                <span><i class="bi bi-telephone"></i></span>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock  %}

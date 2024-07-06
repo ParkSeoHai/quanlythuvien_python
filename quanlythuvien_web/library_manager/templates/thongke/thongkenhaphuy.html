@@ -1,0 +1,40 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Quản lý danh mục
+{% endblock  %}
+{% load custom_filters %}
+{% block content %}
+    <h2 class="lv2 mb-5">Thống kê sách nhập / hủy</h2>
+    <div class="container" style="width:1050px; background: white">
+        <div>
+          <canvas id="myChart"></canvas>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          const ctx = document.getElementById('myChart');
+          const SoLuongNhap = {{ Nhap }};
+          const SoLuongHuy = {{ Huy }};
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+              datasets: [{
+                label: '# Sách hủy(Tổng {{ Nhap|Sum }})',
+                data: SoLuongHuy,
+                borderWidth: 1
+              },{label: '# Sách nhập(Tổng {{ Huy|Sum }})',
+                data: SoLuongNhap,
+                borderWidth: 1}]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        </script>
+    </div>
+{% endblock  %}

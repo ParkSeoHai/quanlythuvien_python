@@ -1,0 +1,62 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Quản lý sách tồn kho
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Danh sách tồn kho</h2>
+    <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
+        <div></div>
+        <div class="search-block w-25">
+            <div class="input-group">
+                <span class="input-group-text search-icon" onclick="searchThongKeTK()">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control search-ThongKeTK" placeholder="Search" onkeypress="searchThongKeTKEnter(event)">
+            </div>
+        </div>
+    </div>
+    {#  thong ke  #}
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if thongkesachs|length == 0 %}
+                <tr>
+                    <td colspan="9" class="text-center">Không có dữ liệu</td>
+                </tr>
+            {% endif %}
+            {% comment %} Hiển thị danh sách user {% endcomment %}
+
+            {% for thongkesach in thongkesachs %}
+                <tr>
+                    <th scope="row">{{ thongkesach.id_sach }}</th>
+                    <td>{{ thongkesach.name }}</td>
+                    <td>{{ thongkesach.quantity }}</td>
+                    <td>{{ thongkesach.id_category.name }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <script>
+    const searchThongKeTK = () => {
+        const searchInput = document.querySelector('.search-ThongKeTK');
+        const searchValue = searchInput.value.trim();
+        if (searchValue) {
+            window.location.href = `/thong-ke/ton-kho/search/${searchValue}`;
+        }
+    }
+    const searchThongKeTKEnter = () => {
+            if (event.key === 'Enter') {
+            searchThongKeTK();
+        }
+    }
+    </script>
+{% endblock  %}

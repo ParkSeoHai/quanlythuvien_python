@@ -1,4 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from django.template import loader
 from django.urls import reverse
 from django.contrib import messages
@@ -16,6 +17,8 @@ from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
+
+from library_manager.models import Books, Users
 
 # Default view for login page
 def index(request):
@@ -44,6 +47,33 @@ def loginPost(request):
             messages.info(request, response.message)
             # Redirect to login page
             return HttpResponseRedirect(reverse('main'))
+        
+def register(request):
+    template = loader.get_template('register.html')
+    return HttpResponse(template.render(request=request))
+
+def registerPost(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        repass = request.POST.get('rppassword')
+        if UserDto.check_email(email):
+            messages.error(request, "Email already registered")
+            return HttpResponseRedirect(reverse('register'))
+        else:
+            if password == repass:
+                if len(password) < 6:
+                    messages.error(request, "Password must be at least 6 characters long")
+                    return HttpResponseRedirect(reverse('register'))
+                else:
+                    user = UserDto(email=email, password=password)
+                    response = user.register()
+                    print(response.message)
+                    messages.success(request, response.message)
+                    return HttpResponseRedirect(reverse('register'))
+            else:
+                messages.error(request, "Passwords do not match")
+                return HttpResponseRedirect(reverse('register'))
 
 # Get user from session
 def get_user(request):
@@ -59,13 +89,17 @@ def get_user(request):
 
 # View for home page
 def home(request):
-    # Get user
     user = get_user(request)
-    # Load home page
-    template = loader.get_template('home.html')
-    return HttpResponse(template.render({
-        'user': user
-    }, request))
+    books = Books.objects.all()
+    users = Users.objects.all()
+
+    context = {
+        'user': user,
+        'books': books,
+        'users': users,
+
+    }
+    return render(request, 'home.html', context)
 
 # View for quanlynguoidung page
 def quanlynguoidung(request, tab):
@@ -126,17 +160,13 @@ def addUserPost(request):
         response = AdminDto.add_user(user)
         print(response.message)
         if response.status is True:
-            # Load quanlynguoidung page
-            template = loader.get_template('quanlynguoidung/index.html')
             # Message
             messages.success(request, response.message)
-            return HttpResponse(template.render({
-                'user': get_user(request),
-            }, request))
+            return HttpResponseRedirect(reverse('quanlynguoidung', args=('nguoi-dung',)))
         else:
             # Message
             messages.error(request, response.message)
-            return HttpResponseRedirect(reverse('quanlynguoidung', args=('nguoi-dung',)))
+            return HttpResponseRedirect(reverse('addUser'))
 
 # Update user view
 def updateUser(request, id):
@@ -343,7 +373,7 @@ def quanlysach(request):
 
 #xoá sách
 def deleteBook(request, id_sach):
-    response = AdminDto.delete_book(id_sach)
+    response = UserDto.delete_book(id_sach)
     if response.status is True:
         print(response.message)
         return HttpResponseRedirect(reverse('quanlysach'))
@@ -403,7 +433,7 @@ def updateBook(request, id_sach):
         'categories': response.data,
     }, request))
 
-# Update user post request
+# Update book post request
 def updateBookPost(request):
     if request.method == 'POST':
         # Get value
@@ -656,28 +686,11 @@ def quanlytinhhinhDaTra(request):
     # Get user
     user = get_user(request)
     phieumuons = UserDto.check_phieumuonDaTra()
-    if phieumuons.data:
-        for phieumuon in phieumuons.data:
-            ngay_hen_tra = phieumuon.ngay_hen_tra
-            ngay_tra = phieumuon.ngay_tra
-
-            if ngay_hen_tra and ngay_tra:
-                a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
-                b = datetime.strptime(ngay_tra, "%Y/%m/%d")
-                date_tra = int((a - b).days)
-        # Load quanlytinhhinhmuontra page
-        template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
-        return HttpResponse(template.render({
-            'user': user,
-            'phieumuons': phieumuons.data,
-            'date': date_tra,
-        }, request))
-    else:
-        template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
-        return HttpResponse(template.render({
-            'user': user,
-            'phieumuons': phieumuons.data,
-        }, request))
+    template = loader.get_template('quanlytinhhinhmuontra/PhieuMuonDaTra.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'phieumuons': phieumuons.data,
+    }, request))
 
 # Quan ly kho sach
 def quanlykhosach(request):
@@ -939,21 +952,23 @@ def addCategoryPost(request):
 
         # Response from add_Category function
         response = AdminDto.add_category(category)
+        print(response.message)
         if response.status is True:
-            print(response.message)
+            messages.success(request, response.message)
             return HttpResponseRedirect(reverse('quanlydanhmuc'))
         else:
-            print(response.message)
+            messages.error(request, response.message)
             return HttpResponseRedirect(reverse('addUsertoCategory'))
         
 def deleteCategory(request, id):
     # Response from delete_user function
     response = AdminDto.delete_category(id)
+    print(response.message)
     if response.status is True:
-        print(response.message)
+        messages.success(request, response.message)
         return HttpResponseRedirect(reverse('quanlydanhmuc'))
     else:
-        print(response.message)
+        messages.error(request, response.message)
         return HttpResponseRedirect(reverse('quanlydanhmuc'))
     
 def updateCategory(request, id):
@@ -977,14 +992,14 @@ def updateCategoryPost(request):
         # Update user dto
         category = CategoryDto(id_category=id, name=name,description=desciption, is_delete=0)
         print(category.__dict__)
-
-        # Response from update_user function
         response = AdminDto.update_category(category)
+        print(response.message)
+        # Response from update_user function
         if response.status is True:
-            print(response.message)
+            messages.success(request, response.message)
             return HttpResponseRedirect(reverse('quanlydanhmuc'))
         else:
-            print(response.message)
+            messages.error(request, response.message)
             return HttpResponseRedirect(reverse('updateCategory', args=(id,)))
 
 def searchCategories(request, searchInput):
@@ -997,4 +1012,34 @@ def searchCategories(request, searchInput):
     return HttpResponse(template.render({
         'user': user,
         'categories': response.data
+    }, request))
+
+def searchThongKeSachTK(request, searchInput):
+    user = get_user(request)
+    response = UserDto.searchSachTK(searchInput)
+    template = loader.get_template('quanlykhosach/sachtonkho/index.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'thongkesachs': response.data
+    }, request))
+
+# Thong ke
+def ThongKeNhapHuy(request):
+    user = get_user(request)
+    response = UserDto.ThongKePhieuNhap()
+    response_huy = UserDto.ThongKePhieuHuy()
+    template = loader.get_template('thongke/thongkenhaphuy.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'Nhap': response.data,
+        'Huy': response_huy.data
+    }))
+
+def ThongKeTongKho(request):
+    user = get_user(request)
+    response = UserDto.thongkesach()
+    template = loader.get_template('thongke/thongketonkho.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'thongkesachs': response.data
     }, request))

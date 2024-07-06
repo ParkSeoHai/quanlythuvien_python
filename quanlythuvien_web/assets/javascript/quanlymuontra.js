@@ -326,7 +326,7 @@ const displayPhieumuon = (phieumuons, is_showAlert) => {
                         <button type="button" class="btn btn-outline-danger" title="Xóa" style="margin-right: 8px" onclick="deletePhieumuon('${pm.id_phieumuon}')">
                             <i class="bi bi-trash3"></i>
                         </button>
-                        <button type="button" class="btn btn-outline-success" title="Xác nhận trả sách" onclick="open_modal_trasach('${pm.id_phieumuon}')>
+                        <button type="button" class="btn btn-outline-success" title="Xác nhận trả sách" onclick="open_modal_trasach('${pm.id_phieumuon}')">
                             <i class="bi bi-check-square"></i>
                         </button>
                     </td>

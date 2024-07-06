@@ -175,7 +175,6 @@ h4.lv4 {
 .sidebar-menu .subs-menu {
     display: none;
     margin-top: 13px;
-    height: 134px;
     animation: showSubmenu linear 0.3s;
 }
 
@@ -185,7 +184,7 @@ h4.lv4 {
         height: 0px;
     } to {
         opacity: 1;
-        height: 134px;
+        height: 100%;
     }
 }
 

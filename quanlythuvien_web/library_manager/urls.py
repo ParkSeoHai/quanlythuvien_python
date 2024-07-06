@@ -41,6 +41,7 @@ urlpatterns = [
     path('quan-ly-danh-muc/delete/<str:id>/', views.deleteCategory, name="deleteCategory"),
     #url quan ly sach
     path('quan-ly-sach/', views.quanlysach, name="quanlysach"),
+    path('home/quanlysach/index.html', views.quanlysach, name='quanlysach'),
     #add sach
     path('quan-ly-sach/add/', views.addBook, name = "addBook"),
     path('addBookPost/', views.addBookPost, name="addBookPost"),
@@ -51,6 +52,7 @@ urlpatterns = [
     path('quan-ly-sach/delete/<str:id_sach>/', views.deleteBook, name="deleteBook"),
     #tim kiem sach
     path('quan-ly-sach/search/<str:searchInput>/', views.searchBook, name="searchBook"),
+    #hien thi home
 
     # Quản lý mượn trả sách
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
@@ -100,4 +102,12 @@ urlpatterns = [
     path('logout/', views.logout, name="logout"),
     # Form action submit
     path('loginPost/', views.loginPost, name='loginPost'),
+    path('register/', views.register, name="register"),
+    path('registerPost/', views.registerPost, name='registerPost'),
+
+    # ket Quan ly sach ton kho
+    path('thong-ke/ton-kho/search/<str:searchInput>/', views.searchThongKeSachTK ,name="searchThongKeSachTK"),
+    #thong ke
+    path('thong-ke/nhap-huy/', views.ThongKeNhapHuy, name="ThongKeNhapHuy" ),
+    path('thong-ke/ton-kho/', views.ThongKeTongKho, name="ThongKeTongKho"),
 ]
