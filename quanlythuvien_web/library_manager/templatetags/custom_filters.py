@@ -20,3 +20,9 @@ def kqdaysTra(ngay_hen_tra, ngay_tra):
     b = datetime.strptime(ngay_tra, "%Y-%m-%d")
     date_muon = int((a - b).days)
     return date_muon
+@register.filter
+def Sum(numbers):
+    kq = 0
+    for number in numbers:
+        kq = kq + number
+    return kq
