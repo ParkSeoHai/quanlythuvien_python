@@ -35,15 +35,13 @@
                         <input type="text" class="form-control" value="{{ book_update.author }}" required placeholder="Enter author" name="author">
                     </div>
                     <div class="form-group mt-4 w-50">
-                    <label class="form-label">Danh mục sách</label>
-                    <select class="form-control" name="category">
-                    {% for category in categories %}
-                                <option value="{{ category.id_category }}">{{ category.name }}</option>
-                    {% endfor %}
+                        <label class="form-label">Danh mục sách</label>
+                        <select class="form-control" name="category">
+                            {% for category in categories %}
+                                        <option value="{{ category.id_category }}">{{ category.name }}</option>
+                            {% endfor %}
                         </select>
-                </div>
-                </div>
-
+                    </div>
                 </div>
 
                 <div class="mt-5">
@@ -56,7 +54,7 @@
         </form>
     {% else %}
         <div class="alert alert-danger" role="alert">
-            Không tìm thấy người dùng
+            Không tìm thấy thông tin sách
         </div>
     {% endif %}
 {% endblock  %}

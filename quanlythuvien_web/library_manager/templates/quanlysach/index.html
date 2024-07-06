@@ -7,7 +7,7 @@
 {% block content %}
     <h2 class="lv2">Danh sách sách</h2>
     <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
-        <a href="add/" class="btn btn-outline-primary">
+        <a href="/quan-ly-sach/add/" class="btn btn-outline-primary">
             <i class="bi bi-plus-circle"></i>&nbsp; Tạo mới
         </a>
         <div class="search-block w-25">
@@ -51,7 +51,7 @@
 
                     <td class="d-table-cell align-middle">{{ book.id_category.name }}</td>
                     <td class="d-table-cell align-middle">
-                        <a href="update/{{ book.id_sach }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
+                        <a href="/quan-ly-sach/update/{{ book.id_sach }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
                             <i class="bi bi-gear"></i>
                         </a>
                         <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteBook('{{ book.id_sach }}')">

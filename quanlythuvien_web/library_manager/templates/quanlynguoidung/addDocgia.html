@@ -1,15 +1,15 @@
 {% extends "index.html" %}
 
 {% block title %}
-    Thêm người dùng
+    Thêm độc giả
 {% endblock  %}
 
 {% block content %}
-    <h2 class="lv2">Thêm người dùng</h2>
-    <form method="post" action={% url 'addUserPost' %} class="form" autocomplete="off">
+    <h2 class="lv2">Thêm độc giả mới</h2>
+    <form method="post" action={% url 'addDocgiaPost' %} class="form" autocomplete="off">
         {% csrf_token %}
         <fieldset>
-            <div class="d-flex justify-content-between gap-4">
+            <div class="d-flex justify-content-between gap-3">
                 <div class="form-group mt-4 w-50">
                     <label class="form-label">Name</label>
                     <input type="text" class="form-control" required placeholder="Enter name" name="name">
@@ -19,30 +19,28 @@
                     <input type="email" class="form-control" required placeholder="Enter email" name="email">
                 </div>
             </div>
-            <div class="d-flex justify-content-between gap-4">
-                <div class="form-group mt-4 w-50">
-                    <label class="form-label">Phone number</label>
-                    <input type="text" class="form-control" required placeholder="Enter phone number" name="phone">
-                </div>
-                <div class="form-group mt-4 w-50">
-                    <label class="form-label">Address</label>
-                    <input type="text" class="form-control" required placeholder="Enter address" name="address">
-                </div>
+            <div class="form-group mt-4">
+                <label class="form-label">Address</label>
+                <input type="text" class="form-control" required placeholder="Enter address" name="address">
             </div>
-            <div class="d-flex justify-content-between gap-4">
-                <div class="form-group mt-4 w-50">
-                    <label class="form-label">Role</label>
-                    <select class="form-control" name="role">
-                        <option value="0">Admin</option>
-                        <option value="1">Thủ thư</option>
-                    </select>
-                </div>
-                <div class="form-group mt-4 w-50">
+            <div class="d-flex justify-content-between gap-3">
+                <div class="form-group mt-4 w-25">
                     <label class="form-label">Gender</label>
                     <select class="form-control" name="gender">
                         <option value="0">Nam</option>
                         <option value="1">Nữ</option>
                     </select>
+                </div>
+                <div class="form-group mt-4 w-25">
+                    <label class="form-label">Loại đối tượng</label>
+                    <select class="form-control" name="type">
+                        <option value="1">Sinh viên</option>
+                        <option value="0">Giảng viên</option>
+                    </select>
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Phone number</label>
+                    <input type="text" class="form-control" required placeholder="Enter phone number" name="phone">
                 </div>
                 <div class="form-group mt-4 w-50">
                     <label class="form-label">Birthday</label>
@@ -50,7 +48,7 @@
                 </div>
             </div>
             <div class="mt-5">
-                <a href="/quan-ly-nguoi-dung/nguoi-dung/" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                <a href="/quan-ly-nguoi-dung/doc-gia/" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
                 <button type="submit" class="btn btn-success">
                     <i class="bi bi-plus-circle"></i>&nbsp; Create
                 </button>

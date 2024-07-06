@@ -1,0 +1,117 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Nhập sách - Cập nhật
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Cập nhật phiếu nhập</h2>
+    <p class="fs-5 mt-3 mb-0"><strong>ID: {{ phieunhap.id_phieunhap }}</strong></p>
+    <form method="post" class="form" autocomplete="off" onsubmit="submitUpdatePhieunhap(event)">
+        {% csrf_token %}
+        <fieldset>
+            <div class="d-flex justify-content-between gap-4">
+                <input type="hidden" class="phieunhap-id" name="phieunhap_id" value="{{ phieunhap.id_phieunhap }}">
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Đơn vị cung cấp</label>
+                    <input type="text" class="form-control dvcungcap"required placeholder="Đơn vị cung cấp" 
+                            name="dvcungcap" value="{{ phieunhap.donvi_cungcap }}">
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Ngày nhập</label>
+                    <input type="date" class="form-control ngaynhap" required placeholder="Ngày nhập"
+                            name="ngaynhap" value="{{ phieunhap.ngay_nhap }}">
+                </div>
+                <div class="form-group mt-4 w-50">
+                    <label class="form-label">Lý do nhập</label>
+                    <input type="text" class="form-control lydo" required placeholder="Lý do nhập"
+                            name="lydo" value="{{ phieunhap.ly_do_nhap }}">
+                </div>
+            </div>
+            <div class="container-books">
+                <div class="container-books__header">
+                    <h3 class="lv3">
+                        Danh sách sách nhập
+                        <span class="fs-6 px-2 title-description"><i class="bi bi-info-circle"></i><span>
+                    </h3>
+                    <div class="text-center d-flex gap-3">
+                        <button type="button" class="btn btn-outline-primary" onclick="addBookPhieuNhap()">
+                            <i class="bi bi-plus-circle"></i>&nbsp; Thêm
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="updateBookPhieuNhap()">
+                            <i class="bi bi-plus-circle"></i>&nbsp; Cập nhật
+                        </button>
+                    </div>
+                </div>
+                <div class="container-books__add mb-3">
+                    <div class="d-flex justify-content-between gap-4">
+                        <input type="hidden" class="book-id" name="book_id">
+                        <div class="form-group w-75">
+                            <label for="bookSelect" class="form-label">Chọn sách</label>
+                            <select class="form-control book-select" id="bookSelect" onchange="chooseBook(this)">
+                                <option value="0">Chọn sách</option>
+                                {% for book in books %}
+                                    <option value="{{ book.id_sach }}">{{ book.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group w-75">
+                            <label for="bookName" class="form-label">Name</label>
+                            <input type="text" class="form-control book-name" id="bookName" placeholder="Name">
+                        </div>
+                        <div class="form-group w-50">
+                            <label for="bookAuthor" class="form-label">Author</label>
+                            <input type="text" class="form-control book-author" id="bookAuthor" placeholder="Author">
+                        </div>
+                        <div class="form-group w-50">
+                            <label for="bookCategory" class="form-label">Category</label>
+                            <select class="form-control book-category" id="bookCategory">
+                                {% for category in categories %}
+                                    <option value="{{ category.id_category }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group w-25">
+                            <label for="bookPrice" class="form-label">Price</label>
+                            <input type="text" class="form-control book-price" id="bookPrice" placeholder="Price">
+                        </div>
+                        <div class="form-group w-25">
+                            <label for="bookQuantity" class="form-label">Quantity</label>
+                            <input type="text" class="form-control book-quantity" id="bookQuantity" placeholder="Quantity">
+                        </div>
+                    </div>
+                </div>
+                <div class="container-books__table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th scope="col">STT</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Author</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-5">
+                <a href="/quan-ly-kho-sach/nhap-sach" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i>&nbsp; Lưu
+                </button>
+            </div>
+        </fieldset>
+    </form>
+    <script>
+        window.addEventListener('load', function () {
+            // Your code here
+            listBooks = {{ listBooks | safe }};
+            displayBook(listBooks);
+        });
+    </script>
+{% endblock  %}

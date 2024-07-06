@@ -1,82 +1,170 @@
 {% extends "index.html" %}
+{% load static %}
 
 {% block title %}
     Quản lý người dùng
 {% endblock  %}
 
 {% block content %}
-    <h2 class="lv2">Danh sách người dùng</h2>
-    <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
-        <a href="add/" class="btn btn-outline-primary">
-            <i class="bi bi-plus-circle"></i>&nbsp; Tạo mới
+    <div class="text-start d-flex" style="margin: 12px 0;">
+        <a href="/quan-ly-nguoi-dung/nguoi-dung/" class="tab-header btn btn-outline-primary" tab="nguoi-dung" title="Quản lý người dùng" style="border-top-right-radius: 0; border-bottom-right-radius: 0;">
+            Người dùng
         </a>
-        <div class="search-block w-25">
-            <div class="input-group">
-                <span class="input-group-text search-icon" onclick="searchUser()">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" class="form-control search-user" placeholder="Search" onkeypress="searchUserEnter(event)">
-            </div>              
-        </div>
+        <a href="/quan-ly-nguoi-dung/doc-gia/" class="tab-header btn btn-outline-primary" tab="doc-gia" title="Quản lý độc giả" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+            Độc giả
+        </a>
     </div>
-    <table class="table table-hover">
-        <thead>
-            <tr class="table-primary">
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Role</th>
-                <th scope="col">Gender</th>
-                <th scope="col">Birthday</th>
-                <th scope="col">Phone number</th>
-                <th scope="col">Address</th>
-                <th scope="col">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if users|length == 0 %}
-                <tr>
-                    <td colspan="9" class="text-center">Không có dữ liệu</td>
-                </tr>
-            {% endif %}
-            {% comment %} Hiển thị danh sách user {% endcomment %}
 
-            {% for user in users %}
-                <tr>
-                    <th scope="row">{{ user.id_user }}</th>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{% if user.role == 0 %} Admin {% elif user.role == 1 %} Thủ thư {% endif %}</td>
-                    <td>{% if user.gender == 0 %} Nam {% else %} Nữ {% endif %}</td>
-                    <td>{{ user.birthday }}</td>
-                    <td>{{ user.phone_number }}</td>
-                    <td>{{ user.address }}</td>
-                    <td>
-                        <a href="update/{{ user.id_user }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
-                            <i class="bi bi-gear"></i>
-                        </a>
-                        <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteUser('{{ user.id_user }}')">
-                            <i class="bi bi-trash3"></i>
-                        </button>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {% comment %} Modal delete user {% endcomment %}
-    <div class="modal-main modal-delete d-none">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Xác nhận xóa</h5>
-            </div>
-            <div class="modal-body">
-                <p class="modal-desc">Bạn có chắc chắn muốn xóa người dùng này không?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="cancelDeleteUser()">Hủy</button>
-                <a href="" class="btn btn-danger btn-delete">Xóa</a>
+    {% if tab == 'nguoi-dung' %}
+        <h2 class="lv2">Danh sách người dùng</h2>
+        <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
+            <a href="/quan-ly-nguoi-dung/nguoi-dung/add/" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle"></i>&nbsp; Tạo mới
+            </a>
+            <div class="search-block w-25">
+                <div class="input-group">
+                    <span class="input-group-text search-icon" onclick="searchUser()">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control search-user" placeholder="Search" onkeypress="searchUserEnter(event)">
+                </div>              
             </div>
         </div>
-    </div>
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-primary">
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">Phone number</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if users|length == 0 %}
+                    <tr>
+                        <th colspan="9" class="text-center">Không có dữ liệu</th>
+                    </tr>
+                {% endif %}
+                {% comment %} Hiển thị danh sách user {% endcomment %}
+
+                {% for user in users %}
+                    <tr>
+                        <th scope="row">{{ user.id_user }}</th>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{% if user.role == 0 %} Admin {% elif user.role == 1 %} Thủ thư {% endif %}</td>
+                        <td>{% if user.gender == 0 %} Nam {% else %} Nữ {% endif %}</td>
+                        <td>{{ user.birthday }}</td>
+                        <td>{{ user.phone_number }}</td>
+                        <td>{{ user.address }}</td>
+                        <td>
+                            <a href="/quan-ly-nguoi-dung/nguoi-dung/update/{{ user.id_user }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
+                                <i class="bi bi-gear"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteUser('{{ user.id_user }}')">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% comment %} Modal delete user {% endcomment %}
+        <div class="modal-main modal-delete d-none">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-desc">Bạn có chắc chắn muốn xóa người dùng này không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cancelDeleteUser()">Hủy</button>
+                    <a href="" class="btn btn-danger btn-delete">Xóa</a>
+                </div>
+            </div>
+        </div>
+    {% elif tab == 'doc-gia' %}
+        <h2 class="lv2">Danh sách độc giả</h2>
+        <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
+            <a href="/quan-ly-nguoi-dung/doc-gia/add/" class="btn btn-outline-primary">
+                <i class="bi bi-plus-circle"></i>&nbsp; Tạo mới
+            </a>
+            <div class="search-block w-25">
+                <div class="input-group">
+                    <span class="input-group-text search-icon" onclick="searchDocgia()">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control search-user" placeholder="Search" onkeypress="searchDocgiaEnter(event)">
+                </div>              
+            </div>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-primary">
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Gender</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">Phone number</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if thethuviens|length == 0 %}
+                    <tr>
+                        <th colspan="9" class="text-center">Không có dữ liệu</th>
+                    </tr>
+                {% endif %}
+                {% comment %} Hiển thị danh sách user {% endcomment %}
+                {% for ttv in thethuviens %}
+                    <tr>
+                        <th scope="row">{{ ttv.id_the }}</th>
+                        <td>{{ ttv.id_docgia.name }}</td>
+                        <td>{{ ttv.id_docgia.email }}</td>
+                        <td>{% if ttv.type == 0 %} Giảng viên {% else %} Sinh viên {% endif %}</td>
+                        <td>{% if ttv.id_docgia.gender == 0 %} Nam {% else %} Nữ {% endif %}</td>
+                        <td>{{ ttv.id_docgia.birthday }}</td>
+                        <td>{{ ttv.id_docgia.phone_number }}</td>
+                        <td>{{ ttv.id_docgia.address }}</td>
+                        <td>
+                            <a href="/quan-ly-nguoi-dung/doc-gia/update/{{ ttv.id_the }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
+                                <i class="bi bi-gear"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteDocgia('{{ ttv.id_the }}')">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% comment %} Modal delete user {% endcomment %}
+        <div class="modal-main modal-delete d-none">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-desc">Bạn có chắc chắn muốn xóa độc giả này không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cancelDeleteDocgia()">Hủy</button>
+                    <a href="" class="btn btn-danger btn-delete">Xóa</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <script src={% static 'javascript/quanlynguoidung.js' %}></script>
 {% endblock  %}

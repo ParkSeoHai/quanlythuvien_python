@@ -1,8 +1,8 @@
-from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Categories
+from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Categories, Phieumuons
 from library_manager.dtos.ResponseDto import ResponseDto as Response
 
 import uuid
-
+from datetime import datetime
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 
@@ -24,10 +24,12 @@ class UserDto(object):
     def login(self):
         try:
             user = Users.objects.filter(email=self.email, password=self.password).first()
-            if user:
-                return Response(True, 'Login success', user.id_user)
+            if user is None:
+                return Response(False, 'Tài khoản hoặc mật khẩu không chính xác', None)
+            if user.is_delete == 1:
+                return Response(False, 'Tài khoản này đã bị xóa', None)
             else:
-                return Response(False, 'Login failed', None)
+                return Response(True, 'Đăng nhập thành công', user.id_user)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
@@ -36,7 +38,8 @@ class UserDto(object):
         try:
             user = Users(id_user=self.id_user, name=self.name, email=self.email,
                         password=self.password, role=self.role, gender=self.gender,
-                        birthday=self.birthday, phone_number=self.phone_number, address=self.address, is_delete=self.is_delete)
+                        birthday=self.birthday, phone_number=self.phone_number,
+                        address=self.address, is_delete=self.is_delete)
             user.save()
             return Response(True, 'Register success', user.id_user)
         except Exception as e:
@@ -50,6 +53,10 @@ class UserDto(object):
         except Exception as e:
             print(e)
             return False
+    
+    def change_info(self):
+        ...
+
     def check_book(name):
         try:
             book = Books.objects.filter(name=name).first()
@@ -57,12 +64,6 @@ class UserDto(object):
         except Exception as e:
             print(e)
             return False
-
-    def logout(self):
-        ...
-    
-    def change_info(self):
-        ...
 
     def add_book(bookDto: BookDto):
         try:
@@ -138,7 +139,6 @@ class UserDto(object):
             print(e)
             return Response(False, e.__str__(), None)
 
-    
     def get_bookById(id_sach):
         try:
             book = Books.objects.filter(id_sach=id_sach).first()
@@ -149,7 +149,7 @@ class UserDto(object):
 
     def get_books():
         try:
-            books = Books.objects.filter(is_delete = 0)
+            books = Books.objects.filter(is_delete=0)
             return Response(True, 'Get books success', books)
         except Exception as e:
             print(e)
@@ -171,14 +171,35 @@ class UserDto(object):
         ...
     
     def get_phieumuons():
-        ...
-
+        try:
+            phieumuons = Phieumuons.objects.all()
+            return Response(True, 'Get phieumuon success', phieumuons)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+        
     def thuhoi_phieumuon():
         ...
     
+    def check_phieumuon():
+        try:
+            phieumuons = Phieumuons.objects.filter(trang_thai=0, is_delete=0)
+            return Response(True, 'Get phieumuon success', phieumuons)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def check_phieumuonDaTra():
+        try:
+            phieumuons = Phieumuons.objects.filter(trang_thai=1,is_delete=0)
+            return Response(True, 'Get phieumuon success', phieumuons)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+    
     def get_phieunhaps():
         try:
-            phieunhaps = Phieunhaps.objects.all()
+            phieunhaps = Phieunhaps.objects.filter(is_delete=0)
             return Response(True, 'Get phieunhaps success', phieunhaps)
         except Exception as e:
             print(e)
@@ -190,7 +211,8 @@ class UserDto(object):
             user = Users.objects.filter(id_user=phieunhap.id_user).first()
             # Add phieunhap
             phieunhap = Phieunhaps(id_phieunhap=phieunhap.id_phieunhap, donvi_cungcap=phieunhap.donvi_cungcap,
-                                    ngay_nhap=phieunhap.ngay_nhap, ly_do_nhap=phieunhap.ly_do_nhap, id_user=user)
+                                    ngay_nhap=phieunhap.ngay_nhap, ly_do_nhap=phieunhap.ly_do_nhap, id_user=user,
+                                    is_delete=phieunhap.is_delete)
             phieunhap.save()
             # Update book if book exits else add new book
             for bookDto in bookDtos:
@@ -199,27 +221,104 @@ class UserDto(object):
                 if book:
                     # Update book
                     book.quantity += bookDto.quantity
+                else:
+                    # Get category by id
+                    category = Categories.objects.filter(id_category=bookDto.id_category).first()
+                    # Add new book
+                    book = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price, quantity=bookDto.quantity,
+                             image=bookDto.image, author=bookDto.author, id_category=category, is_delete=bookDto.is_delete)
+                book.save()
+
+                # Add ctphieunhap
+                ctphieunhap = Ctphieunhaps(id_ctphieunhap=str(uuid.uuid4()), id_phieunhap=phieunhap, id_sach=book,
+                                           so_luong=bookDto.quantity, gia_nhap=bookDto.price)
+                ctphieunhap.save()
+                
+            return Response(True, 'Add phieunhap success', phieunhap.id_phieunhap)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+    
+    def update_phieunhap(phieunhap: PhieunhapDto, bookDtos: list[BookDto], book_deletes):
+        try:
+            # Get user by id
+            user = Users.objects.filter(id_user=phieunhap.id_user).first()
+            # Update phieunhap
+            phieunhap = Phieunhaps.objects.filter(id_phieunhap=phieunhap.id_phieunhap).first()
+            phieunhap.donvi_cungcap = phieunhap.donvi_cungcap
+            phieunhap.ngay_nhap = phieunhap.ngay_nhap
+            phieunhap.ly_do_nhap = phieunhap.ly_do_nhap
+            phieunhap.id_user = user
+            phieunhap.save()
+
+            # Update book if book exits else add new book
+            for bookDto in bookDtos:
+                # Check book is exist by name
+                book = Books.objects.filter(name=bookDto.name).first()
+                if book:
+                    # Get ctphieunhap by id_sach and id_phieunhap, xoa so_luong nhap cu
+                    ctpn = Ctphieunhaps.objects.filter(id_sach=book, id_phieunhap=phieunhap).first()
+                    if ctpn:
+                        book.quantity -= ctpn.so_luong
+
+                    # Update book
+                    book.quantity += bookDto.quantity
                     book.save()
                 else:
                     # Get category by id
                     category = Categories.objects.filter(id_category=bookDto.id_category).first()
                     # Add new book
-                    bookNew = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price, quantity=bookDto.quantity,
-                             image=bookDto.image, author=bookDto.author, active=bookDto.active, id_category=category)
-                    bookNew.save()
-            # Add ctphieunhap
-            for bookDto in bookDtos:
-                # Get book by name
-                book = Books.objects.filter(name=bookDto.name).first()
+                    book = Books(id_sach=str(uuid.uuid4()), name=bookDto.name, price=bookDto.price, quantity=bookDto.quantity,
+                             image=bookDto.image, author=bookDto.author, id_category=category, is_delete=bookDto.is_delete)
+                book.save()
 
-                ctphieunhap = Ctphieunhaps(id_ctphieunhap=str(uuid.uuid4()), id_phieunhap=phieunhap, id_sach=book,
-                                           so_luong=bookDto.quantity, gia_nhap=bookDto.price)
+                # Update ctphieunhap if ctphieunhap exits else add new ctphieunhap
+                ctphieunhap = Ctphieunhaps.objects.filter(id_sach=book, id_phieunhap=phieunhap).first()
+                if ctphieunhap:
+                    ctphieunhap.so_luong = bookDto.quantity
+                    ctphieunhap.gia_nhap = bookDto.price
+                else:
+                    ctphieunhap = Ctphieunhaps(id_ctphieunhap=str(uuid.uuid4()), id_phieunhap=phieunhap, id_sach=book,
+                                               so_luong=bookDto.quantity, gia_nhap=bookDto.price)
                 ctphieunhap.save()
-            return Response(True, 'Nhap sach thanh cong', phieunhap.id_phieunhap)
+            
+            # Delete ct phieunhap
+            for book_delete in book_deletes:
+                book = Books.objects.filter(id_sach=book_delete).first()
+                ctphieunhap = Ctphieunhaps.objects.filter(id_sach=book, id_phieunhap=phieunhap).first()
+                UserDto.delete_ctphieunhap(ctphieunhap.id_ctphieunhap)
+            
+            return Response(True, 'Update phieunhap success', phieunhap.id_phieunhap)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-    
+
+    def delete_phieunhap(id):
+        try:
+            phieunhap = Phieunhaps.objects.filter(id_phieunhap=id).first()
+            if phieunhap is None:
+                return Response(False, 'Phieunhap not found', None)
+            
+            # If phieunhap exist then delete ct phieunhap
+            ctpns = Ctphieunhaps.objects.filter(id_phieunhap=phieunhap)
+            for ctpn in ctpns:
+                print(ctpn.id_ctphieunhap)
+                UserDto.delete_ctphieunhap(ctpn.id_ctphieunhap)
+
+            phieunhap.delete()
+            return Response(True, 'Delete phieunhap success', phieunhap.id_phieunhap)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
+    def search_phieunhap_by_date(dateFrom, dateTo):
+        try:
+            phieunhaps = Phieunhaps.objects.filter(ngay_nhap__gte=dateFrom, ngay_nhap__lte=dateTo, is_delete=0)
+            return Response(True, 'Search phieunhap by date success', phieunhaps)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
     def get_phieunhapById(id):
         try:
             pn = Phieunhaps.objects.filter(id_phieunhap=id).first()
@@ -236,11 +335,43 @@ class UserDto(object):
             print(e)
             return Response(False, e.__str__(), None)
 
+    def delete_ctphieunhap(id):
+        try:
+            ctpn = Ctphieunhaps.objects.filter(id_ctphieunhap=id).first()
+
+            if ctpn is None:
+                print('Ctphieunhap not found')
+                return Response(False, 'Ctphieunhap not found', None)
+            
+            # Update quantity book
+            book = Books.objects.filter(id_sach=ctpn.id_sach.id_sach).first()
+            book.quantity -= ctpn.so_luong
+            book.save()
+
+            # Delete ct phieunhap
+            ctpn.delete()
+            print(f'Delete Ctphieunhap success. {book.name}')
+            return Response(True, 'Delete Ctphieunhap success', id)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+
     def huy_sach():
         ...
 
     def thongkesach():
-        ...
-    
+        try:
+            tksach = Books.objects.filter(quantity__gt=0)
+            return Response(True, 'Get books success', tksach)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+    def searchSachTK(inputSearch:str):
+        try:
+            tksach = Books.objects.filter(name__icontains = inputSearch, quantity__gt=0)
+            return Response(True, 'Search books success', tksach)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
     def kiemke():
         ...

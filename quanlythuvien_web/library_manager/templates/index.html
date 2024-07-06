@@ -8,9 +8,14 @@
     <link rel="stylesheet" href={% static 'css/bootswatch_flatly.css' %} />
     <link rel="stylesheet" href={% static 'css/home.css' %}>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    {% comment %} Toastr messages {% endcomment %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-    <input type="checkbox" id="nav-toggle" checked>
+    <input type="checkbox" id="nav-toggle">
     <div class="sidebar" target="_sidebar">
         <div class="sidebar-brand">
             <a asp-controller="Home" asp-action="Index">
@@ -32,7 +37,7 @@
                 </li>
                 {% if user.role == 0 %}
                     <li>
-                        <a href="/quan-ly-nguoi-dung" page="quan-ly-nguoi-dung" title="Quản lý người dùng" class="sidebar-link">
+                        <a href="/quan-ly-nguoi-dung/nguoi-dung" page="quan-ly-nguoi-dung" title="Quản lý người dùng" class="sidebar-link">
                             <span>
                                 <i class="bi bi-server"></i>
                             </span>
@@ -73,12 +78,34 @@
                     </a>
                 </li>
                 <li>
-                    <a href="/quan-ly-kho-sach" page="quan-ly-kho-sach" title="Quản lý kho sách" class="sidebar-link">
+                    <a page="quan-ly-kho-sach" title="Quản lý kho sách" class="sidebar-link">
                         <span>
                             <i class="bi bi-file-earmark-bar-graph"></i>
                         </span>
                         <span>Quản lý kho sách</span>
                     </a>
+                    <ul class="subs-menu">
+                        <li class="sub-item">
+                            <a href="/quan-ly-kho-sach/nhap-sach" title="Nhập sách" class="sub-link">
+                                Nhập sách
+                            </a>
+                        </li>
+                        <li class="sub-item">
+                            <a href="/quan-ly-kho-sach/huy-sach" title="Hủy sách" class="sub-link">
+                                Hủy sách
+                            </a>
+                        </li>
+                        <li class="sub-item">
+                            <a href="/quan-ly-kho-sach/thong-ke" title="Thống kê sách" class="sub-link">
+                                Thống kê sách
+                            </a>
+                        </li>
+                        <li class="sub-item">
+                            <a href="/quan-ly-kho-sach/kiem-ke" title="Kiểm kê" class="sub-link">
+                                Kiểm kê
+                            </a>
+                        </li>
+                    </ul>
                 </li>
                 <li>
                     <a href="/logout" title="Thoát">
@@ -122,6 +149,13 @@
             <div class="modal-bg d-none"></div>
         </main>
     </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <script type=text/javascript>toastr.{{ message.tags }}('{{ message }}')</script>
+        {% endfor %}
+    {% endif %}
+
     <script src={% static 'javascript/app.js' %}></script>
 </body>
 </html>

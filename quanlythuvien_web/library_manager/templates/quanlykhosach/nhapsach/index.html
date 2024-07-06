@@ -1,0 +1,89 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Quản lý kho sách - Nhập sách
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Danh sách phiếu nhập</h2>
+    <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
+        <a href="add/" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i>&nbsp; Lập phiếu nhập
+        </a>
+        <div class="search-block w-50">
+            <div class="input-group d-flex align-items-center">
+                <span class="me-3">Tìm kiếm theo ngày:</span>
+                <input type="date" class="form-control" id="search-date-from" placeholder="Tìm kiếm theo ngày">
+                <span class="mx-2">đến</span>
+                <input type="date" class="form-control" id="search-date-to" placeholder="Tìm kiếm theo ngày">
+                <button class="btn btn-outline-primary" type="button" onclick="searchPhieumuonByDate()">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {% if dateFrom and dateTo %}
+        <div class="alert alert-info" role="alert">
+            Danh sách phiếu nhập từ ngày <strong>{{ dateFrom }}</strong> đến ngày <strong>{{ dateTo }}</strong> ({{ phieunhaps|length }} kết quả)
+        </div>
+    {% endif %}
+
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th scope="col">ID</th>
+                <th scope="col">Đơn vị cung cấp</th>
+                <th scope="col">Ngày nhập</th>
+                <th scope="col">Lý do nhập</th>
+                <th scope="col">Người thực hiện nhập</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if phieunhaps|length == 0 %}
+                <tr>
+                    <th colspan="9" class="text-center">Không có dữ liệu</th>
+                </tr>
+            {% endif %}
+            {% comment %} Hiển thị danh sách user {% endcomment %}
+
+            {% for phieunhap in phieunhaps %}
+                <tr>
+                    <th scope="row">{{ phieunhap.id_phieunhap }}</th>
+                    <td>{{ phieunhap.donvi_cungcap }}</td>
+                    <td>{{ phieunhap.ngay_nhap }}</td>
+                    <td>{{ phieunhap.ly_do_nhap }}</td>
+                    <td>{{ phieunhap.id_user.name }}</td>
+                    <td>
+                        <a href="/quan-ly-kho-sach/nhap-sach/update/{{ phieunhap.id_phieunhap }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
+                            <i class="bi bi-gear"></i>
+                        </a>
+                        <a href="/quan-ly-kho-sach/nhap-sach/info/{{ phieunhap.id_phieunhap }}" class="btn btn-outline-info" style="margin-right: 8px" title="Chi tiết">
+                            <i class="bu bi-info"></i>
+                        </a>
+                        <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deletePhieunhap('{{ phieunhap.id_phieunhap }}')">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% comment %} Modal delete user {% endcomment %}
+    <div class="modal-main modal-delete d-none">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xác nhận xóa</h5>
+            </div>
+            <div class="modal-body">
+                <p class="modal-desc">Bạn có chắc chắn muốn xóa phiếu nhập này không?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="cancelDelete()">Hủy</button>
+                <a href="" class="btn btn-danger btn-delete">Xóa</a>
+            </div>
+        </div>
+    </div>
+{% endblock  %}
