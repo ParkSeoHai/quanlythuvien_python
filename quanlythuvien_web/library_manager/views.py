@@ -59,7 +59,7 @@ def registerPost(request):
         else:
             if password == repass:
                 if len(password) < 6:
-                    messages.error(request, "Password must be at least 8 characters long")
+                    messages.error(request, "Password must be at least 6 characters long")
                     return HttpResponseRedirect(reverse('register'))
                 else:
                     user = UserDto(email=email, password=password)
@@ -841,14 +841,6 @@ def searchCategories(request, searchInput):
         'user': user,
         'categories': response.data
     }, request))
-def quan_ly_ton_kho(request):
-    user = get_user(request)
-    response = UserDto.thongkesach()
-    template = loader.get_template('quanlykhosach/sachtonkho/index.html')
-    return HttpResponse(template.render({
-        'user': user,
-        'thongkesachs': response.data
-    }, request))
 def searchThongKeSachTK(request, searchInput):
     user = get_user(request)
     response = UserDto.searchSachTK(searchInput)
@@ -869,3 +861,11 @@ def ThongKeNhapHuy(request):
         'Nhap': response.data,
         'Huy': response_huy.data
     }))
+def ThongKeTongKho(request):
+    user = get_user(request)
+    response = UserDto.thongkesach()
+    template = loader.get_template('thongke/thongketonkho.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'thongkesachs': response.data
+    }, request))
