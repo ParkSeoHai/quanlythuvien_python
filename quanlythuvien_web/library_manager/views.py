@@ -7,6 +7,8 @@ import uuid
 import json
 from datetime import datetime
 
+from pip._vendor.requests.models import Response
+
 from library_manager.dtos.CategoryDto import CategoryDto
 # Import user dto
 from library_manager.dtos.UserDto import UserDto
@@ -855,3 +857,15 @@ def searchThongKeSachTK(request, searchInput):
         'user': user,
         'thongkesachs': response.data
     }, request))
+
+# Thong ke
+def ThongKeNhapHuy(request):
+    user = get_user(request)
+    response = UserDto.ThongKePhieuNhap()
+    response_huy = UserDto.ThongKePhieuHuy()
+    template = loader.get_template('thongke/thongkenhaphuy.html')
+    return HttpResponse(template.render({
+        'user': user,
+        'Nhap': response.data,
+        'Huy': response_huy.data
+    }))
