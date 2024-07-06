@@ -380,8 +380,9 @@ class UserDto(object):
 #thong ke
     def ThongKePhieuNhap():
         try:
+            current_year = datetime.now().year
             # Lấy tất cả các phiếu nhập
-            phieunhaps = Phieunhaps.objects.filter(is_delete=0)
+            phieunhaps = Phieunhaps.objects.filter(is_delete=0, ngay_nhap__startswith=f'{current_year}-')
 
             # Khởi tạo từ điển để lưu trữ tổng số lượng
             monthly_stats = defaultdict(lambda: {'total_quantity': 0})
@@ -407,8 +408,10 @@ class UserDto(object):
 
     def ThongKePhieuHuy():
         try:
+            current_year=datetime.now().year
             # Lấy tất cả các phiếu hủy
-            phieuhuys = Phieuhuys.objects.filter(is_delete=0)
+            phieuhuys = Phieuhuys.objects.filter(ngay_huy__startswith=f"{current_year}/",
+                is_delete=0)
 
             # Khởi tạo từ điển để lưu trữ tổng số lượng
             monthly_stats = defaultdict(lambda: {'total_quantity': 0})
