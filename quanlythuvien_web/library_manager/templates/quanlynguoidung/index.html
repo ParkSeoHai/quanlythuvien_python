@@ -109,6 +109,7 @@
             <thead>
                 <tr class="table-primary">
                     <th scope="col">ID</th>
+                    <th scope="col">ID thẻ</th>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
                     <th scope="col">Type</th>
@@ -128,7 +129,8 @@
                 {% comment %} Hiển thị danh sách user {% endcomment %}
                 {% for ttv in thethuviens %}
                     <tr>
-                        <th scope="row">{{ ttv.id_the }}</th>
+                        <th scope="row">{{ ttv.id_docgia.id_docgia }}</th>
+                        <td>{{ ttv.id_the }}</td>
                         <td>{{ ttv.id_docgia.name }}</td>
                         <td>{{ ttv.id_docgia.email }}</td>
                         <td>{% if ttv.type == 0 %} Giảng viên {% else %} Sinh viên {% endif %}</td>

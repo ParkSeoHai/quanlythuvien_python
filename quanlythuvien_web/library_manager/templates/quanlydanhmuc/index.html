@@ -64,32 +64,21 @@
                 <p class="modal-desc">Bạn có chắc chắn muốn xóa danh mục này không?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="cancelDeleteCategory()">Hủy</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelDelete()">Hủy</button>
                 <a href="" class="btn btn-danger btn-delete">Xóa</a>
             </div>
         </div>
     </div>
     <script !src="">
-    const deleteCategory = (id) => {
-    // Open modal
-    const modalBg = document.querySelector('.modal-bg');
-    const modal = document.querySelector('.modal-delete');
-    if (modalBg && modal) {
-        modalBg.classList.remove('d-none');
-        modal.classList.remove('d-none');
-        modal.querySelector('.btn-delete').setAttribute('href', `/quan-ly-danh-muc/delete/${id}`);
+        const deleteCategory = (id) => {
+        // Open modal
+        const modalBg = document.querySelector('.modal-bg');
+        const modal = document.querySelector('.modal-delete');
+        if (modalBg && modal) {
+            modalBg.classList.remove('d-none');
+            modal.classList.remove('d-none');
+            modal.querySelector('.btn-delete').setAttribute('href', `/quan-ly-danh-muc/delete/${id}`);
+        }
     }
-}
-
-// Handle cancel delete user
-const cancelDeleteCategory = () => {
-    // Close modal
-    const modalBg = document.querySelector('.modal-bg');
-    const modal = document.querySelector('.modal-delete');
-    if (modalBg && modal) {
-        modalBg.classList.add('d-none');
-        modal.classList.add('d-none');
-    }
-}
     </script>
 {% endblock  %}

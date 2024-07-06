@@ -400,16 +400,6 @@ const deleteBook = (id_sach) => {
     }
 }
 
-//handle cancel xoá sách
-const cancelDeleteBook = () =>{
-    const modalBg = document.querySelector('.modal-bg');
-    const modal = document.querySelector('.modal-delete');
-    if (modalBg && modal) {
-        modalBg.classList.add('d-none');
-        modal.classList.add('d-none');
-    }
-}
-
 //handle tim kiem sach
 const searchBook = () => {
     const searchInput = document.querySelector('.search-book');
@@ -426,3 +416,18 @@ const searchBookEnter = (event) => {
     }
 }
 
+// Click modal background
+const modalBg = document.querySelector('.modal-bg');
+modalBg.addEventListener('click', () => {
+    const modalAddPhieumuon = document.querySelector('.modal-add-phieumuon');
+    const modalUpdatePhieumuon = document.querySelector('.modal-update-phieumuon');
+    const modalDelete = document.querySelector('.modal-delete');
+    const modalConfirmTraSach = document.querySelector('.modal-trasach-phieumuon');
+
+    // Add class d-none
+    modalAddPhieumuon.classList.add('d-none');
+    modalUpdatePhieumuon.classList.add('d-none');
+    modalBg.classList.add('d-none');
+    modalDelete.classList.add('d-none');
+    modalConfirmTraSach.classList.add('d-none');
+})

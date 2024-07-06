@@ -5,7 +5,7 @@
 {% endblock  %}
 
 {% block content %}
-    <h2 class="lv2">Cập nhật người dùng</h2>
+    <h2 class="lv2">Cập nhật danh mục</h2>
     {% if category_update %}
         <form method="post" action={% url 'updateCategoryPost' %} class="form" autocomplete="off">
             {% csrf_token %}

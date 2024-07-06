@@ -1,10 +1,10 @@
-from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Categories, Phieumuons
+from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Categories, Phieumuons, Thethuviens, Docgias
 from library_manager.dtos.ResponseDto import ResponseDto as Response
 
 import uuid
-from datetime import datetime
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
+from library_manager.dtos.PhieumuonDto import PhieumuonDto
 
 class UserDto(object):
     def __init__(self, id_user = '', name = '', email ='',
@@ -155,31 +155,232 @@ class UserDto(object):
             print(e)
             return Response(False, e.__str__(), None)
     
+    def search_booksByName(name):
+        try:
+            books = Books.objects.filter(name__icontains=name, is_delete=0)
+            return Response(True, "Get books success", books)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(), None)
+        
+    def get_info_thethuvienById(id):
+        try:
+            ttv = Thethuviens.objects.filter(id_the=id).first()
+            if ttv is None:
+                return Response(False, "Thethuvien not found", None)
+            else:
+                # Get info docgia
+                docgia = Docgias.objects.filter(id_docgia=ttv.id_docgia.id_docgia).first()
+                # Get info phieumuons by thethuvien
+                phieumuons = Phieumuons.objects.filter(id_the=ttv, trang_thai=0)
+                # Get info books
+                books = []
+                for phieumuon in phieumuons:
+                    book = {
+                        'name': phieumuon.id_sach.name,
+                        'price': phieumuon.id_sach.price,
+                        'quantity': phieumuon.id_sach.quantity,
+                        'ngay_muon': phieumuon.ngay_tao,
+                        'ngay_hen_tra': phieumuon.ngay_hen_tra
+                    }
+                    books.append(book)
+                    
+                data = {
+                    'hoten': docgia.name,
+                    'type': ttv.type,
+                    'ngay_het_han': ttv.ngay_het_han,
+                    'books': books
+                }
+                return Response(True, 'Get info success', data)
+        except Exception as e:
+            return Response(False, e.__str__(), None)
+
     def get_phieumuonbytrangthai():
         ...
     
-    def add_phieumuon():
-        ...
-    
-    def update_phieumuon():
-        ...
+    def get_phieumuonById(id):
+        try:
+            # Get phieumuon
+            phieumuon = Phieumuons.objects.filter(id_phieumuon=id).first()
+            if phieumuon is None:
+                return Response(False, 'Phieumuon not found', None)
+            
+            phieumuonResponse = {
+                'id_phieumuon': phieumuon.id_phieumuon,
+                'ngay_tao': phieumuon.ngay_tao,
+                'ngay_hen_tra': phieumuon.ngay_hen_tra,
+                'trang_thai': phieumuon.trang_thai,
+                'ngay_tra': phieumuon.ngay_tra,
+                'ghi_chu': phieumuon.ghi_chu,
+                'so_luong': phieumuon.so_luong,
+                'user': {
+                    'id_user': phieumuon.id_user.id_user,
+                    'name': phieumuon.id_user.name,
+                    'role': phieumuon.id_user.role,
+                },
+                'book': {
+                    'id_sach': phieumuon.id_sach.id_sach,
+                    'name': phieumuon.id_sach.name,
+                    'price': phieumuon.id_sach.price,
+                    'quantity': phieumuon.id_sach.quantity,
+                    'author': phieumuon.id_sach.author,
+                    'image': phieumuon.id_sach.image,
+                    'category': phieumuon.id_sach.id_category.name,
+                },
+                'docgia': {
+                    'id_docgia': phieumuon.id_the.id_docgia.id_docgia,
+                    'id_the': phieumuon.id_the.id_the,
+                    'name': phieumuon.id_the.id_docgia.name,
+                    'type': phieumuon.id_the.type,
+                    'ngay_tao': phieumuon.id_the.ngay_tao,
+                    'ngay_het_han': phieumuon.id_the.ngay_het_han,
+                    'ghi_chu': phieumuon.id_the.ghi_chu,
+                }
+            }
+            
+            return Response(True, 'Get phieumuon success', phieumuonResponse)
+        except Exception as e:
+            return Response(False, e.__str__(), None)
 
-    def delete_phieumuon():
-        ...
+    def add_phieumuon(phieumuonDto: PhieumuonDto, bookName):
+        try:
+            # Search book by name
+            book = Books.objects.filter(name=bookName).first()
+            if book is None:
+                return Response(False, "Book not found", None)
+            # Get user
+            user = Users.objects.filter(id_user=phieumuonDto.id_user).first()
+            if user is None:
+                return Response(False, "User not found", None)
+            # Get thethuvien
+            ttv = Thethuviens.objects.filter(id_the=phieumuonDto.id_the).first()
+            if ttv is None:
+                return Response(False, "Thethuvien not found", None)
+            # Check if docgia has phieumuons then does not add to database
+            is_phieumuon = Phieumuons.objects.filter(id_the=ttv, trang_thai=0).first()
+            if is_phieumuon is not None:
+                return Response(False, "Add phieumuon failed because docgia has phieumuons", None)
+
+            # Add phieumuon to database
+            phieumuon = Phieumuons(id_phieumuon=phieumuonDto.id_phieumuon, ngay_tao=phieumuonDto.ngay_tao,
+                                   ngay_hen_tra=phieumuonDto.ngay_hen_tra, ghi_chu=phieumuonDto.ghi_chu,
+                                   trang_thai=phieumuonDto.trang_thai, ngay_tra=phieumuonDto.ngay_tra,
+                                   so_luong=phieumuonDto.so_luong, id_user=user, id_sach=book, id_the=ttv,
+                                   is_delete=phieumuonDto.is_delete)
+            phieumuon.save()
+            # Update quantity book
+            book.quantity -= phieumuonDto.so_luong
+            book.save()
+
+            return Response(True, 'Add phieumuon success', phieumuon.id_phieumuon)
+        except Exception as e:
+            return Response(False, e.__str__(), None)
     
-    def search_phieumuon():
-        ...
+    def update_phieumuon(phieumuonDto: PhieumuonDto, bookName):
+        try:
+            # Find book by name
+            book = Books.objects.filter(name=bookName).first()
+            if book is None:
+                return Response(False, f'Book {bookName} not found', None)
+            
+            # Get phieumuon by id
+            phieumuon = Phieumuons.objects.filter(id_phieumuon=phieumuonDto.id_phieumuon).first()
+            if phieumuon is None:
+                return Response(False, 'Phieumuon not found', None)
+            # Update quantity book old
+            phieumuon.id_sach.quantity += phieumuon.so_luong
+            phieumuon.id_sach.save()
+            # Update quantity book new
+            book.quantity -= phieumuonDto.so_luong
+            book.save()
+            # Update phieumuon
+            phieumuon.id_sach = book
+            phieumuon.ngay_tao = phieumuonDto.ngay_tao
+            phieumuon.ngay_hen_tra = phieumuonDto.ngay_hen_tra
+            phieumuon.ghi_chu = phieumuonDto.ghi_chu
+            phieumuon.save()
+
+            return Response(True, 'Update phieumuon success', phieumuon.id_phieumuon)
+        except Exception as e:
+            return Response(False, e.__str__(), None)
+
+    def delete_phieumuon(id):
+        try:
+            # Find phieumuon
+            phieumuon = Phieumuons.objects.filter(id_phieumuon=id).first()
+            if phieumuon is None:
+                return Response(False, "Phieumuon not found", None)
+            else:
+                # Update quantity book
+                book = Books.objects.filter(id_sach=phieumuon.id_sach.id_sach).first()
+                if book is None:
+                    return Response(False, "Book not found", None)
+                
+                book.quantity += phieumuon.so_luong
+                phieumuon.delete()
+                book.save()
+                return Response(True, "Delete phieumuon success", phieumuon.id_phieumuon)
+        except Exception as e:
+            return Response(False, e.__str__(), None)
+
+    def search_phieumuonById_the(id_the):
+        try:
+            # Get thethuvien by id_the
+            thethuviens = Thethuviens.objects.filter(id_the__icontains=id_the)
+            if (id_the == 'all'):
+                thethuviens = Thethuviens.objects.all()
+
+            # Get phieumuon
+            phieumuons = []
+            for ttv in thethuviens:
+                phieumuon = Phieumuons.objects.filter(id_the=ttv).first()
+                # Convert to phieumuon response object
+                phieumuonObject = {
+                    'id_phieumuon': phieumuon.id_phieumuon,
+                    'bookName': phieumuon.id_sach.name,
+                    'id_the': phieumuon.id_the.id_the,
+                    'docgiaName': phieumuon.id_the.id_docgia.name,
+                    'ngay_tao': phieumuon.ngay_tao,
+                    'ngay_hen_tra': phieumuon.ngay_hen_tra,
+                    'trang_thai': phieumuon.trang_thai,
+                    'so_luong': phieumuon.so_luong,
+                    'userName': phieumuon.id_user.name,
+                    'ghichu': phieumuon.ghi_chu
+                }
+                phieumuons.append(phieumuonObject)
+
+            return Response(True, f'Get phieumuons success. ({len(phieumuons)} result)', phieumuons)
+        except Exception as e:
+            return Response(False, e.__str__(), None)
     
     def get_phieumuons():
         try:
-            phieumuons = Phieumuons.objects.all()
+            phieumuons = Phieumuons.objects.filter(trang_thai=0, is_delete=0)
             return Response(True, 'Get phieumuon success', phieumuons)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
         
-    def thuhoi_phieumuon():
-        ...
+    def thuhoi_phieumuon(id_phieumuon, ngay_tra, ghi_chu):
+        try:
+            phieumuon = Phieumuons.objects.filter(id_phieumuon=id_phieumuon).first()
+            if phieumuon is None:
+                return Response(False, 'Phieumuon not found', None)
+            
+            # Update trang_thai phieumuon
+            phieumuon.trang_thai = 1
+            phieumuon.ngay_tra = ngay_tra
+            if ghi_chu != "":
+                phieumuon.ghi_chu = ghi_chu
+            phieumuon.save()
+
+            # Update quantity book
+            phieumuon.id_sach.quantity += phieumuon.so_luong
+            phieumuon.id_sach.save()
+
+            return Response(True, 'Thu hồi phiếu mượn thành công', phieumuon.id_phieumuon)
+        except Exception as e:
+            return Response(False, e.__str__(), None)
     
     def check_phieumuon():
         try:

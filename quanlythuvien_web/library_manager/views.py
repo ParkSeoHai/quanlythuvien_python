@@ -15,6 +15,7 @@ from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
+from library_manager.dtos.PhieumuonDto import PhieumuonDto
 
 # Default view for login page
 def index(request):
@@ -235,7 +236,8 @@ def addDocgiaPost(request):
         
         # Create thethuvien dto object
         ngay_het_han = str((int(dateNow.strftime("%Y")) + 4)) + "-" + dateNow.strftime("%m") + "-" + dateNow.strftime("%d")
-        thethuvienDto = ThethuvienDto(id_the=str(uuid.uuid4()), type=int(type), ngay_tao=ngay_tao,
+        id_the = str(dateNow.strftime("%Y")) + str(dateNow.strftime("%M")) + str(dateNow.strftime("%S"))
+        thethuvienDto = ThethuvienDto(id_the=id_the, type=int(type), ngay_tao=ngay_tao,
                                       ngay_het_han=ngay_het_han)
         
         # Add docgia to database
@@ -323,16 +325,6 @@ def searchDocgia(request, searchInput):
         'user': get_user(request),
         'thethuviens': response.data,
         'tab': 'doc-gia'
-    }, request))
-
-# Quan ly danh muc
-def quanlydanhmuc(request):
-    # Get user
-    user = get_user(request)
-    # Load quanlydanhmuc page
-    template = loader.get_template('quanlydanhmuc/index.html')
-    return HttpResponse(template.render({
-        'user': user
     }, request))
 
 # hien thi view quan ly sach
@@ -472,9 +464,166 @@ def getBook(request):
 def quanlymuontra(request):
     # Load quanlymuontra page
     template = loader.get_template('quanlymuontra/index.html')
+
+    response = UserDto.get_phieumuons()
     return HttpResponse(template.render({
-        'user': get_user(request)
+        'user': get_user(request),
+        'phieumuons': response.data
     }, request))
+
+# Get books from javascript fetch request - phieumuon
+def getBooks_phieumuon(request):
+    if request.method == 'GET':
+        name = request.GET.get('name')
+        response = UserDto.search_booksByName(name[0:len(name)-1])
+
+        books = []
+        for item in response.data:
+            book = {
+                'id_sach': item.id_sach,
+                'name': item.name,
+                'price': item.price,
+                'quantity': item.quantity,
+                'image': item.image,
+                'author': item.author,
+                'is_delete': item.is_delete,
+                'id_category': item.id_category.id_category
+            }
+            books.append(book)
+
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(books), content_type='application/json')
+
+# Get thethuvien by id_the from javascrip request -phieumuon
+def get_info_thethuvienById(request):
+    if request.method == 'GET':
+        id_the = request.GET.get('id')
+        # Response from userdto
+        responseDto = UserDto.get_info_thethuvienById(id_the[0:len(id_the)-1])
+        # Convert to response object
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Add phieumuon post
+def addPhieumuonPost(request):
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        data = json.loads(data)
+
+        bookName = data['bookName']
+        id_the = data['id_the']
+        ghichu = data['ghichu']
+        so_luong = data['so_luong']
+        id_user = get_user(request).id_user
+
+        date = datetime.now()
+        ngay_tao = f"{date.strftime('%Y')}-{date.strftime('%m')}-{date.strftime('%d')}"
+        ngay_hen_tra = f"{date.strftime('%Y')}-{date.strftime('%m')}-{int(date.strftime('%d')) + 7}"
+
+        # Create phieumuon dto
+        phieumuonDto = PhieumuonDto(id_phieumuon=str(uuid.uuid4()), ngay_tao=ngay_tao, ngay_hen_tra=ngay_hen_tra,
+                                    ghi_chu=ghichu, so_luong=so_luong, id_user=id_user, id_the=id_the)
+        
+        responseDto = UserDto.add_phieumuon(phieumuonDto, bookName)
+
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Get info phieumuon by id_phieumuon]
+def get_info_phieumuonById(request, id):
+    responseDto = UserDto.get_phieumuonById(id)
+    # Convert to response object
+    response = {
+        'status': responseDto.status,
+        'message': responseDto.message,
+        'data': responseDto.data
+    }
+    # Return response to javascript json serializer
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Tra sach phieumuon
+def trasach(request):
+    if request.method == 'POST':
+        # Get data
+        data = request.POST.get('data')
+        data = json.loads(data)
+
+        id_phieumuon = data['id_phieumuon']
+        ghi_chu = data['ghi_chu']
+        # Get ngay_tra
+        date = datetime.now()
+        ngay_tra = f"{date.strftime('%Y')}-{date.strftime('%m')}-{date.strftime('%d')}"
+
+        responseDto = UserDto.thuhoi_phieumuon(id_phieumuon, ngay_tra, ghi_chu)
+        # Convert to response object
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Update phieumuon post
+def updatePhieumuonPost(request):
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        data = json.loads(data)
+        # Get value from data
+        id_phieumuon = data['id_phieumuon']
+        bookName = data['bookName']
+        so_luong = data['so_luong']
+        ngay_tao = data['ngay_tao']
+        ngay_hen_tra = data['ngay_hen_tra']
+        ghi_chu = data['ghi_chu']
+
+        # Create phieumuon dto object
+        phieumuonDto = PhieumuonDto(id_phieumuon=id_phieumuon, so_luong=so_luong, ngay_tao=ngay_tao,
+                                    ngay_hen_tra=ngay_hen_tra, ghi_chu=ghi_chu)
+        # Response from dto
+        responseDto = UserDto.update_phieumuon(phieumuonDto, bookName)
+        print(responseDto.message)
+        # Convert to response object
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Search phieumuon by id_the
+def searchPhieumuonByIdThe(reques, id_the):
+    responseDto = UserDto.search_phieumuonById_the(id_the)
+    # Response object
+    response = {
+        'status': responseDto.status,
+        'message': responseDto.message,
+        'data': responseDto.data
+    }
+    # Return response to javascript json serializer
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Delete phieumuon
+def deletePhieumuon(request, id):
+    response = UserDto.delete_phieumuon(id)
+    print(response.message)
+    if response.status is True:
+        messages.success(request, response.message)
+    else:
+        messages.error(request, response.message)
+    # Redirect to page quanlymuontra
+    return HttpResponseRedirect(reverse(quanlymuontra))
 
 def quanlytinhhinhmuontra(request):
     # Get user
@@ -486,7 +635,7 @@ def quanlytinhhinhmuontra(request):
             today = datetime.now().strftime('%Y-%m-%d')
 
             if ngay_hen_tra and today:
-                a = datetime.strptime(ngay_hen_tra, "%Y/%m/%d")
+                a = datetime.strptime(ngay_hen_tra, "%Y-%m-%d")
                 b = datetime.strptime(today, "%Y-%m-%d")
                 date_muon = int((a - b).days)
         # Load quanlytinhhinhmuontra page
