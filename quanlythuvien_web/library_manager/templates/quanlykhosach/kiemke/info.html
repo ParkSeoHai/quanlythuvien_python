@@ -1,0 +1,55 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Thông tin chi tiết kiểm kê
+{% endblock  %}
+
+{% load custom_filters %}
+
+{% block content %}
+    <h2 class="lv2">Thông tin chi tiết phiếu kiểm kê</h2>
+    <div class="fs-5 mt-3">
+        <p><strong>ID:</strong> {{ kiemke.id_kiemke }}</p>
+        <p><strong>Người thực hiện kiểm kê:</strong> {{ kiemke.id_user.name }}</p>
+        <p><strong>Ngày kiểm kê:</strong> {{ kiemke.ngay_tao }}</p>
+        <p><strong>Lý do kiểm kê:</strong> {{ kiemke.ly_do }}</p>
+        <a href="{{ kiemke.file_kiemke }}">File kiểm kê</a>
+    </div>
+    <div class="mt-3">
+        <h3 class="lv3 mb-3">Chi tiết kiểm kê</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-primary">
+                    <th scope="col">Id</th>
+                    <th scope="col">Tên sách</th>
+                    <th scope="col">Tác giả</th>
+                    <th scope="col">Danh mục</th>
+                    <th scope="col">Số lượng ban đầu</th>
+                    <th scope="col">Số lượng kiểm kê</th>
+                    <th scope="col">Chênh lệch</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if ct_kiemkes|length == 0 %}
+                    <tr>
+                        <th colspan="7" class="text-center">Không có dữ liệu</th>
+                    </tr>
+                {% endif %}
+                {% for ct_kiemke in ct_kiemkes %}
+                    <tr>
+                        <th scope="row">{{ ct_kiemke.id_ctkiemke }}</th>
+                        <td>{{ ct_kiemke.id_sach.name }}</td>
+                        <td>{{ ct_kiemke.id_sach.author }}</td>
+                        <td>{{ ct_kiemke.id_sach.id_category.name }}</td>
+                        <td class="text-center">{{ ct_kiemke.so_luong_bandau }}</td>
+                        <td class="text-center">{{ ct_kiemke.so_luong_kiemke }}</td>
+                        <td class="text-center">{{ ct_kiemke.so_luong_kiemke|subtraction:ct_kiemke.so_luong_bandau }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-5">
+            <a href="/quan-ly-kho-sach/kiem-ke/" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+        </div>
+    </div>
+{% endblock %}

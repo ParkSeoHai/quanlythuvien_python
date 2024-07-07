@@ -7,6 +7,7 @@ from django.contrib import messages
 import uuid
 import json
 from datetime import datetime
+import openpyxl
 
 from library_manager.dtos.CategoryDto import CategoryDto
 # Import user dto
@@ -16,6 +17,8 @@ from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
+from library_manager.dtos.KiemkeDto import KiemkeDto
+from library_manager.dtos.CTKiemkeDto import CTKiemkeDto
 
 from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps
 
@@ -1106,6 +1109,128 @@ def searchPhieuhuyByDate(request, dateFrom, dateTo):
     }
     # Load nhapsach page
     template = loader.get_template('quanlykhosach/huysach/index.html')
+    return HttpResponse(template.render(context, request))
+
+# Quan ly kho sach - kiem ke
+def kiemkeView(request):
+    # Get all kiemke
+    kiemkeResponse = UserDto.get_phieuKiemkes()
+    context = {
+        'user': get_user(request),
+        'kiemkes': kiemkeResponse.data
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/kiemke/index.html')
+    return HttpResponse(template.render(context, request))
+
+# Add kiem ke view
+def addKiemkeView(request):
+    context = {
+        'user': get_user(request),
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/kiemke/add.html')
+    return HttpResponse(template.render(context, request))
+
+# Get data file excel kiemke from request js
+def get_dataKiemkeFile(request):
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        data = json.loads(data)
+        fileName = data['fileName']
+        file_path = r'D:\IT3-EAUT\Python\btl\{}'.format(fileName)
+
+        # Set url file
+        workbook = openpyxl.load_workbook(filename=file_path)
+        workbook.sheetnames
+        sheet = workbook.active
+        # Get list book
+        list_book = []
+        for row in sheet.iter_rows(min_row=2, values_only=True):
+            if row[0] is None and row[1] is None:
+                break
+            book = {
+                'id_sach': row[0],
+                'name': row[1],
+                'category': row[2],
+                'author': row[3],
+                'so_luong_bandau': row[4],
+                'so_luong_kiemke': row[5],
+                'chenh_lech': int(row[5]) - int(row[4])
+            }
+            list_book.append(book)
+        
+        # Response to client
+        response = {
+            'status': False,
+            'data': list_book
+        }
+
+        if len(list_book) > 0:
+            response['status'] = True
+            response['message'] = f'Get data from file {fileName} success'
+        else:
+            response['message'] = f'Get data from file {fileName} failed'
+            
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Add phieu kiemke post
+def add_phieuKiemkePost(request):
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        data = json.loads(data)
+        # Get ngay_tao
+        date = datetime.now()
+        ngay_tao = f'{date.strftime('%Y')}-{date.strftime('%m')}-{date.strftime('%d')}'
+        # Create kiemke dto object
+        kiemkeDto = KiemkeDto(
+            id_kiemke=str(uuid.uuid4()),
+            ngay_tao=ngay_tao,
+            ly_do=data['ly_do'],
+            file_kiemke=data['file_kiemke'],
+            id_user=request.session.get('id_user'),
+        )
+        # Get list ct_kiemke dto
+        ct_kiemkes = []
+        for ct in data['ct_kiemkes']:
+            ct_kiemke = CTKiemkeDto(
+                id_ctkiemke=str(uuid.uuid4()),
+                id_sach=ct['id_sach'],
+                so_luong_bandau=int(ct['so_luong_bandau']),
+                so_luong_kiemke=int(ct['so_luong_kiemke'])
+            )
+            ct_kiemkes.append(ct_kiemke)
+
+        # Response from user dto kiemke
+        responseDto = UserDto.kiemke(kiemkeDto, ct_kiemkes)
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Info kiemke view
+def info_kiemkeView(request, id):
+    # Get phieu kiemke
+    kiemkeResponse = UserDto.get_phieuKiemkeById(id)
+    # Kiemke not found
+    if kiemkeResponse.status is False:
+        messages.error(request, kiemkeResponse.message)
+        return HttpResponseRedirect(reverse('kiemkeView'))
+    
+    # Get ct_kiemke
+    ct_kiemkeResponse = UserDto.get_ctKiemkesById_kiemke(id)
+    # Get context
+    context = {
+        'user': get_user(request),
+        'kiemke': kiemkeResponse.data,
+        'ct_kiemkes': ct_kiemkeResponse.data
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/kiemke/info.html')
     return HttpResponse(template.render(context, request))
 
 # Logout

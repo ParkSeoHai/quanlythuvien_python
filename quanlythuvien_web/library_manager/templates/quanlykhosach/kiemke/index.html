@@ -1,0 +1,63 @@
+{% extends "index.html" %}
+
+{% load static %}
+
+{% block title %}
+    Quản lý kho sách - Kiểm kê
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Lịch sử kiểm kê</h2>
+    <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
+        <a href="/quan-ly-kho-sach/kiem-ke/add/" class="btn btn-outline-primary">
+            <i class="bi bi-plus-circle"></i>&nbsp; Lập phiếu kiểm kê
+        </a>
+        <div class="search-block w-50">
+            <div class="input-group d-flex align-items-center">
+                {% comment %} <span class="me-3">Tìm kiếm theo ngày:</span>
+                <input type="date" class="form-control" id="search-date-from" placeholder="Tìm kiếm theo ngày">
+                <span class="mx-2">đến</span>
+                <input type="date" class="form-control" id="search-date-to" placeholder="Tìm kiếm theo ngày">
+                <button class="btn btn-outline-primary" type="button" onclick="searchPhieumuonByDate()">
+                    <i class="bi bi-search"></i>
+                </button> {% endcomment %}
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th scope="col">ID</th>
+                <th scope="col">Ngày kiểm kê</th>
+                <th scope="col">Người kiểm kê</th>
+                <th scope="col">Lý do kiểm kê</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if kiemkes|length == 0 %}
+                <tr>
+                    <th colspan="5" class="text-center">Không có dữ liệu</th>
+                </tr>
+            {% endif %}
+            {% comment %} Hiển thị danh sách kiem ke {% endcomment %}
+
+            {% for kiemke in kiemkes %}
+                <tr>
+                    <th scope="row">{{ kiemke.id_kiemke }}</th>
+                    <td>{{ kiemke.ngay_tao }}</td>
+                    <td>{{ kiemke.id_user.name }}</td>
+                    <td>{{ kiemke.ly_do }}</td>
+                    <td>
+                        <a href="/quan-ly-kho-sach/kiem-ke/info/{{ kiemke.id_kiemke }}" class="btn btn-outline-info" style="margin-right: 8px" title="Chi tiết">
+                            <i class="bu bi-info"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script src={% static 'javascript/kiemke.js' %}></script>
+{% endblock %}

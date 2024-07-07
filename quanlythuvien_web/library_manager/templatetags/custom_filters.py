@@ -28,3 +28,7 @@ def Sum(numbers):
     for number in numbers:
         kq = kq + number
     return kq
+
+@register.filter
+def subtraction(value, arg):
+    return value - arg
