@@ -163,7 +163,14 @@ class UserDto(object):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-    
+    def get_docgias():
+        try:
+            docgias = Docgias.objects.filter(is_delete=0)
+            return Response(True, 'Get docgias success', docgias)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(),None)
+
     def search_booksByName(name):
         try:
             books = Books.objects.filter(name__icontains=name, is_delete=0)

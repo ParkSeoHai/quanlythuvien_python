@@ -20,7 +20,7 @@ from library_manager.dtos.ThethuvienDto import ThethuvienDto
 from library_manager.dtos.KiemkeDto import KiemkeDto
 from library_manager.dtos.CTKiemkeDto import CTKiemkeDto
 
-from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps
+from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps,Phieumuons
 
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
 from library_manager.dtos.PhieuhuyDto import PhieuhuyDto
@@ -97,21 +97,26 @@ def get_user(request):
 
 # View for home page
 def home(request):
-    user = get_user(request)
-    books = Books.objects.all()
-    users = Users.objects.all()
-    docgias = Docgias.objects.all()
-    phieunhaps = Phieunhaps.objects.all()
-    latest_books = Books.objects.all().order_by('ngay_tao')[:5]
+
+    users_response = AdminDto.get_users()
+    books_response = UserDto.get_books()
+    docgias_response = UserDto.get_docgias()
+    phieumuons_response = UserDto.get_phieumuons()
+    latest_books_response = UserDto.get_books()
+    users = users_response.data if users_response.status else []
+    books = books_response.data if books_response.status else []
+    docgias = docgias_response.data.order_by('-ngay_tao')[:10] if docgias_response.status else []
+    phieumuons = phieumuons_response.data if phieumuons_response.status else []
+    latest_books = latest_books_response.data.order_by('-ngay_tao')[:10] if latest_books_response.status else []
     context = {
-        'user': user,
-        'books': books,
         'users': users,
+        'books': books,
         'docgias': docgias,
-        'phieunhaps': phieunhaps,
+        'phieumuons': phieumuons,
         'latest_books': latest_books,
     }
-    return render(request, 'home.html', context)
+    template = loader.get_template('home.html')
+    return HttpResponse(template.render(context, request))
 
 # View for quanlynguoidung page
 def quanlynguoidung(request, tab):
