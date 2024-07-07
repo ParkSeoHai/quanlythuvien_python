@@ -94,19 +94,22 @@ def get_user(request):
 
 # View for home page
 def home(request):
-    user = get_user(request)
-    books = UserDto.get_books()
-    users = Users.objects.all()
-    docgias = UserDto.get_docgias()
-    response = UserDto.get_phieumuons()
 
-    latest_books = Books.objects.all().order_by('-ngay_tao')[:10]
+    users_response = AdminDto.get_users()
+    books_response = UserDto.get_books()
+    docgias_response = UserDto.get_docgias()
+    phieumuons_response = UserDto.get_phieumuons()
+    latest_books_response = UserDto.get_books()
+    users = users_response.data if users_response.status else []
+    books = books_response.data if books_response.status else []
+    docgias = docgias_response.data.order_by('-ngay_tao')[:10] if docgias_response.status else []
+    phieumuons = phieumuons_response.data if phieumuons_response.status else []
+    latest_books = latest_books_response.data.order_by('-ngay_tao')[:10] if latest_books_response.status else []
     context = {
-        'user': user,
-        'books': books,
         'users': users,
-        'docgias': response.data,
-        'phieumuons': response.data,
+        'books': books,
+        'docgias': docgias,
+        'phieumuons': phieumuons,
         'latest_books': latest_books,
     }
     template = loader.get_template('home.html')
