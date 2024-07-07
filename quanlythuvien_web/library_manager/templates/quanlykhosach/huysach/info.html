@@ -1,0 +1,46 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Hủy sách - Thông tin chi tiết phiếu hủy
+{% endblock  %}
+
+{% load custom_filters %}
+
+{% block content %}
+    <h2 class="lv2">Thông tin chi tiết phiếu hủy</h2>
+    <div class="fs-5 mt-3">
+        <p><strong>ID:</strong> {{ phieuhuy.id_phieuhuy }}</p>
+        <p><strong>Người thực hiện hủy:</strong> {{ phieuhuy.id_user.name }}</p>
+        <p><strong>Ngày hủy:</strong> {{ phieuhuy.ngay_huy }}</p>
+    </div>
+    <div>
+        <h3 class="lv3 mb-3">Danh sách sách hủy</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-primary">
+                    <th scope="col">ID</th>
+                    <th scope="col">Tên sách</th>
+                    <th scope="col">Tác giả</th>
+                    <th scope="col">Thể loại</th>
+                    <th scope="col">Số lượng hủy</th>
+                    <th scope="col">Lý do hủy</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ctsach in ctphieuhuys %}
+                    <tr>
+                        <th scope="row">{{ ctsach.id_ctphieuhuy }}</th>
+                        <td>{{ ctsach.id_sach.name | upper }}</td>
+                        <td>{{ ctsach.id_sach.author }}</td>
+                        <td>{{ ctsach.id_sach.id_category.name }}</td>
+                        <td>{{ ctsach.so_luong }}</td>
+                        <td>{{ ctsach.ly_do_huy }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-5">
+            <a href="/quan-ly-kho-sach/huy-sach/" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+        </div>
+    </div>
+{% endblock %}

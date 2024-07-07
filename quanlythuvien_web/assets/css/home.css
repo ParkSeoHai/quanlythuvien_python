@@ -282,6 +282,11 @@ header label span {
     right: -215px;
 }
 
+.form-huysach .title-description::after {
+    content: "Chọn sách muốn hủy";
+    right: -130px;
+}
+
 .search-wrapper {
     border: 1px solid #ccc;
     border-radius: 30px;

@@ -79,7 +79,6 @@ urlpatterns = [
     # Quan ly kho sach
     # Get book by id from javascript fetch request
     path('getBookById/', views.getBook, name="getBook"),
-
     # Quan ly kho sach - nhap sach
     path('quan-ly-kho-sach/nhap-sach/', views.nhapsach, name="nhapsachIndex"),
     # Lap phieu nhap sach
@@ -96,6 +95,22 @@ urlpatterns = [
     path('quan-ly-kho-sach/nhap-sach/delete/<str:id>/', views.deletePhieunhap, name="deletePhieunhap"),
     # Search phieu nhap by date
     path('quan-ly-kho-sach/nhap-sach/search/<str:dateFrom>/<str:dateTo>/', views.searchPhieunhapByDate, name="searchPhieunhapByDate"),
+    # Quan ly kho sach - huy sach
+    path("quan-ly-kho-sach/huy-sach/", views.huysach, name="huysachIndex"),
+    # Quan ly kho sach - huy sach - add view
+    path("quan-ly-kho-sach/huy-sach/add/", views.addPhieuhuy, name="addPhieuhuy"),
+    # Post request add huy sach
+    path('huysachPost/', views.huysachPost, name="huysachPost"),
+    # Quan ly kho sach - huy sach - update view
+    path("quan-ly-kho-sach/huy-sach/update/<str:id>/", views.updatePhieuhuy, name="updatePhieuhuy"),
+    # Post request update phieuhuy sach
+    path('updatePhieuhuyPost/', views.updatePhieuhuyPost, name="updatePhieuhuyPost"),
+    # Delete phieuhuy
+    path("quan-ly-kho-sach/huy-sach/delete/<str:id>/", views.deletePhieuhuy, name="deletePhieuhuy"),
+    # Info phieuhuy
+    path("quan-ly-kho-sach/huy-sach/info/<str:id>/", views.infoPhieuhuy, name="infoPhieuhuy"),
+    # Search phieu nhap by date
+    path('quan-ly-kho-sach/huy-sach/search/<str:dateFrom>/<str:dateTo>/', views.searchPhieuhuyByDate, name="searchPhieuhuyByDate"),
 
     path('quan-ly-tinh-hinh-muon-tra/load-form', views.quanlytinhhinhDaTra, name="quanlytinhhinhDaTra"),
 

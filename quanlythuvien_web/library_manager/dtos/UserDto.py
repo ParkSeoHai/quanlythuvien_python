@@ -9,6 +9,7 @@ from library_manager.dtos.ResponseDto import ResponseDto as Response
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
+from library_manager.dtos.PhieuhuyDto import PhieuhuyDto
 
 class UserDto(object):
     def __init__(self, id_user = '', name = '', email ='',
@@ -146,10 +147,12 @@ class UserDto(object):
     def get_bookById(id_sach):
         try:
             book = Books.objects.filter(id_sach=id_sach).first()
+            if book is None:
+                return Response(False, 'Book not found')
             return Response(True, 'Get book success', book)
         except Exception as e:
             print(e)
-            return Response(False, e.__str__(), None)
+            return Response(False, e.__str__())
 
     def get_books():
         try:
@@ -561,8 +564,155 @@ class UserDto(object):
             print(e)
             return Response(False, e.__str__(), None)
 
-    def huy_sach():
-        ...
+    def get_ctphieuhuyBy_PhuyId(id_phieuhuy):
+        try:
+            ctphs = Ctphieuhuys.objects.filter(id_phieuhuy=id_phieuhuy)
+            return Response(True, 'Get ctphieuhuys success', ctphs)
+        except Exception as e:
+            return Response(False, e.__str__())
+
+    def search_phieuhuy_by_date(dateFrom, dateTo):
+        try:
+            phieuhuys = Phieuhuys.objects.filter(ngay_huy__gte=dateFrom, ngay_huy__lte=dateTo, is_delete=0)
+            return Response(True, 'Search phieuhuy by date success', phieuhuys)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__())
+
+    def get_phieuhuys():
+        try:
+            phieuhuys = Phieuhuys.objects.filter(is_delete=0)
+            return Response(True, 'Get phieuhuys success', phieuhuys)
+        except Exception as e:
+            return Response(False, e.__str__())
+        
+    def get_books_all():
+        try:
+            books = Books.objects.all()
+            return Response(True, 'Get all books success', books)
+        except Exception as e:
+            return Response(False, e.__str__())
+
+    def huy_sach(phieuhuyDto: PhieuhuyDto, ctphieuhuys):
+        try:
+            # Get user by id
+            user = Users.objects.filter(id_user=phieuhuyDto.id_user).first()
+            if user is None:
+                return Response(False, 'User not found')
+            
+            # Add phieunhap
+            phieuhuy = Phieuhuys(
+                id_phieuhuy=phieuhuyDto.id_phieuhuy,
+                ngay_huy=phieuhuyDto.ngay_huy,
+                id_user=user,
+                is_delete=phieuhuyDto.is_delete
+            )
+            phieuhuy.save()
+            # Add ctphieuhuy
+            for ct in ctphieuhuys:
+                # Get book by id
+                book = Books.objects.filter(id_sach=ct['id_sach']).first()
+                if book is None:
+                    return Response(False, 'Book not found')
+                # Update quantity book
+                book.quantity -= ct['so_luong']
+                # Add ctphieuhuy
+                ctphieuhuy = Ctphieuhuys(
+                    id_ctphieuhuy=ct['id_ctphieuhuy'],
+                    id_phieuhuy=phieuhuy,
+                    id_sach=book,
+                    so_luong=ct['so_luong'],
+                    ly_do_huy=ct['ly_do_huy']
+                )
+                ctphieuhuy.save()
+                book.save()
+            return Response(True, 'Add phieuhuy success', phieuhuy.id_phieuhuy)
+        except Exception as e:
+            return Response(False, e.__str__())
+
+    def get_phieuhuyById(id):
+        try:
+            phieuhuy = Phieuhuys.objects.filter(id_phieuhuy=id).first()
+            if phieuhuy is None:
+                return Response(False, 'Phieuhuy not found', id)
+            return Response(True, 'Get phieuhuy success', phieuhuy)
+        except Exception as e:
+            return Response(False, e.__str__())
+
+    def update_phieuhuy(phieuhuyDto: PhieuhuyDto, ctphieuhuys, ctph_deletes):
+        try:
+            # Update phieuhuy
+            phieuhuy = Phieuhuys.objects.filter(id_phieuhuy=phieuhuyDto.id_phieuhuy).first()
+            if phieuhuy is None:
+                return Response(False, 'Phieuhuy not found', phieuhuyDto.id_phieuhuy)
+            phieuhuy.ngay_huy = phieuhuyDto.ngay_huy
+            phieuhuy.save()
+            # Update ctphieuhuy
+            for ctph in ctphieuhuys:
+                # Get ctph by id_phieuhuy & id_sach
+                ctphieuhuy = Ctphieuhuys.objects.filter(id_phieuhuy=phieuhuy.id_phieuhuy,
+                                                        id_sach=ctph['id_sach']).first()
+                # Get book by id
+                book = Books.objects.filter(id_sach=ctph['id_sach']).first()
+                if book is None:
+                    return Response(False, f'Book not found, id: {ctph['id_sach']}')
+                
+                if ctphieuhuy is None:
+                    # Add new ctphieuhuy
+                    ctphieuhuy = Ctphieuhuys(
+                        id_ctphieuhuy=ctph['id_ctphieuhuy'],
+                        id_sach=book,
+                        id_phieuhuy=phieuhuy,
+                        so_luong=ctph['so_luong'],
+                        ly_do_huy=ctph['ly_do_huy']
+                    )
+                    # Update quantity
+                    book.quantity -= ctphieuhuy.so_luong
+                else:
+                    # Update quantity book
+                    book.quantity += ctphieuhuy.so_luong - ctph['so_luong']
+                    ctphieuhuy.so_luong = ctph['so_luong']
+                    ctphieuhuy.ly_do_huy = ctph['ly_do_huy']
+                # Update ctphieuhuy & book
+                ctphieuhuy.save()
+                book.save()
+
+            # Delete ctphieuhuys
+            for id_ctph in ctph_deletes:
+                # Get ctph
+                ctphieuhuy = Ctphieuhuys.objects.filter(id_ctphieuhuy=id_ctph).first()
+                if ctphieuhuy is None:
+                    return Response(False, f'Ctphieuhuy not found, id: {id_ctph}')
+                else:
+                    # Update quantity book
+                    ctphieuhuy.id_sach.quantity += ctphieuhuy.so_luong
+                    ctphieuhuy.id_sach.save()
+                    ctphieuhuy.delete()
+                    
+            return Response(True, 'Update phieuhuy success', phieuhuy.id_phieuhuy)
+        except Exception as e:
+            return Response(False, e.__str__())
+
+    def delete_phieuhuy(id):
+        try:
+            # Get phieuhuy by id
+            phieuhuy = Phieuhuys.objects.filter(id_phieuhuy=id).first()
+            if phieuhuy is None:
+                return Response(False, 'Phieuhuy not found')
+            # Delete ctphieuhuy
+            ctphieuhuys = Ctphieuhuys.objects.filter(id_phieuhuy=phieuhuy)
+            for ct in ctphieuhuys:
+                # Update quantity book
+                book = Books.objects.filter(id_sach=ct.id_sach.id_sach).first()
+                book.quantity += ct.so_luong
+                book.save()
+                ct.delete()
+
+            phieuhuy.delete()
+            return Response(True, 'Delete phieuhuy success', id)
+
+        except Exception as e:
+            return Response(False, e.__str__())
 
     def thongkesach():
         try:

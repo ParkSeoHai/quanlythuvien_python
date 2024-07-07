@@ -1,5 +1,7 @@
 {% extends "index.html" %}
 
+{% load static %}
+
 {% block title %}
     Nhập sách - Tạo mới
 {% endblock  %}
@@ -102,4 +104,6 @@
             </div>
         </fieldset>
     </form>
+
+    <script src={% static 'javascript/nhapsach.js' %}></script>
 {% endblock  %}

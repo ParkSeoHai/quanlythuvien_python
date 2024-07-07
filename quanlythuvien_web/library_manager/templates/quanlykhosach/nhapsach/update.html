@@ -1,5 +1,7 @@
 {% extends "index.html" %}
 
+{% load static %}
+
 {% block title %}
     Nhập sách - Cập nhật
 {% endblock  %}
@@ -107,6 +109,7 @@
             </div>
         </fieldset>
     </form>
+    <script src={% static 'javascript/nhapsach.js' %}></script>
     <script>
         window.addEventListener('load', function () {
             // Your code here

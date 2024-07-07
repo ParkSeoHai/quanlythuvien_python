@@ -17,6 +17,7 @@ from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
+from library_manager.dtos.PhieuhuyDto import PhieuhuyDto
 
 from library_manager.models import Books, Users
 
@@ -475,20 +476,28 @@ def searchBook(request, searchInput):
 def getBook(request):
     if request.method == 'GET':
         id = request.GET.get('id')
-        response = UserDto.get_bookById(id[0:len(id)-1])
+        responseDto = UserDto.get_bookById(id[0:len(id)-1])
         # Book response
-        bookResponse = {
-            'id_sach': response.data.id_sach,
-            'name': response.data.name,
-            'price': response.data.price,
-            'quantity': response.data.quantity,
-            'image': response.data.image,
-            'author': response.data.author,
-            'is_delete': response.data.is_delete,
-            'id_category': response.data.id_category_id
+        book = {
+            'id_sach': responseDto.data.id_sach,
+            'name': responseDto.data.name,
+            'price': responseDto.data.price,
+            'quantity': responseDto.data.quantity,
+            'image': responseDto.data.image,
+            'author': responseDto.data.author,
+            'is_delete': responseDto.data.is_delete,
+            'id_category': responseDto.data.id_category_id,
+            'nameCategory': responseDto.data.id_category.name
         }
+        # Response to client
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': book
+        }
+        
         # Return response to javascript json serializer
-        return HttpResponse(json.dumps(bookResponse), content_type='application/json')
+        return HttpResponse(json.dumps(response), content_type='application/json')
 
 # Quan ly muon tra sach
 def quanlymuontra(request):
@@ -724,7 +733,7 @@ def addPhieunhap(request):
     # Get category
     categoryRes = AdminDto.get_categories()
     # Get books
-    bookRes = UserDto.get_books()
+    bookRes = UserDto.get_books_all()
     # Context for template
     context = {
         'user': user,
@@ -908,6 +917,174 @@ def infoPhieunhap(request, id):
     }
     # Load infoPhieunhap page
     template = loader.get_template('quanlykhosach/nhapsach/info.html')
+    return HttpResponse(template.render(context, request))
+
+# Quan ly kho sach - huy sach
+def huysach(request):
+    # Get list phieuhuys
+    phieuhuyResponse = UserDto.get_phieuhuys()
+
+    context = {
+        'user': get_user(request),
+        'phieuhuys': phieuhuyResponse.data
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/huysach/index.html')
+    return HttpResponse(template.render(context, request))
+
+# Quan ly kho sach - huy sach - add view
+def addPhieuhuy(request):
+    # Get all books
+    books = UserDto.get_books_all().data
+    context = {
+        'user': get_user(request),
+        'books': books
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/huysach/add.html')
+    return HttpResponse(template.render(context, request))
+
+# Quan ly kho sach - huy sach - update view
+def updatePhieuhuy(request, id):
+    # Get all books
+    books = UserDto.get_books_all().data
+    # Get phieuhuy
+    phieuhuyRes = UserDto.get_phieuhuyById(id)
+    # Get ctphieuhuys
+    ctphieuhuyRes = UserDto.get_ctphieuhuyBy_PhuyId(id)
+    # List books
+    listBooks = []
+    for ctph in ctphieuhuyRes.data:
+        book = {
+            'id_ctph': ctph.id_ctphieuhuy,
+            'id_sach': ctph.id_sach.id_sach,
+            'name': ctph.id_sach.name,
+            'category': ctph.id_sach.id_category.name,
+            'author': ctph.id_sach.author,
+            'quantity': ctph.so_luong,
+            'quantityCurr': ctph.id_sach.quantity,
+            'note': ctph.ly_do_huy,
+        }
+        listBooks.append(book)
+
+    context = {
+        'user': get_user(request),
+        'phieuhuy': phieuhuyRes.data,
+        'books': books,
+        'listBooks': listBooks
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/huysach/update.html')
+    return HttpResponse(template.render(context, request))
+
+# Add phieuhuy post
+def huysachPost(request):
+    if request.method == 'POST':
+        # Get value
+        data = request.POST.get('data')
+        data = json.loads(data)
+        # Get ngayhuy by date now
+        date = datetime.now()
+        ngay_huy = f'{date.strftime('%Y')}-{date.strftime('%m')}-{date.strftime('%d')}'
+        # Create phieu huy dto
+        phieuhuyDto = PhieuhuyDto(
+            id_phieuhuy=str(uuid.uuid4()),
+            ngay_huy=ngay_huy,
+            id_user=request.session.get('id_user'),
+        )
+        # Get ct phieuhuy
+        ctphieuhuys = []
+        for ct in data['books']:
+            ctObject = {
+                'id_ctphieuhuy': str(uuid.uuid4()),
+                'id_sach': ct['id_sach'],
+                'so_luong': int(ct['quantity']),
+                'ly_do_huy': ct['note']
+            }
+            ctphieuhuys.append(ctObject)
+
+        responseDto = UserDto.huy_sach(phieuhuyDto, ctphieuhuys)
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Update phieuhuy post
+def updatePhieuhuyPost(request):
+    if request.method == 'POST':
+        data = request.POST.get('data')
+        data = json.loads(data)
+        # Create phieuhuy object dto
+        phieuhuyDto = PhieuhuyDto(
+            id_phieuhuy=data['id_phieuhuy'],
+            ngay_huy=data['ngay_huy']
+        )
+        # Get ct phieuhuy
+        ctphieuhuys = []
+        for ct in data['books']:
+            ctObject = {
+                'id_ctphieuhuy': str(uuid.uuid4()),
+                'id_sach': ct['id_sach'],
+                'so_luong': int(ct['quantity']),
+                'ly_do_huy': ct['note']
+            }
+            ctphieuhuys.append(ctObject)
+        # Get ctph delete
+        ctph_deletes = data['ctph_deletes']
+
+        # Response from userdto
+        responseDto = UserDto.update_phieuhuy(phieuhuyDto, ctphieuhuys, ctph_deletes)
+        # Convert to response object
+        response = {
+            'status': responseDto.status,
+            'message': responseDto.message,
+            'data': responseDto.data
+        }
+        # Return response to javascript json serializer
+        return HttpResponse(json.dumps(response), content_type='application/json')
+
+# Delete phieuhuy
+def deletePhieuhuy(request, id):
+    response = UserDto.delete_phieuhuy(id)
+    print(response.message)
+    if response.status is True:
+        messages.success(request, response.message)
+    else:
+        messages.error(request, response.message)
+    # Redirect to page quan-ly-kho-sach / huy-sach
+    return HttpResponseRedirect(reverse('huysachIndex'))
+
+# Info phieuhuy view
+def infoPhieuhuy(request, id):
+    # Get phieuhuy by id
+    phieuhuy = UserDto.get_phieuhuyById(id).data
+    # Get all ctphieuhuys
+    ctphieuhuys = UserDto.get_ctphieuhuyBy_PhuyId(phieuhuy.id_phieuhuy).data
+    context = {
+        'user': get_user(request),
+        'phieuhuy': phieuhuy,
+        'ctphieuhuys': ctphieuhuys
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/huysach/info.html')
+    return HttpResponse(template.render(context, request))
+
+# Search phieuhuy by date
+def searchPhieuhuyByDate(request, dateFrom, dateTo):
+    # Response from search_phieuhuyby_date function
+    response = UserDto.search_phieuhuy_by_date(dateFrom, dateTo)
+    # Context for template
+    context = {
+        'user': get_user(request),
+        'phieuhuys': response.data,
+        'dateFrom': dateFrom,
+        'dateTo': dateTo
+    }
+    # Load nhapsach page
+    template = loader.get_template('quanlykhosach/huysach/index.html')
     return HttpResponse(template.render(context, request))
 
 # Logout

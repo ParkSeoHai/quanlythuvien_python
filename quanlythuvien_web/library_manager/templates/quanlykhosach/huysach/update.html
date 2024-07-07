@@ -1,0 +1,107 @@
+{% extends "index.html" %}
+
+{% load static %}
+
+{% block title %}
+    Hủy sách - Cập nhật phiếu hủy
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Cập nhật phiếu hủy sách</h2>
+    <form class="form form-huysach" autocomplete="off" onsubmit="submitUpdatePhieuhuy(event)">
+        {% csrf_token %}
+        <fieldset>
+            <div class="d-flex justify-content-between">
+                <input type="hidden" class="phieuhuy-id" name="phieuhuy-id" value="{{ phieuhuy.id_phieuhuy }}">
+                <div class="form-group mt-4 w-25">
+                    <label class="form-label">Ngày tạo phiếu hủy</label>
+                    <input type="date" class="form-control ngayhuy" required placeholder="Ngày hủy"
+                            name="ngayhuy" value="{{ phieuhuy.ngay_huy }}">
+                </div>
+            </div>
+
+            <div class="container-books">
+                <div class="container-books__header">
+                    <h3 class="lv3">
+                        Danh sách sách hủy
+                        <span class="fs-6 px-2 title-description">
+                            <i class="bi bi-info-circle"></i>
+                        <span>
+                    </h3>
+                    <div class="text-center d-flex gap-3">
+                        <button type="button" class="btn btn-outline-primary" onclick="addBookPhieuHuy()">
+                            <i class="bi bi-plus-circle"></i>&nbsp; Thêm
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="updateBookPhieuHuy()">
+                            <i class="bi bi-plus-circle"></i>&nbsp; Cập nhật
+                        </button>
+                    </div>
+                </div>
+                <div class="container-books__add mb-3">
+                    <div class="d-flex justify-content-between gap-4">
+                        <input type="hidden" class="book-id" name="book_id">
+                        <div class="form-group w-75">
+                            <label for="bookSelect" class="form-label">Chọn sách</label>
+                            <select class="form-control book-select" id="bookSelect" onchange="chooseBookPhieuhuy(this)">
+                                <option value="0">Chọn sách</option>
+                                {% for book in books %}
+                                    <option value="{{ book.id_sach }}">{{ book.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group w-50">
+                            <label for="bookCategory" class="form-label">Category</label>
+                            <input type="text" class="form-control book-category" disabled id="bookCategory" placeholder="Category">
+                        </div>
+                        <div class="form-group" style="width: 40%;">
+                            <label for="bookAuthor" class="form-label">Tác giả</label>
+                            <input type="text" class="form-control book-author" disabled id="bookAuthor" placeholder="Tác giả">
+                        </div>
+                        <div class="form-group w-25">
+                            <label for="bookQuantityCurrent" class="form-label">Số lượng hiện có</label>
+                            <input type="text" class="form-control book-quantity" disabled id="bookQuantityCurrent" placeholder="Số lượng hiện tại">
+                        </div>
+                        <div class="form-group w-25">
+                            <label for="bookQuantity" class="form-label">Số lượng hủy</label>
+                            <input type="text" class="form-control book-quantity" id="bookQuantity" placeholder="Số lượng hủy">
+                        </div>
+                        <div class="form-group w-25">
+                            <label class="form-label">Lý do hủy</label>
+                            <textarea class="form-control ly-do_huysach" placeholder="Nhập lý do hủy"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-books__table">
+                    <table class="table table-hover table-books_phieuhuy">
+                        <thead>
+                            <tr class="table-primary">
+                                <th scope="col">STT</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Author</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Note</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-5">
+                <a href="/quan-ly-kho-sach/huy-sach" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i>&nbsp; Save
+                </button>
+            </div>
+        </fieldset>
+    </form>
+    <script src={% static 'javascript/huysach.js' %}></script>
+    <script>
+        window.addEventListener('load', function () {
+            booksPhieuhuy = {{ listBooks | safe }};
+            displayBooksPhieuhuy(booksPhieuhuy);
+        });
+    </script>
+{% endblock  %}

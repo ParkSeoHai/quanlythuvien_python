@@ -135,20 +135,20 @@ const searchThethuvienEnter = (event, typeModal) => {
 const savePhieumuon = () => {
     const bookName = modalAddPhieumuon.querySelector('input[name=book]:checked');
     if (!bookName) {
-        toastr.error('Vui lòng chọn sách');
+        toastr.info('Vui lòng chọn sách');
         return;
     }
 
     // Check quantity book
     const bookQuantity = modalAddPhieumuon.querySelector('input[name=book]:checked ~ .book-quantity');
     if (bookQuantity.value <= 0) {
-        toastr.error('Số lượng sách hiện tại đã hết');
+        toastr.info('Số lượng sách hiện tại đã hết');
         return;
     }
 
     // Check validation
     if (!thethuvienValid) {
-        toastr.error('Thông tin thẻ không hợp lệ');
+        toastr.info('Thông tin thẻ không hợp lệ');
         return;
     }
 
@@ -248,13 +248,13 @@ const updatePhieumuon = () => {
         // Get data
         const bookName = modalUpdatePhieumuon.querySelector('input[name=book]:checked');
         if (!bookName) {
-            toastr.error('Vui lòng chọn sách');
+            toastr.info('Vui lòng chọn sách');
             return;
         }
         // Check quantity book
         const bookQuantity = modalUpdatePhieumuon.querySelector('input[name=book]:checked ~ .book-quantity');
         if (bookQuantity.value <= 0) {
-            toastr.error('Số lượng sách hiện tại đã hết');
+            toastr.info('Số lượng sách hiện tại đã hết');
             return;
         }
 
