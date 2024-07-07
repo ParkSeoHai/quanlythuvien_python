@@ -421,9 +421,11 @@ def addBookPost(request):
         image = request.POST.get('image')
         author = request.POST.get('author')
         id_category = request.POST.get('category')
+        dateNow = datetime.now()
+        ngay_tao = dateNow.strftime("%Y") + "-" + dateNow.strftime("%m") + "-" + dateNow.strftime("%d")
         # Create book dto
         book = BookDto(id_sach=id_sach, name=name, price=price, quantity=quantity, image=image,
-                        author=author, id_category=id_category)
+                        author=author, id_category=id_category, ngay_tao=ngay_tao)
         print(book.__dict__)
 
         # Response from add_book function
