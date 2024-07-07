@@ -16,10 +16,14 @@ from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
+
+from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps
+
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
 from library_manager.dtos.PhieuhuyDto import PhieuhuyDto
 
 from library_manager.models import Books, Users
+
 
 # Default view for login page
 def index(request):
@@ -93,12 +97,16 @@ def home(request):
     user = get_user(request)
     books = Books.objects.all()
     users = Users.objects.all()
-
+    docgias = Docgias.objects.all()
+    phieunhaps = Phieunhaps.objects.all()
+    latest_books = Books.objects.all().order_by('ngay_tao')[:5]
     context = {
         'user': user,
         'books': books,
         'users': users,
-
+        'docgias': docgias,
+        'phieunhaps': phieunhaps,
+        'latest_books': latest_books,
     }
     return render(request, 'home.html', context)
 
@@ -125,6 +133,14 @@ def quanlynguoidung(request, tab):
         print('Tab not found')
         # Message show in template
         messages.info(request, 'Tab not found')
+
+    # Load quanlynguoidung page
+    template = loader.get_template('quanlynguoidung/index.html')
+    return HttpResponse(template.render(context, request))
+
+
+
+
 
     # Load quanlynguoidung page
     template = loader.get_template('quanlynguoidung/index.html')
@@ -405,9 +421,11 @@ def addBookPost(request):
         image = request.POST.get('image')
         author = request.POST.get('author')
         id_category = request.POST.get('category')
+        dateNow = datetime.now()
+        ngay_tao = dateNow.strftime("%Y") + "-" + dateNow.strftime("%m") + "-" + dateNow.strftime("%d")
         # Create book dto
         book = BookDto(id_sach=id_sach, name=name, price=price, quantity=quantity, image=image,
-                        author=author, id_category=id_category)
+                        author=author, id_category=id_category, ngay_tao=ngay_tao)
         print(book.__dict__)
 
         # Response from add_book function
@@ -789,6 +807,7 @@ def nhapsachPost(request):
         # Get value
         data = request.POST.get('data')
         data = json.loads(data)
+
         # Create phieu nhap dto
         phieunhap = PhieunhapDto(
             id_phieunhap=str(uuid.uuid4()),
@@ -808,7 +827,8 @@ def nhapsachPost(request):
                 quantity=int(book['quantity']),
                 image='https://plus.unsplash.com/premium_photo-1667251760532-85310936c89a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 author=book['author'],
-                id_category=book['category']['id']
+                id_category=book['category']['id'],
+                ngay_tao=data['ngaynhap']
             )
             books.append(book)
         
@@ -852,7 +872,8 @@ def updatePhieunhapPost(request):
                 quantity=int(book['quantity']),
                 image='https://plus.unsplash.com/premium_photo-1667251760532-85310936c89a?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
                 author=book['author'],
-                id_category=book['category']['id']
+                id_category=book['category']['id'],
+                ngay_tao=data['ngaynhap']
             )
             books.append(book)
 

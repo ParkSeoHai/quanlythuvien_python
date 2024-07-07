@@ -88,6 +88,7 @@ class Books(models.Model):
     id_category = models.ForeignKey('Categories', models.DO_NOTHING, db_column='id_category')
     ngay_tao = models.CharField(max_length=50)
 
+
     class Meta:
         managed = False
         db_table = 'books'

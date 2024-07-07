@@ -12,7 +12,7 @@
         <div class="card-single">
             <div>
 
-                <h1>x</h1>
+                <h1>{{ docgias|length }}</h1>
 
                 <span>Độc giả</span>
             </div>
@@ -41,7 +41,7 @@
         </div>
         <div class="card-single">
             <div>
-                <h1>X</h1>
+                <h1>{{phieunhaps|length}}</h1>
                 <span>Lượt mượn sách</span>
             </div>
             <div>
@@ -72,7 +72,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                    {% for book in books %}
+                                    {% for book in latest_books %}
                                     <tr>
                                         <td>{{ book.name }}</td>
                                         <td>{{ book.author }}</td>
@@ -93,14 +93,14 @@
                 <div class="card-header">
                     <h3 class="lv3">New customers</h3>
                     <button>
-                        <a href="quanlynguoidung/index.html">
+                        <a href="/quan-ly-nguoi-dung/nguoi-dung">
                             See all<span class="las la-arrow-right"></span>
                         </a>
                     </button>
                 </div>
 
                 <div class="card-body">
-{% for user in users %}
+                    {% for user in users %}
                         <div class="customer">
 
                             <div class="info" >

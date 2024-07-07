@@ -82,7 +82,7 @@ class UserDto(object):
                 # Add book to database
                 book = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price,
                              quantity=bookDto.quantity, image=bookDto.image, author=bookDto.author,
-                             is_delete=bookDto.is_delete, id_category=category)
+                             is_delete=bookDto.is_delete, id_category=category,ngay_tao =bookDto.ngay_tao)
                 book.save()
                 return Response(True, 'Add book success', book.id_sach)
         except Exception as e:
@@ -434,7 +434,8 @@ class UserDto(object):
                     category = Categories.objects.filter(id_category=bookDto.id_category).first()
                     # Add new book
                     book = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price, quantity=bookDto.quantity,
-                             image=bookDto.image, author=bookDto.author, id_category=category, is_delete=bookDto.is_delete)
+                             image=bookDto.image, author=bookDto.author, id_category=category, is_delete=bookDto.is_delete,
+                             ngay_tao=bookDto.ngay_tao)
                 book.save()
 
                 # Add ctphieunhap
@@ -477,7 +478,8 @@ class UserDto(object):
                     category = Categories.objects.filter(id_category=bookDto.id_category).first()
                     # Add new book
                     book = Books(id_sach=str(uuid.uuid4()), name=bookDto.name, price=bookDto.price, quantity=bookDto.quantity,
-                             image=bookDto.image, author=bookDto.author, id_category=category, is_delete=bookDto.is_delete)
+                             image=bookDto.image, author=bookDto.author, id_category=category, is_delete=bookDto.is_delete,
+                             ngay_tao=bookDto.ngay_tao)
                 book.save()
 
                 # Update ctphieunhap if ctphieunhap exits else add new ctphieunhap
