@@ -822,18 +822,17 @@ class UserDto(object):
 
     def ThongKePhieuHuy():
         try:
-            current_year=datetime.now().year
+            current_year = datetime.now().year
             # Lấy tất cả các phiếu hủy
-            phieuhuys = Phieuhuys.objects.filter(ngay_huy__startswith=f"{current_year}/",
-                is_delete=0)
+            phieuhuys = Phieuhuys.objects.filter(ngay_huy__startswith=f"{current_year}-",is_delete=0)
 
             # Khởi tạo từ điển để lưu trữ tổng số lượng
             monthly_stats = defaultdict(lambda: {'total_quantity': 0})
 
             for phieuhuy in phieuhuys:
                 # Chuyển đổi chuỗi ngày tháng sang đối tượng datetime
-                ngay_nhap = datetime.strptime(phieuhuy.ngay_huy, "%Y-%m-%d")
-                month = ngay_nhap.month
+                ngay_huy = datetime.strptime(phieuhuy.ngay_huy, "%Y-%m-%d")
+                month = ngay_huy.month
 
                 # Lấy các chi tiết phiếu nhập tương ứng
                 ctphieuhuys = Ctphieuhuys.objects.filter(id_phieuhuy=phieuhuy)

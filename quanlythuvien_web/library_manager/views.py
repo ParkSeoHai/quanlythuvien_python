@@ -1355,7 +1355,7 @@ def ThongKeNhapHuy(request):
     return HttpResponse(template.render({
         'user': user,
         'Nhap': response.data,
-        'Huy': response_huy.data
+        'Huy': response_huy.data,
     }))
 
 def ThongKeTongKho(request):
