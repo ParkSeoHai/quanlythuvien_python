@@ -64,21 +64,24 @@
                 <p class="modal-desc">Bạn có chắc chắn muốn xóa danh mục này không?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="cancelDeleteCategory()">Hủy</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelDelete()">Hủy</button>
                 <a href="" class="btn btn-danger btn-delete">Xóa</a>
             </div>
         </div>
     </div>
     <script !src="">
-    const deleteCategory = (id) => {
-    // Open modal
-    const modalBg = document.querySelector('.modal-bg');
-    const modal = document.querySelector('.modal-delete');
-    if (modalBg && modal) {
-        modalBg.classList.remove('d-none');
-        modal.classList.remove('d-none');
-        modal.querySelector('.btn-delete').setAttribute('href', `/quan-ly-danh-muc/delete/${id}`);
+        const deleteCategory = (id) => {
+        // Open modal
+        const modalBg = document.querySelector('.modal-bg');
+        const modal = document.querySelector('.modal-delete');
+        if (modalBg && modal) {
+            modalBg.classList.remove('d-none');
+            modal.classList.remove('d-none');
+            modal.querySelector('.btn-delete').setAttribute('href', `/quan-ly-danh-muc/delete/${id}`);
+        }
     }
+<<<<<<< HEAD
+=======
 }
 
 // Handle cancel delete user
@@ -103,5 +106,6 @@ const searchCategoryEnter = () => {
         searchCategory();
     }
 }
+>>>>>>> 2045ffe1891636971c5db05e830585256c4af7d7
     </script>
 {% endblock  %}

@@ -1,10 +1,235 @@
 {% extends "index.html" %}
+{% load static %}
 
 {% block title %}
     Quản lý mượn trả
 {% endblock  %}
 
 {% block content %}
-    <h1>Quan ly muon tra</h1>
+    <div style="position: relative;">
+        <h2 class="lv2">Danh sách phiếu mượn</h2>
+        <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
+            <button type="button" class="btn btn-outline-primary" onclick="open_add_phieumuon()">
+                <i class="bi bi-plus-circle"></i>&nbsp; Tạo phiếu mượn
+            </button>
+            <div class="search-block w-25">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Nhập mã thẻ thư viện" oninput="searchPhieumuon(event)">
+                </div>              
+            </div>
+        </div>
+        <div class="alert alert-info alert-search_phieumuon d-none" role="alert">
+        </div>
+        <table class="table table-hover table-list__phieumuon">
+            <thead>
+                <tr class="table-primary">
+                    <th scope="col">ID</th>
+                    <th scope="col">Tên sách</th>
+                    <th scope="col">Mã thẻ thư viện</th>
+                    <th scope="col">Tên độc giả</th>
+                    <th scope="col">Ngày mượn</th>
+                    <th scope="col">Ngày hẹn trả</th>
+                    <th scope="col">Trạng thái</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Người tạo phiếu</th>
+                    <th scope="col">Ghi chú</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if phieumuons|length == 0 %}
+                    <tr>
+                        <th colspan="11" class="text-center">Không có dữ liệu</th>
+                    </tr>
+                {% endif %}
+                {% comment %} Hiển thị danh sách user {% endcomment %}
+                {% for phieumuon in phieumuons %}
+                    <tr>
+                        <th scope="row">{{ phieumuon.id_phieumuon }}</th>
+                        <td>{{ phieumuon.id_sach.name }}</td>
+                        <td>{{ phieumuon.id_the.id_the }}</td>
+                        <td>{{ phieumuon.id_the.id_docgia.name }}</td>
+                        <td>{{ phieumuon.ngay_tao }}</td>
+                        <td>{{ phieumuon.ngay_hen_tra }}</td>
+                        <td>{% if phieumuon.trang_thai == 0 %} Đang mượn {% else %} Đã trả {% endif %}</td>
+                        <td>{{ phieumuon.so_luong }}</td>
+                        <td>{{ phieumuon.id_user.name }}</td>
+                        <td>{{ phieumuon.ghi_chu }}</td>
+                        <td>
+                            <button class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa" onclick="open_update_phieumuon('{{ phieumuon.id_phieumuon }}')">
+                                <i class="bi bi-gear"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger" style="margin-right: 8px" title="Xóa" onclick="deletePhieumuon('{{ phieumuon.id_phieumuon }}')">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-success" title="Xác nhận trả sách" onclick="open_modal_trasach('{{ phieumuon.id_phieumuon }}')">
+                                <i class="bi bi-check-square"></i>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% comment %} Modal add phieumuon {% endcomment %}
+        <div class="modal-phieumuon modal-add-phieumuon d-none">
+            <div class="header">
+                <h5 class="modal-title">Tạo phiếu mượn sách</h5>
+                <div class="icon-close" onclick="closeModalPhieumuon()">
+                    <i class="bi bi-x"></i>
+                </div>
+            </div>
+            <div class="body mt-3">
+                <div class="d-flex">
+                    <div class="form-group w-75">
+                        <label class="form-label">Tìm sách</label>
+                        <input type="text" class="form-control" placeholder="Nhập tên sách" oninput="getBooksPhieumuon(event, 'add')">
     
+                        {% comment %} Show list books {% endcomment %}
+                        <div class="table-list-book">
+                            <table class="table table-hover mt-3">
+                                <thead>
+                                    <tr class="table-primary">
+                                        <th scope="col"></th>
+                                        <th scope="col">Tên sách</th>
+                                        <th scope="col">Tác giả</th>
+                                        <th scope="col">Số lượng còn</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group ms-4 w-50">
+                        <label class="form-label">Mã thẻ thư viện</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control thethuvien_id" placeholder="Nhập mã thẻ" onkeypress="searchThethuvienEnter(event, 'add')">
+                            <span class="input-group-text search-icon" title="Tìm kiếm" onclick="searchThethuvien('add')">
+                                <i class="bi bi-search"></i>
+                            </span>
+                        </div>
+    
+                        <div class="info-docgia fs-5 mt-3">
+                        </div>
+                    </div>
+    
+                    <div class="form-group ms-4" style="width: 30%;">
+                        <label class="form-label">Ghi chú</label>
+                        <textarea class="form-control ghi-chu" placeholder="Nhập ghi chú"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom">
+                <button type="button" class="btn btn-dark me-2" onclick="closeModalPhieumuon()">Trở lại</button>
+                <button type="button" class="btn btn-outline-primary" onclick="savePhieumuon()">Lưu phiếu mượn</button>
+            </div>
+        </div>
+
+        {% comment %} Modal update phieumuon {% endcomment %}
+        <div class="modal-phieumuon modal-update-phieumuon d-none">
+            <input type="text" class="id-phieunhap-update" value="" hidden>
+            <div class="header">
+                <h5 class="modal-title">Cập nhật phiếu mượn sách</h5>
+                <div class="icon-close" onclick="closeModalPhieumuon()">
+                    <i class="bi bi-x"></i>
+                </div>
+            </div>
+            <div class="body mt-3">
+                <div class="d-flex">
+                    <div class="form-group w-75">
+                        <label class="form-label">Tìm sách</label>
+                        <input type="text" class="form-control namebook-input" placeholder="Nhập tên sách" oninput="getBooksPhieumuon(event, 'update')">
+    
+                        {% comment %} Show list books {% endcomment %}
+                        <div class="table-list-book">
+                            <table class="table table-hover mt-3">
+                                <thead>
+                                    <tr class="table-primary">
+                                        <th scope="col"></th>
+                                        <th scope="col">Tên sách</th>
+                                        <th scope="col">Tác giả</th>
+                                        <th scope="col">Số lượng còn</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group ms-4 w-50">
+                        <label class="form-label">Mã thẻ thư viện</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control thethuvien_id" disabled="disabled" placeholder="Nhập mã thẻ" onkeypress="searchThethuvienEnter(event, 'update')">
+                            <span class="input-group-text search-icon" title="Tìm kiếm" onclick="searchThethuvien('update')">
+                                <i class="bi bi-search"></i>
+                            </span>
+                        </div>
+    
+                        <div class="info-docgia fs-5 mt-3">
+                        </div>
+                    </div>
+    
+                    <div class="ms-4" style="width: 30%;">
+                        <div class="form-group">
+                            <label class="form-label">Ngày tạo</label>
+                            <input type="date" class="form-control ngay_tao" required>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label class="form-label">Ngày hẹn trả</label>
+                            <input type="date" class="form-control ngay_hen_tra" required>
+                        </div>
+                        <div class="form-group mt-3">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea class="form-control ghi-chu" placeholder="Nhập ghi chú"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom">
+                <button type="button" class="btn btn-dark me-2" onclick="closeModalPhieumuon()">Trở lại</button>
+                <button type="button" class="btn btn-outline-primary" onclick="updatePhieumuon()">Lưu phiếu mượn</button>
+            </div>
+        </div>
+
+        {% comment %} Modal delete {% endcomment %}
+        <div class="modal-main modal-delete d-none">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Xác nhận xóa</h5>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-desc">Bạn có chắc chắn muốn xóa độc giả này không?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="cancelDelete()">Hủy</button>
+                    <a href="" class="btn btn-danger btn-delete">Xóa</a>
+                </div>
+            </div>
+        </div>
+
+        {% comment %} Modal tra sach phieumuon {% endcomment %}
+        <div class="modal-phieumuon modal-trasach-phieumuon d-none" style="width: 40%; min-height: 150px;">
+            <input type="text" class="id_phieumuon_trasach" value="" hidden>
+            <div class="header">
+                <h5 class="modal-title">Thu hồi phiếu mượn</h5>
+                <div class="icon-close" onclick="closeModalPhieumuon()">
+                    <i class="bi bi-x"></i>
+                </div>
+            </div>
+            <div class="body mt-3">
+                <span class="fs-5 fw-semibold">Xác nhận đúng thông tin trước khi thu hồi phiếu mượn</span>
+                <div class="form-group mt-2">
+                    <label class="form-label">Ghi chú trả sách</label>
+                    <textarea class="form-control ghi-chu_trasach" placeholder="Nhập ghi chú"></textarea>
+                </div>
+            </div>
+            <div class="bottom">
+                <button type="button" class="btn btn-dark me-2" onclick="closeModalPhieumuon()">Trở lại</button>
+                <button type="button" class="btn btn-outline-primary" onclick="thuhoi_phieumuon()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <script src={% static 'javascript/quanlymuontra.js' %}></script>
 {% endblock  %}

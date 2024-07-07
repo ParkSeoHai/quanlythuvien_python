@@ -6,7 +6,10 @@ urlpatterns = [
     path('home/', views.home, name="home"),
     # Url quan ly nguoi dung / user
     path('quan-ly-nguoi-dung/<str:tab>/', views.quanlynguoidung, name="quanlynguoidung"),
+<<<<<<< HEAD
     path('home/quanlynguoidung/nguoi-dung/<str:tab>/', views.quanlynguoidung, name='nguoi_dung'),
+=======
+>>>>>>> 337b4cd5448d632d10a35816a92c37e99d533141
     # Add user
     path('quan-ly-nguoi-dung/nguoi-dung/add/', views.addUser, name="addUser"),
     path('addUserPost/', views.addUserPost, name="addUserPost"),
@@ -57,12 +60,28 @@ urlpatterns = [
 
     # Quản lý mượn trả sách
     path('quan-ly-muon-tra/', views.quanlymuontra, name="quanlymuontra"),
+    # Get books from javascript fetch request - phieumuon
+    path('getBooks_Phieumuon/', views.getBooks_phieumuon, name="getBooksPhieumuon"),
+    # Get info pheumuon by id from fetch request js
+    path('get_info_phieumuonById/<str:id>/', views.get_info_phieumuonById, name="getInfoPhieumuonById"),
+    # Get info thethuvien from fetch request js
+    path('get_info_thethuvienById/', views.get_info_thethuvienById, name="getInfoThethuvienById"),
+    # Add phieumuon from fetch js
+    path('addPhieumuonPost/', views.addPhieumuonPost, name="addPhieumuonPost"),
+    # Update phieumuon from fetch js
+    path('updatePhieumuonPost/', views.updatePhieumuonPost, name="updatePhieumuonPost"),
+    # Delete phieumuon
+    path('quan-ly-muon-tra/delete/<str:id>/', views.deletePhieumuon, name="deletePhieumuon"),
+    # Search phieumuon by id_the fetch js
+    path('quan-ly-muon-tra/search-by-idThe/<str:id_the>/', views.searchPhieumuonByIdThe, name="searchPhieumuonByIdThe"),
+    # Tra sach phieumuon fetch js
+    path('quan-ly-muon-tra/trasach/', views.trasach, name="trasach"),
 
     #quan ly tinh hinh muon tra
     path('quan-ly-tinh-hinh-muon-tra/', views.quanlytinhhinhmuontra, name="quanlytinhhinhmuontra"),
     
     # Quan ly kho sach
-    # path('quan-ly-kho-sach/', views.quanlykhosach, name="quanlykhosach"),
+    # Get book by id from javascript fetch request
     path('getBookById/', views.getBook, name="getBook"),
 
     # Quan ly kho sach - nhap sach
@@ -84,7 +103,6 @@ urlpatterns = [
 
     path('quan-ly-tinh-hinh-muon-tra/load-form', views.quanlytinhhinhDaTra, name="quanlytinhhinhDaTra"),
 
-    path('quan-ly-kho-sach/', views.quanlykhosach, name="quanlykhosach"),
     path('logout/', views.logout, name="logout"),
     # Form action submit
     path('loginPost/', views.loginPost, name='loginPost'),
