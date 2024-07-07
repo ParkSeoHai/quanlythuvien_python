@@ -86,7 +86,7 @@ class Books(models.Model):
     author = models.CharField(max_length=100)
     is_delete = models.IntegerField()
     id_category = models.ForeignKey('Categories', models.DO_NOTHING, db_column='id_category')
-    ngay_tao = models.CharField(max_length=50)
+    ngay_tao = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         managed = False

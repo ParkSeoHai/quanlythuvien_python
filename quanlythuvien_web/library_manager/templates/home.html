@@ -41,7 +41,7 @@
         </div>
         <div class="card-single">
             <div>
-                <h1>{phieunhaps|length}}</h1>
+                <h1>{{phieunhaps|length}}</h1>
                 <span>Lượt mượn sách</span>
             </div>
             <div>
@@ -72,7 +72,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                    {% for book in books %}
+                                    {% for book in latest_books %}
                                     <tr>
                                         <td>{{ book.name }}</td>
                                         <td>{{ book.author }}</td>

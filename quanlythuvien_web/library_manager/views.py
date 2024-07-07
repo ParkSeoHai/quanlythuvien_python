@@ -16,14 +16,14 @@ from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
-<<<<<<< HEAD
+
 from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps
-=======
+
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
 
 from library_manager.models import Books, Users
 
->>>>>>> 337b4cd5448d632d10a35816a92c37e99d533141
+
 # Default view for login page
 def index(request):
     template = loader.get_template('login.html')
@@ -98,14 +98,14 @@ def home(request):
     users = Users.objects.all()
     docgias = Docgias.objects.all()
     phieunhaps = Phieunhaps.objects.all()
-    books_create = Books.objects.all().order_by('-created_at')
+    latest_books = Books.objects.all().order_by('ngay_tao')[:5]
     context = {
         'user': user,
         'books': books,
         'users': users,
         'docgias': docgias,
         'phieunhaps': phieunhaps,
-        'books_create': books_create,
+        'latest_books': latest_books,
     }
     return render(request, 'home.html', context)
 
@@ -137,7 +137,7 @@ def quanlynguoidung(request, tab):
     template = loader.get_template('quanlynguoidung/index.html')
     return HttpResponse(template.render(context, request))
 
-<<<<<<< HEAD
+
 
 
 
@@ -145,8 +145,7 @@ def quanlynguoidung(request, tab):
     template = loader.get_template('quanlynguoidung/index.html')
     return HttpResponse(template.render(context, request))
 
-=======
->>>>>>> 337b4cd5448d632d10a35816a92c37e99d533141
+
 # Add user view
 def addUser(request):
     # Load template
