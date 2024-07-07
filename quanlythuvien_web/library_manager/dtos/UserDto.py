@@ -1,5 +1,6 @@
 from library_manager.models import Users, Books, Phieunhaps, Ctphieunhaps, Docgias
 from library_manager.models import Categories, Phieumuons, Phieuhuys, Ctphieuhuys, Thethuviens
+from library_manager.models import Kiemkes, Ctkiemkes
 
 from collections import defaultdict
 import uuid
@@ -10,6 +11,7 @@ from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
 from library_manager.dtos.PhieuhuyDto import PhieuhuyDto
+from library_manager.dtos.KiemkeDto import KiemkeDto
 
 class UserDto(object):
     def __init__(self, id_user = '', name = '', email ='',
@@ -738,9 +740,63 @@ class UserDto(object):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
-        
-    def kiemke():
-        ...
+
+    def get_phieuKiemkes():
+        try:
+            kiemkes = Kiemkes.objects.all()
+            return Response(True, 'Get phieu kiemkes success', kiemkes)
+        except Exception as e:
+            return Response(False, e.__str__())   
+
+    def get_phieuKiemkeById(id):
+        try:
+            # Get kiemke by id
+            kiemke = Kiemkes.objects.filter(id_kiemke=id).first()
+            if kiemke is None:
+                return Response(False, f'Phieu kiemke not found, id: {id}')
+            return Response(True, 'Get phieu kiemke by id success', kiemke)
+        except Exception as e:
+            return Response(False, e.__str__())
+
+    def get_ctKiemkesById_kiemke(id_kiemke):
+        try:
+            ct_kiemkes = Ctkiemkes.objects.filter(id_kiemke=id_kiemke).all()
+            return Response(True, 'Get ct_kiemkes success', ct_kiemkes)
+        except Exception as e:
+            return Response(False, e.__str__())
+
+    def kiemke(kiemkeDto: KiemkeDto, ct_kiemkes):
+        try:
+            # Get user by id
+            user = Users.objects.filter(id_user=kiemkeDto.id_user).first()
+            # Add phieu kiemke
+            kiemke = Kiemkes(
+                id_kiemke=kiemkeDto.id_kiemke,
+                ngay_tao=kiemkeDto.ngay_tao,
+                ly_do=kiemkeDto.ly_do,
+                file_kiemke=kiemkeDto.file_kiemke,
+                id_user=user
+            )
+            kiemke.save()
+            # Add ct_kiemke
+            for ct in ct_kiemkes:
+                # Get book by id
+                book = Books.objects.filter(id_sach=ct.id_sach).first()
+                ct_kiemke = Ctkiemkes(
+                    id_ctkiemke=ct.id_ctkiemke,
+                    id_kiemke=kiemke,
+                    id_sach=book,
+                    so_luong_kiemke=ct.so_luong_kiemke,
+                    so_luong_bandau=ct.so_luong_bandau
+                )
+                ct_kiemke.save()
+                # Update quantity book
+                book.quantity = ct.so_luong_kiemke
+                book.save()
+            
+            return Response(True, 'Add phieu kiemke success', kiemke.id_kiemke)
+        except Exception as e:
+            return Response(False, e.__str__())
 
     #thong ke
     def ThongKePhieuNhap():

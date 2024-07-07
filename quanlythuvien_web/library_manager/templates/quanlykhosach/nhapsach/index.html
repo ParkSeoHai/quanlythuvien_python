@@ -9,7 +9,7 @@
 {% block content %}
     <h2 class="lv2">Danh sách phiếu nhập</h2>
     <div class="text-start d-flex justify-content-between" style="margin: 12px 0;">
-        <a href="add/" class="btn btn-outline-primary">
+        <a href="/quan-ly-kho-sach/nhap-sach/add/" class="btn btn-outline-primary">
             <i class="bi bi-plus-circle"></i>&nbsp; Lập phiếu nhập
         </a>
         <div class="search-block w-50">
@@ -45,7 +45,7 @@
         <tbody>
             {% if phieunhaps|length == 0 %}
                 <tr>
-                    <th colspan="9" class="text-center">Không có dữ liệu</th>
+                    <th colspan="6" class="text-center">Không có dữ liệu</th>
                 </tr>
             {% endif %}
             {% comment %} Hiển thị danh sách phieunhaps {% endcomment %}

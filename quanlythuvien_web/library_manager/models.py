@@ -88,7 +88,6 @@ class Books(models.Model):
     id_category = models.ForeignKey('Categories', models.DO_NOTHING, db_column='id_category')
     ngay_tao = models.CharField(max_length=50)
 
-
     class Meta:
         managed = False
         db_table = 'books'
@@ -103,6 +102,18 @@ class Categories(models.Model):
     class Meta:
         managed = False
         db_table = 'categories'
+
+
+class Ctkiemkes(models.Model):
+    id_ctkiemke = models.CharField(primary_key=True, max_length=100)
+    id_kiemke = models.ForeignKey('Kiemkes', models.DO_NOTHING, db_column='id_kiemke')
+    id_sach = models.ForeignKey(Books, models.DO_NOTHING, db_column='id_sach')
+    so_luong_kiemke = models.IntegerField()
+    so_luong_bandau = models.IntegerField()
+
+    class Meta:
+        managed = False
+        db_table = 'ctkiemkes'
 
 
 class Ctphieuhuys(models.Model):
@@ -188,6 +199,18 @@ class Docgias(models.Model):
     class Meta:
         managed = False
         db_table = 'docgias'
+
+
+class Kiemkes(models.Model):
+    id_kiemke = models.CharField(primary_key=True, max_length=100)
+    ngay_tao = models.CharField(max_length=50)
+    ly_do = models.CharField(max_length=255)
+    file_kiemke = models.CharField(max_length=255)
+    id_user = models.ForeignKey('Users', models.DO_NOTHING, db_column='id_user')
+
+    class Meta:
+        managed = False
+        db_table = 'kiemkes'
 
 
 class Phieuhuys(models.Model):

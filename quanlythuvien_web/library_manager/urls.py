@@ -113,6 +113,17 @@ urlpatterns = [
     # Search phieu nhap by date
     path('quan-ly-kho-sach/huy-sach/search/<str:dateFrom>/<str:dateTo>/', views.searchPhieuhuyByDate, name="searchPhieuhuyByDate"),
 
+    # Kiem ke sach - view
+    path("quan-ly-kho-sach/kiem-ke/", views.kiemkeView, name="kiemkeView"),
+    # Add kiem ke - view
+    path("quan-ly-kho-sach/kiem-ke/add/", views.addKiemkeView, name="addKiemkeView"),
+    # Get data file excel kiemke from request js
+    path("get_dataKiemkeFile/", views.get_dataKiemkeFile, name="getDataKiemkeFile"),
+    # Add phieu kiemke post
+    path("addPhieuKiemkePost/", views.add_phieuKiemkePost, name="addPhieuKiemkePost"),
+    # Info phieu kiemke view
+    path("quan-ly-kho-sach/kiem-ke/info/<str:id>/", views.info_kiemkeView, name="infoKiemkeView"),
+
     path('quan-ly-tinh-hinh-muon-tra/load-form', views.quanlytinhhinhDaTra, name="quanlytinhhinhDaTra"),
 
     path('logout/', views.logout, name="logout"),

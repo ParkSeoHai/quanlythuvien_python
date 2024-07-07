@@ -1,0 +1,59 @@
+{% extends "index.html" %}
+
+{% load static %}
+
+{% block title %}
+    Lập phiếu kiểm kê
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Lập phiếu kiểm kê</h2>
+    <form method="post" class="form" autocomplete="off" onsubmit="submitKiemke(event)">
+        {% csrf_token %}
+        <fieldset>
+            <div class="d-flex gap-4">
+                <div class="form-group mt-4 w-25">
+                    <label class="form-label">Lý do kiểm kê</label>
+                    <textarea class="form-control lydokiemke" placeholder="Nhập lý do kiểm kê"></textarea>
+                </div>
+                <div class="form-group mt-4" style="width: 15%;">
+                    <label class="form-label">Nhập file kiểm kê</label>
+                    <input type="file" id="file-kiemke" class="form-control">
+                    <button type="button" class="btn btn-primary mt-3" onclick="nhapFileExcel()">Thực hiện nhập file</button>
+                </div>
+            </div>
+            <div class="container-books">
+                <div class="container-books__header">
+                    <h3 class="lv3">
+                        Chi tiết kiểm kê
+                    </h3>
+                </div>
+                <div class="container-kiemke__table">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr class="table-primary">
+                                <th scope="col">Id</th>
+                                <th scope="col">Tên sách</th>
+                                <th scope="col">Tác giả</th>
+                                <th scope="col">Danh mục</th>
+                                <th scope="col">Số lượng ban đầu</th>
+                                <th scope="col">Số lượng kiểm kê</th>
+                                <th scope="col">Chênh lệch</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="mt-5">
+                <a href="/quan-ly-kho-sach/kiem-ke" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i>&nbsp; Xác nhận kiểm kê
+                </button>
+            </div>
+        </fieldset>
+    </form>
+
+    <script src={% static 'javascript/kiemke.js' %}></script>
+{% endblock  %}
