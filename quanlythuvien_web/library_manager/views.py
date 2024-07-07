@@ -18,7 +18,7 @@ from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
-from library_manager.models import Books, Users, AuthUser
+from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps
 # Default view for login page
 def index(request):
     template = loader.get_template('login.html')
@@ -89,12 +89,16 @@ def home(request):
     user = get_user(request)
     books = Books.objects.all()
     users = Users.objects.all()
-
+    docgias = Docgias.objects.all()
+    phieunhaps = Phieunhaps.objects.all()
+    books_create = Books.objects.all().order_by('-created_at')
     context = {
         'user': user,
         'books': books,
         'users': users,
-
+        'docgias': docgias,
+        'phieunhaps': phieunhaps,
+        'books_create': books_create,
     }
     return render(request, 'home.html', context)
 
@@ -126,14 +130,7 @@ def quanlynguoidung(request, tab):
     template = loader.get_template('quanlynguoidung/index.html')
     return HttpResponse(template.render(context, request))
 
-def quanlynguoidung1(request):
-    # Get user id session when user login
-    user = get_user(request)
-    # Context for template
-    context = {
-        'user': user,
 
-    }
 
 
     # Load quanlynguoidung page

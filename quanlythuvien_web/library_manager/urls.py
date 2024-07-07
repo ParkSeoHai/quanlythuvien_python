@@ -6,7 +6,7 @@ urlpatterns = [
     path('home/', views.home, name="home"),
     # Url quan ly nguoi dung / user
     path('quan-ly-nguoi-dung/<str:tab>/', views.quanlynguoidung, name="quanlynguoidung"),
-    path('home/quanlynguoidung/index.html/', views.quanlynguoidung1, name='quanlynguoidung1'),
+    path('home/quanlynguoidung/nguoi-dung/<str:tab>/', views.quanlynguoidung, name='nguoi_dung'),
     # Add user
     path('quan-ly-nguoi-dung/nguoi-dung/add/', views.addUser, name="addUser"),
     path('addUserPost/', views.addUserPost, name="addUserPost"),

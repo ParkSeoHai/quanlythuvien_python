@@ -12,7 +12,7 @@
         <div class="card-single">
             <div>
 
-                <h1>x</h1>
+                <h1>{{ docgias|length }}</h1>
 
                 <span>Độc giả</span>
             </div>
@@ -41,7 +41,7 @@
         </div>
         <div class="card-single">
             <div>
-                <h1>X</h1>
+                <h1>{phieunhaps|length}}</h1>
                 <span>Lượt mượn sách</span>
             </div>
             <div>
@@ -93,7 +93,7 @@
                 <div class="card-header">
                     <h3 class="lv3">New customers</h3>
                     <button>
-                        <a href="quanlynguoidung/index.html">
+                        <a href="{% url 'nguoi_dung' 'nguoi-dung' %}">
                             See all<span class="las la-arrow-right"></span>
                         </a>
                     </button>
