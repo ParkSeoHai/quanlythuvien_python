@@ -81,7 +81,7 @@ class UserDto(object):
                 # Add book to database
                 book = Books(id_sach=bookDto.id_sach, name=bookDto.name, price=bookDto.price,
                              quantity=bookDto.quantity, image=bookDto.image, author=bookDto.author,
-                             is_delete=bookDto.is_delete, id_category=category)
+                             is_delete=bookDto.is_delete, id_category=category,ngay_tao =bookDto.ngay_tao)
                 book.save()
                 return Response(True, 'Add book success', book.id_sach)
         except Exception as e:
