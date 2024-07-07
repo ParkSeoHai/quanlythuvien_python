@@ -17,7 +17,7 @@ from library_manager.dtos.BookDto import BookDto
 from library_manager.dtos.DocgiaDto import DocgiaDto
 from library_manager.dtos.ThethuvienDto import ThethuvienDto
 
-from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps
+from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps,Phieumuons
 
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
 from library_manager.dtos.PhieuhuyDto import PhieuhuyDto
@@ -95,20 +95,22 @@ def get_user(request):
 # View for home page
 def home(request):
     user = get_user(request)
-    books = Books.objects.all()
+    books = UserDto.get_books()
     users = Users.objects.all()
-    docgias = Docgias.objects.all()
-    phieunhaps = Phieunhaps.objects.all()
-    latest_books = Books.objects.all().order_by('ngay_tao')[:5]
+    docgias = UserDto.get_docgias()
+    response = UserDto.get_phieumuons()
+
+    latest_books = Books.objects.all().order_by('-ngay_tao')[:10]
     context = {
         'user': user,
         'books': books,
         'users': users,
-        'docgias': docgias,
-        'phieunhaps': phieunhaps,
+        'docgias': response.data,
+        'phieumuons': response.data,
         'latest_books': latest_books,
     }
-    return render(request, 'home.html', context)
+    template = loader.get_template('home.html')
+    return HttpResponse(template.render(context, request))
 
 # View for quanlynguoidung page
 def quanlynguoidung(request, tab):
