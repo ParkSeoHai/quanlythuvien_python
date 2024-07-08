@@ -164,6 +164,14 @@ class UserDto(object):
             print(e)
             return Response(False, e.__str__(), None)
     
+    def get_docgias():
+        try:
+            docgias = Docgias.objects.filter(is_delete=0)
+            return Response(True, 'Get docgias success', docgias)
+        except Exception as e:
+            print(e)
+            return Response(False, e.__str__(),None)
+
     def search_booksByName(name):
         try:
             books = Books.objects.filter(name__icontains=name, is_delete=0)
@@ -304,32 +312,33 @@ class UserDto(object):
     def search_phieumuonById_the(id_the):
         try:
             # Get thethuvien by id_the
-            thethuviens = Thethuviens.objects.filter(id_the__icontains=id_the)
+            thethuviens = Thethuviens.objects.filter(id_the__icontains=id_the).all()
             if (id_the == 'all'):
-                thethuviens = Thethuviens.objects.all()
+                thethuviens = Thethuviens.objects.filter(is_delete=0).all()
 
             # Get phieumuon
             phieumuons = []
             for ttv in thethuviens:
-                phieumuon = Phieumuons.objects.filter(id_the=ttv).first()
+                phieumuon = Phieumuons.objects.filter(id_the=ttv, trang_thai=0).first()
+                if phieumuon is not None:
                 # Convert to phieumuon response object
-                phieumuonObject = {
-                    'id_phieumuon': phieumuon.id_phieumuon,
-                    'bookName': phieumuon.id_sach.name,
-                    'id_the': phieumuon.id_the.id_the,
-                    'docgiaName': phieumuon.id_the.id_docgia.name,
-                    'ngay_tao': phieumuon.ngay_tao,
-                    'ngay_hen_tra': phieumuon.ngay_hen_tra,
-                    'trang_thai': phieumuon.trang_thai,
-                    'so_luong': phieumuon.so_luong,
-                    'userName': phieumuon.id_user.name,
-                    'ghichu': phieumuon.ghi_chu
-                }
-                phieumuons.append(phieumuonObject)
+                    phieumuonObject = {
+                        'id_phieumuon': phieumuon.id_phieumuon,
+                        'bookName': phieumuon.id_sach.name,
+                        'id_the': phieumuon.id_the.id_the,
+                        'docgiaName': phieumuon.id_the.id_docgia.name,
+                        'ngay_tao': phieumuon.ngay_tao,
+                        'ngay_hen_tra': phieumuon.ngay_hen_tra,
+                        'trang_thai': phieumuon.trang_thai,
+                        'so_luong': phieumuon.so_luong,
+                        'userName': phieumuon.id_user.name,
+                        'ghichu': phieumuon.ghi_chu
+                    }
+                    phieumuons.append(phieumuonObject)
 
             return Response(True, f'Get phieumuons success. ({len(phieumuons)} result)', phieumuons)
         except Exception as e:
-            return Response(False, e.__str__(), None)
+            return Response(False, e.__str__())
     
     def get_phieumuons():
         try:
