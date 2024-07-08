@@ -597,6 +597,12 @@ class UserDto(object):
         except Exception as e:
             return Response(False, e.__str__())
 
+    def get_phieumuons_all():
+        try:
+            phieumuons = Phieumuons.objects.all()
+            return Response(True, 'Get all phieumuons success', phieumuons)
+        except Exception as e:
+            return Response(False, e.__str__())
     def huy_sach(phieuhuyDto: PhieuhuyDto, ctphieuhuys):
         try:
             # Get user by id

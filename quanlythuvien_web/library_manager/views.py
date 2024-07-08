@@ -101,7 +101,7 @@ def home(request):
     users_response = AdminDto.get_users()
     books_response = UserDto.get_books()
     docgias_response = UserDto.get_docgias()
-    phieumuons_response = UserDto.get_phieumuons()
+    phieumuons_response = UserDto.get_phieumuons_all()
     latest_books_response = UserDto.get_books()
     users = users_response.data if users_response.status else []
     books = books_response.data if books_response.status else []
