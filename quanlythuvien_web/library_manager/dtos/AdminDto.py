@@ -125,7 +125,6 @@ class AdminDto(UserDto):
                     is_user = UserDto.check_email(userDto.email)
                     if is_user is True:
                         return Response(False, 'This email already exists', None)
-                else:
                     user.email = userDto.email
 
                 # Update user
@@ -226,6 +225,36 @@ class AdminDto(UserDto):
             print(e)
             return Response(False, e.__str__(), None)
 
+    def get_info_docgiaById_the(id):
+        try:
+            ttv = Thethuviens.objects.filter(id_the=id).first()
+            if ttv is None:
+                return Response(False, "Thethuvien not found", None)
+            else:
+                # Get info phieumuons by thethuvien
+                phieumuons = Phieumuons.objects.filter(id_the=ttv, trang_thai=0)
+                # Get info books
+                books = []
+                for phieumuon in phieumuons:
+                    book = {
+                        'name': phieumuon.id_sach.name,
+                        'price': phieumuon.id_sach.price,
+                        'quantity': phieumuon.id_sach.quantity,
+                        'ngay_muon': phieumuon.ngay_tao,
+                        'ngay_hen_tra': phieumuon.ngay_hen_tra
+                    }
+                    books.append(book)
+                    
+                data = {
+                    'hoten': ttv.id_docgia.name,
+                    'type': ttv.type,
+                    'ngay_het_han': ttv.ngay_het_han,
+                    'books': books
+                }
+                return Response(True, 'Get info success', data)
+        except Exception as e:
+            return Response(False, e.__str__(), None)
+
     def check_email_docgia(email):
         try:
             docgia = Docgias.objects.filter(email=email).first()
@@ -267,9 +296,11 @@ class AdminDto(UserDto):
                 return Response(False, "Docgia not found", None)
             
             # Check email new
-            is_email = AdminDto.check_email_docgia(docgiaDto.email)
-            if is_email is True:
-                return Response(False, "Email is already exist", None)
+            if docgia.email != docgiaDto.email:
+                is_email = AdminDto.check_email_docgia(docgiaDto.email)
+                if is_email is True:
+                    return Response(False, "Email is already exist", None)
+                docgia.email = docgiaDto.email
 
             # Update thethuvien
             thethuvien.type = ttv.type
@@ -280,7 +311,6 @@ class AdminDto(UserDto):
 
             # Update docgia
             docgia.name = docgiaDto.name
-            docgia.email = docgiaDto.email
             docgia.gender = docgiaDto.gender
             docgia.birthday = docgiaDto.birthday
             docgia.phone_number = docgiaDto.phone_number

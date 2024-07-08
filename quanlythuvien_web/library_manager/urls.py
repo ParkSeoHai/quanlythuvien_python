@@ -28,6 +28,8 @@ urlpatterns = [
     path('quan-ly-nguoi-dung/doc-gia/delete/<str:id>/', views.deleteDocgia, name="deleteDocgia"),
     # Search doc-gia
     path('quan-ly-nguoi-dung/doc-gia/search/<str:searchInput>/', views.searchDocgia, name="searchDocgia"),
+    # Info docgia
+    path('quan-ly-nguoi-dung/doc-gia/info/<str:id_the>/', views.infoDocgia, name="infoDocgia"),
 
     # Quan ly danh muc
     path('quan-ly-danh-muc/', views.quanlydanhmuc, name="quanlydanhmuc"),

@@ -218,6 +218,8 @@ def updateUserPost(request):
         # Create user dto
         user = UserDto(id_user=id, name=name, email=email, role=role, gender=gender,
                         birthday=birthday, phone_number=phone, address=address)
+        
+        print(user.__dict__)
 
         # Response from update_user function
         response = AdminDto.update_user(user)
@@ -376,6 +378,26 @@ def searchDocgia(request, searchInput):
         'thethuviens': response.data,
         'tab': 'doc-gia'
     }, request))
+
+# Info docgia
+def infoDocgia(request, id_the):
+    print(id_the)
+    # Get info thethuvien by id
+    ttvResponse = AdminDto.get_thethuvien_by_id(id_the)
+    if ttvResponse.status is True:
+        # Get info phieumuons by id_the
+        phieumuonResponse = UserDto.get_phieumuonsByThethuvien(ttvResponse.data)
+
+        # Load template
+        template = loader.get_template('quanlynguoidung/infoDocgia.html')
+        return HttpResponse(template.render({
+            'user': get_user(request),
+            'ttv': ttvResponse.data,
+            'phieumuons': phieumuonResponse.data
+        }, request))
+    else:
+        messages.error(request, ttvResponse.message)
+        return HttpResponseRedirect(reverse('quanlynguoidung', args=('doc-gia',)))
 
 # hien thi view quan ly sach
 def quanlysach(request):
@@ -559,7 +581,7 @@ def get_info_thethuvienById(request):
     if request.method == 'GET':
         id_the = request.GET.get('id')
         # Response from userdto
-        responseDto = UserDto.get_info_thethuvienById(id_the[0:len(id_the)-1])
+        responseDto = AdminDto.get_info_docgiaById_the(id_the[0:len(id_the)-1])
         # Convert to response object
         response = {
             'status': responseDto.status,
