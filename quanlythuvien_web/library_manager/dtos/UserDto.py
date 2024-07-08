@@ -528,6 +528,8 @@ class UserDto(object):
     def get_phieunhapById(id):
         try:
             pn = Phieunhaps.objects.filter(id_phieunhap=id).first()
+            if pn is None:
+                return Response(True, 'Phieunhap not found')
             return Response(True, 'Get phieunhap success', pn)
         except Exception as e:
             print(e)

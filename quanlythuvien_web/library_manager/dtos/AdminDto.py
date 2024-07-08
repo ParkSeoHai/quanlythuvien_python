@@ -219,7 +219,7 @@ class AdminDto(UserDto):
             if ttv is None:
                 return Response(False, 'Thethuvien not found', None)
 
-            return Response(True, f'Get thethuvien success. {ttv.id_the}', ttv)
+            return Response(True, 'Get thethuvien by id success', ttv)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
