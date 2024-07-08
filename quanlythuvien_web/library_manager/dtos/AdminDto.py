@@ -62,9 +62,11 @@ class AdminDto(UserDto):
                 category.is_delete = 1;
                 category.save()
                 return Response(True, 'Delete category success', None)
-            else:
+            elif category:
                 category.delete()
                 return Response(True, 'Delete category success', None)
+            else:
+                return Response(False, 'False to delete category', None)
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)

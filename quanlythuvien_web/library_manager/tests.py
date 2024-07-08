@@ -7,6 +7,11 @@ from library_manager.dtos.ThethuvienDto import ThethuvienDto
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
 from library_manager.dtos.BookDto import BookDto
+from library_manager.dtos.CategoryDto import CategoryDto
+from library_manager.dtos.PhieuhuyDto import PhieuhuyDto
+from library_manager.dtos.KiemkeDto import KiemkeDto
+from library_manager.dtos.CTKiemkeDto import CTKiemkeDto
+from datetime import datetime
 
 # Command test: python manage.py test -v 2 --k library_manager.tests.{className}
 
@@ -570,4 +575,389 @@ class Add_phieunhapTest(TestCase):
         }, {
             'status': True,
             'message': 'Add phieunhap success'
+        })
+class register(TestCase):
+    def test_case1(self):
+        user = UserDto(email='admin@gmail.com', password='123456')
+        if UserDto.check_email(user.email):
+            self.assertEqual(False, True)
+        else:
+            response = UserDto.register(user)
+            self.assertEqual({
+                'status': response.status,
+                'message': response.message,
+            },{
+                'status': True,
+                'message': 'Register success',
+            })
+    def test_case2(self):
+        user = UserDto(email='admin123@gmail.com', password='111111')
+        response = UserDto.register(user)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message,
+        }, {
+            'status': True,
+            'message': 'Register success',
+        })
+class addCategory(TestCase):
+    def test_case1(self):
+        category = CategoryDto(name='Sách Python', description='Sách về python')
+        response = AdminDto.add_category(category)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Add category success'
+        })
+    def test_case2(self):
+        category = CategoryDto(name='Công nghệ thông tin', description='none')
+        response = AdminDto.add_category(category)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Add category success'
+        })
+class updateCategory(TestCase):
+    def test_case1(self):
+        category = CategoryDto(id_category='fca7336d-1d2c-4dd5-9e1d-fb104fc53191', name='Sách python', description='Sách về python')
+        response = AdminDto.update_category(category)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },{
+            'status': True,
+            'message': 'Update category success'
+        })
+
+    def test_case2(self):
+        category = CategoryDto(id_category='fca7336d-1d2c-4dd5-9e1d-fb104fc53191', name='Công nghệ thực phẩm', description='none')
+        response = AdminDto.update_category(category)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },{
+            'status': True,
+            'message': 'Update category success'
+        })
+class deleteCategory(TestCase):
+    def test_case1(self):
+        id_category='fca7336d-1d2c-4dd5-9e1d-fb104fc53191'
+        response = AdminDto.delete_category(id_category)
+        self.assertEqual({
+            'status': response.status,
+        },{
+            'status': True,
+        })
+    def test_case2(self):
+        id_category='daa032-23'
+        response = AdminDto.delete_category(id_category)
+        self.assertEqual({
+            'status': response.status,
+        }, {
+            'status': True,
+        })
+class getCategory(TestCase):
+    def test_case1(self):
+        categories = AdminDto.get_categories()
+        self.assertEqual({
+            'status': categories.status,
+            'message': categories.message
+        },{
+            'status': True,
+            'message': 'Get categories success'
+        })
+class getQLTHMT(TestCase):
+    def test_case1(self):
+        response = UserDto.check_phieumuon()
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },{
+            'status': True,
+            'message': 'Get phieumuon success'
+        })
+class getThongKeNhapHuy(TestCase):
+    def test_case1(self):
+        response = UserDto.ThongKePhieuNhap()
+        response2 = UserDto.ThongKePhieuHuy()
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },{
+            'status': True,
+            'message': 'Thong ke thanh cong'
+        })
+        self.assertEqual({
+            'status': response2.status,
+            'message': response2.message
+        }, {
+            'status': True,
+            'message': 'Thong ke thanh cong'
+        })
+class getThongKeTonKho(TestCase):
+    def test_case1(self):
+        response = UserDto.thongkesach()
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },{
+            'status': True,
+            'message': 'Get books success'
+        })
+class searchCategory(TestCase):
+    def test_case1(self):
+        a = 'Công nghệ thông tin'
+        response = AdminDto.search_category(a)
+        self.assertEqual({
+            'status': response.status,
+        },{
+            'status': True,
+        })
+    def test_case2(self):
+        a = 'something'
+        response = AdminDto.search_category(a)
+        self.assertEqual({
+            'status': response.status,
+        }, {
+            'status': True,
+        })
+class getinfoPhieuKiemKe(TestCase):
+    def test_case1(self):
+        id = '3679e5d4-6b48-44f9-8e81-b76a2352b944'
+        response = UserDto.get_phieuKiemkeById(id)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Get phieu kiemke by id success'
+        })
+    def test_case2(self):
+        id = '6f73d063-8a9f-436a-8fef-72603c5d0857'
+        response = UserDto.get_phieuKiemkeById(id)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Get phieu kiemke by id success'
+        })
+class addPhieuKiemke(TestCase):
+    def test_case1(self):
+        kiemke = KiemkeDto(id_kiemke='6f73d063-8a9f-436a-8fef-72603c5d0857', ngay_tao='2024-07-10’', ly_do='Kiểm kê tháng 7', file_kiemke='url', id_user='142dd5a8-23e1-4cef-89eb-93052f36776b')
+        ctkiemke = [CTKiemkeDto(id_ctkiemke='bfa46093-8781-4b2e-8164-3f446338ff69', id_sach='7b357d38-8ed7-4cda-838d-55135c843e61', so_luong_bandau=10, so_luong_kiemke=8),
+                    CTKiemkeDto(id_ctkiemke='73ba9cac-5989-483d-9ee2-7fe1be59d0ed', id_sach='2291e033-baf1-44de-94d6-40bf94e91e35', so_luong_bandau=15 , so_luong_kiemke=16 )]
+        response = UserDto.kiemke(kiemke, ctkiemke)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },{
+            'status': True,
+            'message': 'Add phieu kiemke success'
+        })
+class gethistoryKiemke(TestCase):
+    def test_case1(self):
+        response = UserDto.get_phieuKiemkes()
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },{
+            'status': True,
+            'message': 'Get phieu kiemkes success'
+        })
+class getCTPhieuHuy(TestCase):
+    def test_case1(self):
+        id = '891cbb1f-0bea-453c-a783-2a10e0aeef90'
+        response = UserDto.get_ctphieuhuyBy_PhuyId(id)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Get ctphieuhuys success'
+        })
+    def test_case2(self):
+        id = 'usu29x3f-074b-498a-b6e0-628765df9089'
+        response = UserDto.get_ctphieuhuyBy_PhuyId(id)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Get ctphieuhuys success'
+        })
+class searchPhieuHuy(TestCase):
+    def test_case1(self):
+        date_from = '2024-07-01'
+        date_to = '2024-07-03'
+        a = datetime.strptime(date_from, '%Y-%m-%d')
+        b = datetime.strptime(date_to, '%Y-%m-%d')
+        response = UserDto.search_phieuhuy_by_date(a, b)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Search phieuhuy by date success'
+        })
+class deletePhieuHuy(TestCase):
+    def test_case1(self):
+        id = '2cee2d3f-074b-498a-b6e0-628765df9089'
+        response = UserDto.delete_phieuhuy(id)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },  {
+            'status': True,
+            'message': 'Delete phieuhuy success'
+        })
+    def test_case2(self):
+        id = 'usu29x3f-074b-498a-b6e0-628765df9089'
+        response = UserDto.delete_phieuhuy(id)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },  {
+            'status': True,
+            'message': 'Delete phieuhuy success'
+        })
+class addPhieuHuy(TestCase):
+    def test_case1(self):
+        ngayhuy='2024-07-09'
+        a = datetime.strptime(ngayhuy, '%Y-%m-%d')
+        phieuhuy = PhieuhuyDto(id_phieuhuy='3df400bc-78ad-4d7d-ae5a-10ac3589f6f3', ngay_huy=a, id_user='142dd5a8-23e1-4cef-89eb-93052f36776b')
+        ctphieuhuy = [
+                        {
+                            'id_ctphieuhuy' : '142dd5a8-23e1-4cef-89eb-93052f36776b',
+                            'id_sach' : '7b357d38-8ed7-4cda-838d-55135c843e61',
+                            'so_luong' : 1,
+                            'ly_do_huy' : 'Sách bị cháy'
+                        },
+                        {
+                            'id_ctphieuhuy': 'f519c434-6db5-4cab-ad5b-393560caee77',
+                            'id_sach': '2291e033-baf1-44de-94d6-40bf94e91e35',
+                            'so_luong': 3,
+                            'ly_do_huy': 'Sách bị hỏng'
+                        }
+                    ]
+        response = UserDto.huy_sach(phieuhuy, ctphieuhuy)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Add phieuhuy success'
+        })
+    def test_case2(self):
+        ngayhuy='2024-07-09'
+        a = datetime.strptime(ngayhuy, '%Y-%m-%d')
+        phieuhuy = PhieuhuyDto(id_phieuhuy='4234e4a1-b88d-4b29-bb75-32cc335bb727', ngay_huy=a, id_user='c2a320e5-eb4e-4570-bfa0-0d300fdcf723')
+        ctphieuhuy = [
+                        {
+                            'id_ctphieuhuy' : '2c1cb904-1f55-4128-a79d-1ee8246dff7f',
+                            'id_sach' : '7b357d38-8ed7-4cda-838d-55135c843e61',
+                            'so_luong' : 1,
+                            'ly_do_huy' : 'Sách bị cháy'
+                        },
+                        {
+                            'id_ctphieuhuy': 'f519c434-6db5-4cab-ad5b-393560caee77',
+                            'id_sach': '2291e033-baf1-44de-94d6-40bf94e91e35',
+                            'so_luong': 3,
+                            'ly_do_huy': 'Sách bị hỏng'
+                        }
+                    ]
+        response = UserDto.huy_sach(phieuhuy, ctphieuhuy)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Add phieuhuy success'
+        })
+class getPhieuHuy(TestCase):
+    def test_case1(self):
+        response = UserDto.get_phieuhuys()
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Get phieuhuys success'
+        })
+class getPhieuNhapByID(TestCase):
+    def test_case1(self):
+        id = 'bda84d7d-9e34-4335-a5c2-9ac7392ce0ff'
+        rp = UserDto.get_phieunhapById(id)
+        self.assertEqual({
+            'status': rp.status,
+            'message': rp.message
+        }, {
+            'status': True,
+            'message': 'Get phieunhap success'
+        })
+    def test_case2(self):
+        id = '0c197c30-77d5-4f7e-82ca-686a8cfddb47'
+        rp = UserDto.get_phieunhapById(id)
+        self.assertEqual({
+            'status': rp.status,
+            'message': rp.message
+        }, {
+            'status': True,
+            'message': 'Get phieunhap success'
+        })
+class searchPhieuNhap(TestCase):
+    def test_case1(self):
+        date_from = '2024-07-01'
+        date_to = '2024-07-03'
+        a = datetime.strptime(date_from, '%Y-%m-%d')
+        b = datetime.strptime(date_to, '%Y-%m-%d')
+        response = UserDto.search_phieunhap_by_date(a,b)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Search phieunhap by date success'
+        })
+class deletePhieuNhap(TestCase):
+    def test_case1(self):
+        id = '6eba9ce9-103d-4100-bc26-a68337b6ed41'
+        response = UserDto.delete_phieunhap(id)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Delete phieunhap success'
+        })
+    def test_case2(self):
+        id = '7490a0d2-adde-4ca4-8cc8-c1978522ad7c'
+        response = UserDto.delete_phieunhap(id)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        }, {
+            'status': True,
+            'message': 'Delete phieunhap success'
+        })
+class updatePhieuNhap(TestCase):
+    def test_case1(self):
+        ngay_nhap = '2024-06-09'
+        ngay_tao = '2024-07-08'
+        a = datetime.strptime(ngay_nhap, '%Y-%m-%d')
+        b = datetime.strptime(ngay_tao, '%Y-%m-%d')
+        phieunhap = PhieunhapDto(id_phieunhap='6eba9ce9-103d-4100-bc26-a68337b6ed41', donvi_cungcap='Bộ giáo dục', ngay_nhap=a, ly_do_nhap='Nhập sách 06/2024', id_user='‘142dd5a8-23e1-4cef-89eb-93052f36776b')
+        book = [BookDto(id_sach='df5848fb-dff4-458e-959c-2860a0c79211', name='Lập trình Python', price=25000, quantity=10, author='Nguyen A', id_category='fca7336d-1d2c-4dd5-9e1d-fb104fc53191', ngay_tao=b, )]
+        bookdelete = '544e2e17-e88f-4578-b42b-7c11e88d9999'
+        response = UserDto.update_phieunhap(phieunhap, book , bookdelete)
+        self.assertEqual({
+            'status': response.status,
+            'message': response.message
+        },{
+            'status': True,
+            'message': 'Update phieunhap success'
         })
