@@ -61,9 +61,6 @@ class UserDto(object):
             print(e)
             return False
     
-    def change_info(self):
-        ...
-
     def check_book(name):
         try:
             book = Books.objects.filter(name=name).first()
@@ -180,9 +177,6 @@ class UserDto(object):
             print(e)
             return Response(False, e.__str__(), None)
         
-    def get_phieumuonbytrangthai():
-        ...
-    
     def get_phieumuonById(id):
         try:
             # Get phieumuon
@@ -603,6 +597,7 @@ class UserDto(object):
             return Response(True, 'Get all phieumuons success', phieumuons)
         except Exception as e:
             return Response(False, e.__str__())
+        
     def huy_sach(phieuhuyDto: PhieuhuyDto, ctphieuhuys):
         try:
             # Get user by id

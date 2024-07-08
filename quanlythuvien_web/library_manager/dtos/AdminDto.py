@@ -5,7 +5,6 @@ from library_manager.dtos.ResponseDto import ResponseDto as Response
 from library_manager.models import Users, Categories, Docgias, Thethuviens, Phieumuons, Phieuhuys, Phieunhaps, Books
 from library_manager.dtos.CategoryDto import CategoryDto
 
-import datetime
 
 class AdminDto(UserDto):
     def __init__(self):

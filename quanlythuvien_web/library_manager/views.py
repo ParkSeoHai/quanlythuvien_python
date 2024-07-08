@@ -1,5 +1,4 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
 from django.template import loader
 from django.urls import reverse
 from django.contrib import messages
@@ -10,7 +9,7 @@ from datetime import datetime
 import openpyxl
 
 from library_manager.dtos.CategoryDto import CategoryDto
-# Import user dto
+# Import dto
 from library_manager.dtos.UserDto import UserDto
 from library_manager.dtos.AdminDto import AdminDto
 from library_manager.dtos.PhieunhapDto import PhieunhapDto
@@ -20,12 +19,8 @@ from library_manager.dtos.ThethuvienDto import ThethuvienDto
 from library_manager.dtos.KiemkeDto import KiemkeDto
 from library_manager.dtos.CTKiemkeDto import CTKiemkeDto
 
-from library_manager.models import Books, Users, AuthUser, Docgias, Phieunhaps,Phieumuons
-
 from library_manager.dtos.PhieumuonDto import PhieumuonDto
 from library_manager.dtos.PhieuhuyDto import PhieuhuyDto
-
-from library_manager.models import Books, Users
 
 
 # Default view for login page
@@ -1368,7 +1363,7 @@ def searchCategories(request, searchInput):
 def searchThongKeSachTK(request, searchInput):
     user = get_user(request)
     response = UserDto.searchSachTK(searchInput)
-    template = loader.get_template('quanlykhosach/sachtonkho/index.html')
+    template = loader.get_template('thongke/thongketonkho.html')
     return HttpResponse(template.render({
         'user': user,
         'thongkesachs': response.data
