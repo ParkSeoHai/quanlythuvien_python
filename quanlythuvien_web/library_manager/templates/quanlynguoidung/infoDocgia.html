@@ -1,0 +1,89 @@
+{% extends "index.html" %}
+
+{% block title %}
+    Thông tin chi tiết độc giả
+{% endblock  %}
+
+{% block content %}
+    <h2 class="lv2">Thông tin chi tiết độc giả</h2>
+    <div class="d-flex fs-5 mt-3">
+        {% comment %} Info docgia {% endcomment %}
+        <div class="w-50">
+            <p><strong>ID:</strong> {{ ttv.id_docgia.id_docgia }}</p>
+            <p><strong>Tên độc giả:</strong> {{ ttv.id_docgia.name }}</p>
+            <p><strong>Email:</strong> {{ ttv.id_docgia.email }}</p>
+            <p><strong>Giới tính:</strong>
+                {% if ttv.id_docgia.gender == 0 %}
+                    Nam
+                {% else %}
+                    Nữ
+                {% endif %}</p>
+            <p><strong>Ngày sinh:</strong> {{ ttv.id_docgia.birthday }}</p>
+            <p><strong>Số điện thoại:</strong> {{ ttv.id_docgia.phone_number }}</p>
+            <p><strong>Địa chỉ:</strong> {{ ttv.id_docgia.address }}</p>
+            <p><strong>Ngày tạo:</strong> {{ ttv.id_docgia.ngay_tao }}</p>
+        </div>
+        {% comment %} Info thethuvien {% endcomment %}
+        <div class="w-50">
+            <h3 class="lv3 mb-3">Thông tin thẻ thư viện</h3>
+            <p><strong>Mã thẻ thư viện:</strong> {{ ttv.id_the }}</p>
+            <p><strong>Đối tượng:</strong>
+                {% if ttv.type == 0 %}
+                    Giảng viên
+                {% else %}
+                    Sinh viên
+                {% endif %}
+            </p>
+            <p><strong>Ngày bắt đầu:</strong> {{ ttv.ngay_tao }}</p>
+            <p><strong>Ngày hết hạn:</strong> {{ ttv.ngay_het_han }}</p>
+            <p><strong>Ghi chú:</strong> {{ ttv.ghi_chu }}</p>
+        </div>
+    </div>
+    <div>
+        <h3 class="lv3 mb-3">Lịch sử mượn sách</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr class="table-primary">
+                    <th scope="col">ID</th>
+                    <th scope="col">Tên sách</th>
+                    <th scope="col">Tác giả</th>
+                    <th scope="col">Trạng thái</th>
+                    <th scope="col">Số lượng</th>
+                    <th scope="col">Ngày mượn</th>
+                    <th scope="col">Ngày trả</th>
+                    <th scope="col">Ghi chú</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if phieumuons|length == 0 %}
+                    <tr>
+                        <th colspan="8" class="text-center">Không có dữ liệu</th>
+                    </tr>
+                {% endif %}
+                {% for pm in phieumuons %}
+                    <tr>
+                        <th scope="row">{{ pm.id_phieumuon }}</th>
+                        <td>{{ pm.id_sach.name | upper }}</td>
+                        <td>{{ pm.id_sach.author }}</td>
+                        <td>
+                            {% if pm.trang_thai == 0 %}
+                                Đang mượn
+                            {% elif pm.trang_thai == 1 %}
+                                Trả đúng hạn
+                            {% else %}
+                                Trả trễ hạn
+                            {% endif %}    
+                        </td>
+                        <td>{{ pm.so_luong }}</td>
+                        <td>{{ pm.ngay_tao }}</td>
+                        <td>{{ pm.ngay_tra }}</td>
+                        <td>{{ pm.ghi_chu }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="mt-5">
+            <a href="/quan-ly-nguoi-dung/doc-gia/" class="btn btn-outline-primary" style="margin-right: 4px">Quay lại</a>
+        </div>
+    </div>
+{% endblock %}

@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-    Quản lý người dùng
+    Quản lý người dùng - {{ tab }}
 {% endblock  %}
 
 {% block content %}
@@ -123,7 +123,7 @@
             <tbody>
                 {% if thethuviens|length == 0 %}
                     <tr>
-                        <th colspan="9" class="text-center">Không có dữ liệu</th>
+                        <th colspan="10" class="text-center">Không có dữ liệu</th>
                     </tr>
                 {% endif %}
                 {% comment %} Hiển thị danh sách user {% endcomment %}
@@ -141,6 +141,9 @@
                         <td>
                             <a href="/quan-ly-nguoi-dung/doc-gia/update/{{ ttv.id_the }}" class="btn btn-outline-primary" style="margin-right: 8px" title="Sửa">
                                 <i class="bi bi-gear"></i>
+                            </a>
+                            <a href="/quan-ly-nguoi-dung/doc-gia/info/{{ ttv.id_the }}" class="btn btn-outline-info" style="margin-right: 8px" title="Chi tiết">
+                                <i class="bu bi-info"></i>
                             </a>
                             <button type="button" class="btn btn-outline-danger" title="Xóa" onclick="deleteDocgia('{{ ttv.id_the }}')">
                                 <i class="bi bi-trash3"></i>

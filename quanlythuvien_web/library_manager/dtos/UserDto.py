@@ -163,6 +163,7 @@ class UserDto(object):
         except Exception as e:
             print(e)
             return Response(False, e.__str__(), None)
+    
     def get_docgias():
         try:
             docgias = Docgias.objects.filter(is_delete=0)
@@ -179,38 +180,6 @@ class UserDto(object):
             print(e)
             return Response(False, e.__str__(), None)
         
-    def get_info_thethuvienById(id):
-        try:
-            ttv = Thethuviens.objects.filter(id_the=id).first()
-            if ttv is None:
-                return Response(False, "Thethuvien not found", None)
-            else:
-                # Get info docgia
-                docgia = Docgias.objects.filter(id_docgia=ttv.id_docgia.id_docgia).first()
-                # Get info phieumuons by thethuvien
-                phieumuons = Phieumuons.objects.filter(id_the=ttv, trang_thai=0)
-                # Get info books
-                books = []
-                for phieumuon in phieumuons:
-                    book = {
-                        'name': phieumuon.id_sach.name,
-                        'price': phieumuon.id_sach.price,
-                        'quantity': phieumuon.id_sach.quantity,
-                        'ngay_muon': phieumuon.ngay_tao,
-                        'ngay_hen_tra': phieumuon.ngay_hen_tra
-                    }
-                    books.append(book)
-                    
-                data = {
-                    'hoten': docgia.name,
-                    'type': ttv.type,
-                    'ngay_het_han': ttv.ngay_het_han,
-                    'books': books
-                }
-                return Response(True, 'Get info success', data)
-        except Exception as e:
-            return Response(False, e.__str__(), None)
-
     def get_phieumuonbytrangthai():
         ...
     
@@ -294,23 +263,24 @@ class UserDto(object):
     
     def update_phieumuon(phieumuonDto: PhieumuonDto, bookName):
         try:
-            # Find book by name
-            book = Books.objects.filter(name=bookName).first()
-            if book is None:
-                return Response(False, f'Book {bookName} not found', None)
-            
             # Get phieumuon by id
             phieumuon = Phieumuons.objects.filter(id_phieumuon=phieumuonDto.id_phieumuon).first()
             if phieumuon is None:
                 return Response(False, 'Phieumuon not found', None)
-            # Update quantity book old
-            phieumuon.id_sach.quantity += phieumuon.so_luong
-            phieumuon.id_sach.save()
-            # Update quantity book new
-            book.quantity -= phieumuonDto.so_luong
-            book.save()
+            
+            # Find book by name
+            book = Books.objects.filter(name=bookName).first()
+            
+            if book != phieumuon.id_sach:
+                # Update quantity book old
+                phieumuon.id_sach.quantity += phieumuon.so_luong
+                phieumuon.id_sach.save()
+                # Update quantity book new
+                book.quantity -= phieumuonDto.so_luong
+                book.save()
+                phieumuon.id_sach = book
+            
             # Update phieumuon
-            phieumuon.id_sach = book
             phieumuon.ngay_tao = phieumuonDto.ngay_tao
             phieumuon.ngay_hen_tra = phieumuonDto.ngay_hen_tra
             phieumuon.ghi_chu = phieumuonDto.ghi_chu
@@ -342,32 +312,33 @@ class UserDto(object):
     def search_phieumuonById_the(id_the):
         try:
             # Get thethuvien by id_the
-            thethuviens = Thethuviens.objects.filter(id_the__icontains=id_the)
+            thethuviens = Thethuviens.objects.filter(id_the__icontains=id_the).all()
             if (id_the == 'all'):
-                thethuviens = Thethuviens.objects.all()
+                thethuviens = Thethuviens.objects.filter(is_delete=0).all()
 
             # Get phieumuon
             phieumuons = []
             for ttv in thethuviens:
-                phieumuon = Phieumuons.objects.filter(id_the=ttv).first()
+                phieumuon = Phieumuons.objects.filter(id_the=ttv, trang_thai=0).first()
+                if phieumuon is not None:
                 # Convert to phieumuon response object
-                phieumuonObject = {
-                    'id_phieumuon': phieumuon.id_phieumuon,
-                    'bookName': phieumuon.id_sach.name,
-                    'id_the': phieumuon.id_the.id_the,
-                    'docgiaName': phieumuon.id_the.id_docgia.name,
-                    'ngay_tao': phieumuon.ngay_tao,
-                    'ngay_hen_tra': phieumuon.ngay_hen_tra,
-                    'trang_thai': phieumuon.trang_thai,
-                    'so_luong': phieumuon.so_luong,
-                    'userName': phieumuon.id_user.name,
-                    'ghichu': phieumuon.ghi_chu
-                }
-                phieumuons.append(phieumuonObject)
+                    phieumuonObject = {
+                        'id_phieumuon': phieumuon.id_phieumuon,
+                        'bookName': phieumuon.id_sach.name,
+                        'id_the': phieumuon.id_the.id_the,
+                        'docgiaName': phieumuon.id_the.id_docgia.name,
+                        'ngay_tao': phieumuon.ngay_tao,
+                        'ngay_hen_tra': phieumuon.ngay_hen_tra,
+                        'trang_thai': phieumuon.trang_thai,
+                        'so_luong': phieumuon.so_luong,
+                        'userName': phieumuon.id_user.name,
+                        'ghichu': phieumuon.ghi_chu
+                    }
+                    phieumuons.append(phieumuonObject)
 
             return Response(True, f'Get phieumuons success. ({len(phieumuons)} result)', phieumuons)
         except Exception as e:
-            return Response(False, e.__str__(), None)
+            return Response(False, e.__str__())
     
     def get_phieumuons():
         try:
@@ -377,19 +348,41 @@ class UserDto(object):
             print(e)
             return Response(False, e.__str__(), None)
         
+    def get_phieumuonsByThethuvien(theThuVien: Thethuviens):
+        try:
+            # Get phieumuons
+            phieumuons = Phieumuons.objects.filter(id_the=theThuVien).all()
+            return Response(True, 'Get phieumuons by thethuvien success', phieumuons)
+        except Exception as e:
+            return Response(False, e.__str__())
+
     def thuhoi_phieumuon(id_phieumuon, ngay_tra, ghi_chu):
         try:
             phieumuon = Phieumuons.objects.filter(id_phieumuon=id_phieumuon).first()
             if phieumuon is None:
                 return Response(False, 'Phieumuon not found', None)
             
-            # Update trang_thai phieumuon
-            phieumuon.trang_thai = 1
+            # Convert ngay_hen_tra to date
+            ngay_hen_tra_date = datetime.strptime(phieumuon.ngay_hen_tra, '%Y-%m-%d')
+            # Convert ngay_tra to date
+            ngay_tra_date = datetime.strptime(ngay_tra, '%Y-%m-%d')
+
+            ghi_chu_auto = 'Đúng hạn'
+
+            # Update trang_thai phieumuon / 1 - Dung han : 2 - Tre han
+            if ngay_tra_date > ngay_hen_tra_date:
+                phieumuon.trang_thai = 2
+                ghi_chu_auto = 'Trễ hạn'
+            else:
+                phieumuon.trang_thai = 1
+            
             phieumuon.ngay_tra = ngay_tra
             if ghi_chu != "":
                 phieumuon.ghi_chu = ghi_chu
-            phieumuon.save()
+            else:
+                phieumuon.ghi_chu = ghi_chu_auto
 
+            phieumuon.save()
             # Update quantity book
             phieumuon.id_sach.quantity += phieumuon.so_luong
             phieumuon.id_sach.save()

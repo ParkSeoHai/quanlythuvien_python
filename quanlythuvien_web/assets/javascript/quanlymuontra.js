@@ -356,7 +356,10 @@ const searchPhieumuon = debounce((event) => {
     fetch(`/quan-ly-muon-tra/search-by-idThe/${searchString}`)
         .then(response => response.json())
         .then(data => {
-            displayPhieumuon(data.data, is_showAlert)
+            console.log(data);
+            if (data.status == true) {
+                displayPhieumuon(data.data, is_showAlert)
+            }
         })
 })
 
