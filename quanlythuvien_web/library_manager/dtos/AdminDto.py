@@ -59,9 +59,8 @@ class AdminDto(UserDto):
             category = Categories.objects.filter(id_category=id).first()
             book = Books.objects.filter(id_category=id).first()
             if book:
-                category.is_delete = 1;
-                category.save()
-                return Response(True, 'Delete category success', None)
+                #fix delete category
+                return Response(False, 'Category is in use', None)
             elif category:
                 category.delete()
                 return Response(True, 'Delete category success', None)

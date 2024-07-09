@@ -17,6 +17,10 @@
         <main role="main" class="pb-3 main h-100">
             <div style="min-height: 520px" class="login">
                 <h2 class="text-primary">Đăng kí</h2>
+                
+                <div class="text-start">
+                        <a href="/">Quay về</a>
+                </div>
                 <form action={% url 'registerPost' %} method="post" autocomplete="off">
                     {% csrf_token %}
                     <div class="form-group">

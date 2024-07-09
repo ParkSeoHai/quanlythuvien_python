@@ -69,7 +69,9 @@ def registerPost(request):
                     messages.error(request, "Password must be at least 6 characters long")
                     return HttpResponseRedirect(reverse('register'))
                 else:
-                    user = UserDto(email=email, password=password)
+                    id = str(uuid.uuid4())
+                    #fix id
+                    user = UserDto(id_user=id, email=email, password=password)
                     response = user.register()
                     print(response.message)
                     messages.success(request, response.message)
